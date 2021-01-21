@@ -12,15 +12,15 @@ export default class ProductController {
 
     @Authorized('getProducts')
     @Get("/:id")
-    public async getProductByID(@CurrentUser({required:true}) operator: Operator, @Param("id") id:number ){
-        const service:ProductService = new ProductService(operator);
+    public async getProductByID(@Param("id") id:number ){
+        const service:ProductService = new ProductService();
         return service.getProductById(id);
     }
 
     @Authorized('getProducts')
     @Get("")
-    public async getProducts(@CurrentUser({required:true}) operator: Operator, @QueryParams() params:Product){
-        const service:ProductService = new ProductService(operator);
+    public async getProducts(@QueryParams() params:Product){
+        const service:ProductService = new ProductService();
         return service.getProducts(params);
     }
 

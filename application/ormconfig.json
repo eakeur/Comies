@@ -1,38 +1,13 @@
-[{
-   "name": "development",
-   "type": "mysql",
-   "host": "localhost",
-   "port": 3306,
-   "username": "development",
-   "password": "2001Development@))!Database",
-   "database": "comies_dev",
-   "synchronize": true,
-   "logging": true,
-   "entities": [
-      "bin/structures/**/*.js"
-   ],
-   "migrations": [
-      "bin/migration/**/*.js"
-   ],
-   "subscribers": [
-      "bin/subscriber/**/*.js"
-   ],
-   "cli": {
-      "entitiesDir": "src/structures",
-      "migrationsDir": "src/migration",
-      "subscribersDir": "src/subscriber"
-   }
-},
 {
    "name": "production",
    "type": "mysql",
-   "host": "100.64.57.12",
+   "host": "localhost",
    "port": 3306,
-   "username": "production",
-   "password": "2001Production@))!Database",
+   "username": "igor",
+   "password": "2001Database@))!",
    "database": "comies",
    "synchronize": true,
-   "logging": true,
+   "logging": false,
    "entities": [
       "bin/structures/**/*.js"
    ],
@@ -47,5 +22,5 @@
       "migrationsDir": "src/migration",
       "subscribersDir": "src/subscriber"
    }
-}]
+}
 

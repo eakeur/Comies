@@ -10,8 +10,8 @@ export default class OperatorController {
 
     @Authorized('getOperators')
     @Get("/:id")
-    public async getOperatorByID(@CurrentUser({required:true}) operator: Operator, @Param("id") id:number){
-        const service:OperatorService = new OperatorService(operator);
+    public async getOperatorByID(@Param("id") id:number){
+        const service:OperatorService = new OperatorService();
         return service.getOperatorById(id);
     }
 

@@ -44,6 +44,7 @@ export default class ProductService {
 
     public async updateProduct(product:Product):Promise<Response>{
         try {
+            delete product.orders;
             await this.collection.update(product.id, product);
             this.response.notifications.push(new Notification("Produto atualizado com sucesso!"))
         } catch (error) {
@@ -68,9 +69,9 @@ export default class ProductService {
     public async getProducts(filters:Product):Promise<Response>{
         try {
             const query = this.collection.createQueryBuilder(); query.where("active = 1");
-            if (filters.code ) query.andWhere(`code LIKE '%${filters.code}%'`);
-            if (filters.name ) query.andWhere(`name LIKE '%${filters.name}%'`);
-            if (filters.price) query.andWhere(`price = ${filters.price}`     );
+            if (filters.code) query.andWhere(`code LIKE '%${filters.code}%'`);
+            if (filters.name) query.andWhere(`name LIKE '%${filters.name}%'`);
+            if (filters.price) query.andWhere(`price = ${filters.price}`);
             this.response.data = await query.getMany();
         } catch (error) {
             console.error(error);
@@ -78,6 +79,30 @@ export default class ProductService {
             this.response.notifications.push(new Notification("Ocorreu um erro ao procurar por produtos. Por favor, tente mais tarde ou fale com um administrador."))
         }
 
+        return this.response;
+    }
+
+    public async getCount(filters:Product):Promise<Response>{
+        try {
+            this.response.data = { quantity: await this.collection.count(filters), filters};
+        } catch (error) {
+            console.error(error);
+            this.response.success = false;
+            this.response.notifications.push(new Notification("Ocorreu um erro ao contar os produtos. Por favor, tente mais tarde ou fale com um administrador."))
+        }
+
+        return this.response;
+    }
+
+    public async select(select: string): Promise<Response>{
+        try {
+            const query = this.collection.createQueryBuilder();
+            this.response.data = await query.where(select).getMany();
+        } catch (error) {
+            console.error(error);
+            this.response.success = false;
+            this.response.notifications.push(new Notification("Ocorreu um erro ao processar sua solicitação. Por favor, tente mais tarde ou fale com um administrador."))
+        }
         return this.response;
     }
 }
