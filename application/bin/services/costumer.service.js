@@ -71,14 +71,14 @@ var CostumerService = /** @class */ (function () {
             });
         });
     };
-    CostumerService.prototype.removeCostumer = function (costumer) {
+    CostumerService.prototype.removeCostumer = function (costumerID) {
         return __awaiter(this, void 0, void 0, function () {
             var error_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.collection.remove(costumer)];
+                        return [4 /*yield*/, this.collection.delete(costumerID)];
                     case 1:
                         _a.sent();
                         this.response.notifications.push(new notification_1.default("Cliente excluído com sucesso!"));
@@ -101,7 +101,7 @@ var CostumerService = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.collection.save(costumer)];
+                        return [4 /*yield*/, this.collection.update(costumer.id, costumer)];
                     case 1:
                         _a.sent();
                         this.response.notifications.push(new notification_1.default("Cliente atualizado com sucesso!"));
@@ -142,16 +142,24 @@ var CostumerService = /** @class */ (function () {
     };
     CostumerService.prototype.getCostumers = function (costumer) {
         return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                try {
-                    this.response.data = this.collection.find(costumer);
+            var _a, error_5;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _b.trys.push([0, 2, , 3]);
+                        _a = this.response;
+                        return [4 /*yield*/, this.collection.find(costumer)];
+                    case 1:
+                        _a.data = _b.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        error_5 = _b.sent();
+                        console.error(error_5);
+                        this.response.success = false;
+                        this.response.notifications.push(new notification_1.default("Ocorreu um erro ao procurar por clientes. Por favor, tente mais tarde ou fale com um administrador."));
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/, this.response];
                 }
-                catch (error) {
-                    console.error(error);
-                    this.response.success = false;
-                    this.response.notifications.push(new notification_1.default("Ocorreu um erro ao procurar por clientes. Por favor, tente mais tarde ou fale com um administrador."));
-                }
-                return [2 /*return*/, this.response];
             });
         });
     };

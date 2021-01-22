@@ -18,7 +18,11 @@ class CostumerFormComponent extends StatefulWidget {
   final TextEditingController district;
   final TextEditingController city;
   final TextEditingController state;
+  final TextEditingController complement;
+  final TextEditingController reference;
   final TextEditingController country;
+  final TextEditingController ddd;
+  final TextEditingController phone;
 
   CostumerFormComponent({
     Key key,
@@ -35,6 +39,10 @@ class CostumerFormComponent extends StatefulWidget {
     this.city,
     this.state,
     this.country,
+    this.complement,
+    this.reference,
+    this.ddd,
+    this.phone,
   }) : super(key: key);
 
   @override
@@ -79,12 +87,15 @@ class CostumerForm extends State<CostumerFormComponent> {
               nameController: widget.name,
               isUpdate: widget.isUpdate,
             ),
-            // DetailedInformationForm(
-            //   minController: widget.minController,
-            //   unityController: widget.unityController,
-            //   onDropdownChange: onDropdownChange,
-            //   isUpdate: widget.isUpdate,
-            // ),
+            SizedBox(height: 40),
+            AddressForm(
+              code: widget.code, street: widget.street, number: widget.number,
+              district: widget.district, city: widget.city, state: widget.state, country: widget.country,
+              reference: widget.reference, complement: widget.complement,
+            ),
+            SizedBox(height: 40),
+            PhoneForm(ddd: widget.ddd, phone: widget.phone, isUpdate: widget.isUpdate),
+            SizedBox(height: 40),
             ActionsForm(
               onSave: onSave,
               isUpdate: widget.isUpdate,
@@ -183,13 +194,11 @@ class BasicInformationForm extends StatelessWidget {
               ),
               textAlign: TextAlign.left,
             ),
-            Divider(
-              thickness: 1.2,
-              height: 20.2,
-            ),
+            SizedBox(height: 20),
           ],
         ),
         TextFormField(
+            autofocus: true,
             controller: nameController,
             keyboardType: TextInputType.name,
             decoration: decorateField("Nome do cliente", Icons.person),
@@ -200,110 +209,184 @@ class BasicInformationForm extends StatelessWidget {
   }
 }
 
-// class AddressForm extends StatelessWidget {
-//   final TextEditingController name;
-//   final TextEditingController code;
-//   final TextEditingController street;
-//   final TextEditingController number;
-//   final TextEditingController district;
-//   final TextEditingController city;
-//   final TextEditingController state;
-//   final TextEditingController country;
+class PhoneForm extends StatelessWidget {
+  final TextEditingController phone;
+  final TextEditingController ddd;
+  final bool isUpdate;
 
-//   AddressForm(
-//       {
-//             this.code,
-//     this.street,
-//     this.number,
-//     this.district,
-//     this.city,
-//     this.state,
-//     this.country,
-//       });
+  PhoneForm({this.phone, this.ddd, this.isUpdate});
 
-//   InputDecoration decorateField(String label, IconData icon) {
-//     return InputDecoration(
-//       labelText: label,
-//       suffixIcon: Icon(icon),
-//     );
-//   }
+  InputDecoration decorateField(String label, IconData icon) {
+    return InputDecoration(
+      labelText: label,
+      suffixIcon: Icon(icon),
+    );
+  }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         Column(
-//           children: [
-//             Text(
-//               "Endereço",
-//               style: TextStyle(
-//                 color: Theme.of(context).primaryColor,
-//               ),
-//               textAlign: TextAlign.left,
-//             ),
-//             Divider(
-//               thickness: 1.2,
-//               height: 20.2,
-//             ),
-//           ],
-//         ),
-//         Row(
-//           children: [
-//             Expanded(
-//               flex: 30,
-//               child: Column(
-//                 children: [
-//                   SizedBox(height: 17),
-//                   DropdownButton(
-//                     isExpanded: true,
-//                     value: unityController.text == ""
-//                         ? null
-//                         : int.parse(unityController.text),
-//                     onChanged: onDropdownChange,
-//                     items: [
-//                       DropdownMenuItem(
-//                         child: Text("Quilogramas"),
-//                         value: 0,
-//                       ),
-//                       DropdownMenuItem(
-//                         child: Text("Miligramas"),
-//                         value: 1,
-//                       ),
-//                       DropdownMenuItem(
-//                         child: Text("Litros"),
-//                         value: 2,
-//                       ),
-//                       DropdownMenuItem(
-//                         child: Text("Mililitros"),
-//                         value: 3,
-//                       ),
-//                       DropdownMenuItem(
-//                         child: Text("Unidade"),
-//                         value: 4,
-//                       ),
-//                     ],
-//                   ),
-//                 ],
-//               ),
-//             ),
-//             SizedBox(width: 10),
-//             Expanded(
-//               flex: 70,
-//               child: TextFormField(
-//                   controller: minController,
-//                   keyboardType: TextInputType.number,
-//                   decoration:
-//                       decorateField("Quantidade mínima", Icons.shopping_cart),
-//                   maxLines: 1),
-//             ),
-//           ],
-//         ),
-//         SizedBox(height: 20),
-//       ],
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          children: [
+            Text(
+              "Contato",
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+              ),
+              textAlign: TextAlign.left,
+            ),
+            SizedBox(height: 20),
+          ],
+        ),
+        Row(
+          children: [
+            Expanded(
+              flex: 20,
+              child:TextFormField(
+              controller: ddd,
+              keyboardType: TextInputType.number,
+              decoration: decorateField("DDD", Icons.call_made),
+              maxLines: 1),
+            ),
+            SizedBox(width: 10),
+            Expanded(
+              flex: 80,
+              child:TextFormField(
+              controller: ddd,
+              keyboardType: TextInputType.phone,
+              decoration: decorateField("Telefone", Icons.phone),
+              maxLines: 1),
+            ),
+          ],
+        ),
+        SizedBox(height: 20),
+      ],
+    );
+  }
+}
+
+class AddressForm extends StatelessWidget {
+  final TextEditingController complement;
+  final TextEditingController reference;
+  final TextEditingController code;
+  final TextEditingController street;
+  final TextEditingController number;
+  final TextEditingController district;
+  final TextEditingController city;
+  final TextEditingController state;
+  final TextEditingController country;
+
+  AddressForm(
+    {
+      this.code,
+      this.street,
+      this.number,
+      this.district,
+      this.city,
+      this.state,
+      this.country,
+      this.complement,
+      this.reference,
+    });
+
+  InputDecoration decorateField(String label, IconData icon) {
+    return InputDecoration(
+      labelText: label,
+      suffixIcon: Icon(icon),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          children: [
+            Text(
+              "Endereço",
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+              ),
+              textAlign: TextAlign.left,
+            ),
+            SizedBox(height: 20),
+          ],
+        ),
+        Row(
+          children: [
+            Expanded(
+              flex: 30,
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: code,
+                      keyboardType: TextInputType.number,
+                      decoration: decorateField("CEP", Icons.code),
+                      maxLines: 1),
+                  
+                ],
+              ),
+            ),
+            SizedBox(width: 10),
+            Expanded(
+              flex: 70,
+              child: TextFormField(
+                  controller: street,
+                  keyboardType: TextInputType.streetAddress,
+                  decoration:
+                      decorateField("Endereço", Icons.map),
+                  maxLines: 1),
+            ),
+          ],
+        ),
+        SizedBox(height: 20),
+        Row(
+          children: [
+            Expanded(
+              flex: 40,
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: code,
+                      keyboardType: TextInputType.streetAddress,
+                      decoration: decorateField("Número", Icons.code),
+                      maxLines: 1),
+                ],
+              ),
+            ),
+            SizedBox(width: 10),
+            Expanded(
+              flex: 60,
+              child: TextFormField(
+                  controller: street,
+                  keyboardType: TextInputType.streetAddress,
+                  decoration:
+                      decorateField("Complemento", Icons.control_point),
+                  maxLines: 1),
+            ),
+          ],
+        ),
+        SizedBox(height: 20),
+        Row(
+          children: [
+            Expanded(
+              flex:100,
+              child: TextFormField(
+                  controller: street,
+                  keyboardType: TextInputType.streetAddress,
+                  decoration:
+                      decorateField("Referência", Icons.business),
+                  maxLines: 1),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
 
 class ActionsForm extends StatelessWidget {
   final Function onSave;
@@ -326,7 +409,7 @@ class ActionsForm extends StatelessWidget {
           label: Text(isUpdate ? "Atualizar" : "Salvar"),
         ),
         SizedBox(width: 20),
-        if (onDelete != null)
+        if (isUpdate)
           ElevatedButton.icon(
             style: ButtonStyle(
               backgroundColor:

@@ -199,15 +199,29 @@ class DetailedScreen extends StatefulWidget {
 }
 
 class Detailed extends State<DetailedScreen> {
-  TextEditingController codeController = new TextEditingController();
+  TextEditingController nameC = new TextEditingController();
 
-  TextEditingController nameController = new TextEditingController();
+  TextEditingController codeC = new TextEditingController();
 
-  TextEditingController priceController = new TextEditingController();
+  TextEditingController streetC = new TextEditingController();
 
-  TextEditingController unityController = new TextEditingController();
+  TextEditingController districtC = new TextEditingController();
 
-  TextEditingController minController = new TextEditingController();
+  TextEditingController complementC = new TextEditingController();
+
+  TextEditingController numberC = new TextEditingController();
+
+  TextEditingController cityC = new TextEditingController();
+
+  TextEditingController stateC = new TextEditingController();
+
+  TextEditingController countryC = new TextEditingController();
+
+  TextEditingController dddC = new TextEditingController();
+
+  TextEditingController phoneC = new TextEditingController();
+
+  
 
   bool isBigScreen() => MediaQuery.of(context).size.width > widthDivisor;
 
@@ -222,17 +236,18 @@ class Detailed extends State<DetailedScreen> {
   LoadStatus status = LoadStatus.loaded;
 
   void onSave() {
-    // var costm = widget.service.createProduct();
-    // costm.code = codeController.text;
-    // costm.name = nameController.text;
+    var costm = widget.service.createProduct();
+    costm.firstName = nameC.text;
+    costm.lastName = "";
+    costm.active = true;
     // costm.price = double.parse(priceController.text);
     // costm.min = int.parse(minController.text);
     // costm.active = true;
     // costm.unity = Unity.values[int.parse(unityController.text)];
     // costm.id = widget.id;
-    // widget.id == 0
-    //     ? widget.service.addCostumer(costm)
-    //     : widget.service.updateCostumer(costm);
+    widget.id == 0
+         ? widget.service.addCostumer(costm)
+         : widget.service.updateCostumer(costm);
   }
 
   void onDelete() {
@@ -246,11 +261,7 @@ class Detailed extends State<DetailedScreen> {
         lastID = widget.id;
       });
       widget.service.getById(widget.id).then((costumer) => setState(() {
-            // codeController.text = costumer.code;
-            // nameController.text = costumer.name;
-            // priceController.text = costumer.price.toString();
-            // minController.text = costumer.min.toString();
-            // unityController.text = costumer.unity.index.toString();
+            nameC.text = costumer.firstName;
             status = LoadStatus.loaded;
           }));
     }
@@ -264,7 +275,17 @@ class Detailed extends State<DetailedScreen> {
       service: widget.service,
       onSave: onSave,
       onDelete: onDelete,
-      name: nameController,
+      name: nameC,
+      code:  codeC,
+      street: streetC,
+      number: numberC,
+      district: districtC,
+      complement: complementC,
+      city: cityC,
+      state: stateC,
+      country: countryC,
+      ddd: dddC,
+      phone: phoneC,
       isUpdate: widget.id != null && widget.id != 0,
     );
   }

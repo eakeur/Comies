@@ -199,6 +199,7 @@ class BasicInformationForm extends StatelessWidget {
               flex: 30,
               child: TextFormField(
                   controller: codeController,
+                  autofocus: true,
                   readOnly: isUpdate,
                   keyboardType: TextInputType.text,
                   decoration: decorateField("Código do produto", Icons.qr_code),
@@ -344,7 +345,7 @@ class ActionsForm extends StatelessWidget {
           label: Text(isUpdate ? "Atualizar" : "Salvar"),
         ),
         SizedBox(width: 20),
-        if (onDelete != null)
+        if (isUpdate)
           ElevatedButton.icon(
             style: ButtonStyle(
               backgroundColor:

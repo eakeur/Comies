@@ -40,11 +40,11 @@ export default class CostumerController {
     }
 
     @Authorized('removeCostumers')
-    @Delete("")
+    @Delete("/:id")
     @UseBefore(json())
-    public async removeCostumer(@CurrentUser({required:true}) operator: Operator, @Body() costumer: Costumer){
+    public async removeCostumer(@CurrentUser({required:true}) operator: Operator, @Param("id") id:number){
         const service:CostumerService = new CostumerService(operator);
-        return service.removeCostumer(costumer);
+        return service.removeCostumer(id);
     }
 
 }

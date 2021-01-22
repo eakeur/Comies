@@ -74,18 +74,17 @@ var ServerInitializer = /** @class */ (function () {
     };
     ServerInitializer.prototype.initializeServer = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var app;
+            var port;
             return __generator(this, function (_a) {
-                app = express_1.default();
-                app.use("/", serve_static_1.default("public"));
-                routing_controllers_1.useExpressServer(app, {
+                port = process.env.port || 8080;
+                routing_controllers_1.useExpressServer(express_1.default().use("/", serve_static_1.default("public")), {
                     cors: true,
                     currentUserChecker: function (action) { return new operator_service_1.default().getOperatorByToken(action); },
                     classTransformer: true,
                     authorizationChecker: function (action, roles) { return new operator_service_1.default().authorizeOperator(action, roles); },
                     controllers: [costumer_controller_1.default, product_controller_1.default, order_controller_1.default, operator_controller_1.default]
-                })
-                    .listen(process.env.port || 8080);
+                }).listen(port);
+                console.log("Comies server started on port " + port);
                 return [2 /*return*/];
             });
         });

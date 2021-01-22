@@ -29,9 +29,9 @@ export default class CostumerService {
         return this.response;
     }
 
-    public async removeCostumer(costumer:Costumer):Promise<Response>{
+    public async removeCostumer(costumerID: number):Promise<Response>{
         try {
-            await this.collection.remove(costumer);
+            await this.collection.delete(costumerID);
             this.response.notifications.push(new Notification("Cliente excluído com sucesso!"));
         } catch (error) {
             console.error(error);
@@ -43,7 +43,7 @@ export default class CostumerService {
 
     public async updateCostumer(costumer:Costumer):Promise<Response>{
         try {
-            await this.collection.save(costumer);
+            await this.collection.update(costumer.id, costumer);
             this.response.notifications.push(new Notification("Cliente atualizado com sucesso!"));
         } catch (error) {
             console.error(error);
@@ -66,7 +66,7 @@ export default class CostumerService {
 
     public async getCostumers(costumer?:Costumer):Promise<Response>{
         try {
-            this.response.data = this.collection.find(costumer);
+            this.response.data = await this.collection.find(costumer);
         } catch (error) {
             console.error(error);
             this.response.success = false;

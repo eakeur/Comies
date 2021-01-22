@@ -94,12 +94,12 @@ var CostumerController = /** @class */ (function () {
             });
         });
     };
-    CostumerController.prototype.removeCostumer = function (operator, costumer) {
+    CostumerController.prototype.removeCostumer = function (operator, id) {
         return __awaiter(this, void 0, void 0, function () {
             var service;
             return __generator(this, function (_a) {
                 service = new costumer_service_1.default(operator);
-                return [2 /*return*/, service.removeCostumer(costumer)];
+                return [2 /*return*/, service.removeCostumer(id)];
             });
         });
     };
@@ -139,11 +139,11 @@ var CostumerController = /** @class */ (function () {
     ], CostumerController.prototype, "updateCostumer", null);
     __decorate([
         routing_controllers_1.Authorized('removeCostumers'),
-        routing_controllers_1.Delete(""),
+        routing_controllers_1.Delete("/:id"),
         routing_controllers_1.UseBefore(body_parser_1.json()),
-        __param(0, routing_controllers_1.CurrentUser({ required: true })), __param(1, routing_controllers_1.Body()),
+        __param(0, routing_controllers_1.CurrentUser({ required: true })), __param(1, routing_controllers_1.Param("id")),
         __metadata("design:type", Function),
-        __metadata("design:paramtypes", [operator_1.default, costumer_1.default]),
+        __metadata("design:paramtypes", [operator_1.default, Number]),
         __metadata("design:returntype", Promise)
     ], CostumerController.prototype, "removeCostumer", null);
     CostumerController = __decorate([
