@@ -81,7 +81,7 @@ class ListComponent extends StatelessWidget {
         for (var prod in list)
           ListTile(
             leading: Icon(Icons.person),
-            title: Text("${prod.firstName}"),
+            title: Text("${prod.name}"),
             onTap: () => onTap(prod.id),
             trailing: IconButton(
               icon: Icon(Icons.arrow_right),

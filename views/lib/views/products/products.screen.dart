@@ -226,7 +226,7 @@ class Detailed extends State<DetailedScreen> {
     prod.code = codeController.text;
     prod.name = nameController.text;
     prod.price = double.parse(priceController.text);
-    prod.min = int.parse(minController.text);
+    prod.min = double.parse(minController.text);
     prod.active = true;
     prod.unity = Unity.values[int.parse(unityController.text)];
     prod.id = widget.id;

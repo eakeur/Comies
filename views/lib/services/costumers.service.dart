@@ -92,8 +92,7 @@ class CostumersService extends GeneralService<Costumer> {
       Costumer costm = new Costumer();
       if (map is Map && map != null) {
         costm.id = map['id'];
-        costm.firstName = map['firstName'];
-        costm.lastName = map['lastName'];
+        costm.name = map['name'];
         costm.phones = map['phones'];
         costm.addresses = map["addresses"];
         costm.orders = map['orders'];
@@ -109,8 +108,7 @@ class CostumersService extends GeneralService<Costumer> {
     try {
       return {
         if (prod.id != null) "id": prod.id,
-        if (prod.firstName != null) "firstName": prod.firstName,
-        if (prod.lastName != null) "lastName": prod.lastName,
+        if (prod.name != null) "firstName": prod.name,
         if (prod.phones != null) "phones": prod.phones,
         if (prod.addresses != null) "addresses": prod.active,
         if (prod.orders != null) "orders": prod.orders,

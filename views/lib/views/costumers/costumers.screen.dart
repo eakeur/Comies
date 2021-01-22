@@ -104,7 +104,7 @@ class General extends State<GeneralScreen> {
   }
 
   void onSearchFieldChange(String change) {
-    widget.service.addProperty((p) => p.firstName = change);
+    widget.service.addProperty((p) => p.name = change);
   }
 
   void renderDetails(int id) => setState(() {
@@ -237,8 +237,7 @@ class Detailed extends State<DetailedScreen> {
 
   void onSave() {
     var costm = widget.service.createProduct();
-    costm.firstName = nameC.text;
-    costm.lastName = "";
+    costm.name = nameC.text;
     costm.active = true;
     // costm.price = double.parse(priceController.text);
     // costm.min = int.parse(minController.text);
@@ -261,7 +260,7 @@ class Detailed extends State<DetailedScreen> {
         lastID = widget.id;
       });
       widget.service.getById(widget.id).then((costumer) => setState(() {
-            nameC.text = costumer.firstName;
+            nameC.text = costumer.name;
             status = LoadStatus.loaded;
           }));
     }
