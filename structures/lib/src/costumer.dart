@@ -4,8 +4,7 @@ import 'package:comies_entities/src/phone.dart';
 
 class Costumer {
   int id;
-  String firstName;
-  String lastName;
+  String name;
   List<Phone> phones;
   List<Address> addresses;
   List<Order> orders;

@@ -6,7 +6,7 @@ class Product {
   int id;
   String name;
   String code;
-  int min;
+  double min;
   Unity unity;
   double price;
   Partner partner;

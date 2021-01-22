@@ -13,3 +13,7 @@
 ## 1.0.3
 
 - Fixed some types to fit better the information they will store.
+
+## 1.0.4
+
+- Fixed some types to fit better the information they will store.

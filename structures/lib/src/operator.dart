@@ -5,8 +5,7 @@ import 'package:comies_entities/src/store.dart';
 
 class Operator {
   int id;
-  String firstName;
-  String lastName;
+  String name;
   String identification;
   String password;
   DateTime lastLogin;
