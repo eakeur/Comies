@@ -6,10 +6,13 @@ class Product {
   int id;
   String name;
   String code;
-  double min;
+  double min; 
   Unity unity;
   double price;
+  int partnerId;
+  bool active;
+  
   Partner partner;
   List<Order> orders;
-  bool active;
+  
 }

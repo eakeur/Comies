@@ -19,7 +19,7 @@ export default class CostumerService {
 
     public async addCostumer(costumer:Costumer):Promise<Response>{
         try {
-            await this.collection.save(costumer);
+            await this.collection.insert(costumer);
             this.response.notifications.push(new Notification("Cliente adicionado com sucesso!"));
         } catch (error) {
             console.error(error);
