@@ -46,7 +46,7 @@ class Products extends State<ProductsScreen> {
                               width: 600,
                               child: ProductFormComponent(
                                   id: id,
-                                  afterDelete: () {setState(() {});},
+                                  afterDelete: () {setState(() { id = null;});},
                                   afterSave: () {setState(() {});}))))
                 else
                   Expanded(
@@ -85,12 +85,24 @@ class Products extends State<ProductsScreen> {
 }
 
 class AddButton extends StatelessWidget {
+
+
+  void buttonAction(){
+    
+  }
+  
   @override
   Widget build(BuildContext context) {
+    bool isBigScreen() => MediaQuery.of(context).size.width > widthDivisor;
     return FloatingActionButton(
-        onPressed: () => Scaffold.of(context).showBottomSheet((context) => 
-          Container(height: MediaQuery.of(context).size.height - 100, child: DetailedScreen())),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+        onPressed: (){
+          isBigScreen() ? 
+            Scaffold.of(context).showBottomSheet((context) => 
+              Container(height: MediaQuery.of(context).size.height - 100, child: DetailedScreen()),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)))
+          : Navigator.push(context, MaterialPageRoute(
+              builder: (BuildContext context) => new DetailedScreen()));
+        },
         tooltip: 'Adicionar produto',
         child: Icon(Icons.add));
   }

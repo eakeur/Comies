@@ -157,7 +157,7 @@ class ProductForm extends State<ProductFormComponent> {
               Row(
                 children: [
                   Expanded(
-                      flex: 30,
+                      flex: 50,
                       child: Column(children: [
                         SizedBox(height: 17),
                         DropdownButton(
@@ -180,12 +180,12 @@ class ProductForm extends State<ProductFormComponent> {
                       ])),
                   SizedBox(width: 10),
                   Expanded(
-                    flex: 70,
+                    flex: 50,
                     child: TextFormField(
                         controller: minController,
                         keyboardType: TextInputType.number,
                         decoration: decorateField(
-                            "Quantidade mínima", Icons.shopping_cart),
+                            "Mínimo", Icons.shopping_cart),
                         maxLines: 1),
                   ),
                 ],

@@ -3,7 +3,6 @@ import 'package:comies_entities/comies_entities.dart';
 
 class ProductsService extends GeneralService<Product> {
   dynamic _context;
-  List<Product> products = [];
 
   ProductsService() {
     this.path = 'products';
@@ -26,7 +25,6 @@ class ProductsService extends GeneralService<Product> {
           prods.add(_deserializeMap(item));
         }
       }
-      products = prods;
       return prods;
     } catch (e) {
       notify(res, _context);
@@ -83,7 +81,7 @@ class ProductsService extends GeneralService<Product> {
         prod.id = map['id'];
         prod.name = map['name'];
         prod.code = map['code'];
-        prod.min = map['min'];
+        prod.min = map['min'].toDouble();
         prod.active = map["active"];
         prod.orders = map['orders'];
         prod.price = map['price'].toDouble();

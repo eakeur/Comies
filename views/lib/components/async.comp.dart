@@ -23,6 +23,7 @@ class AsyncComponent extends StatefulWidget {
 }
 
 class Async extends State<AsyncComponent> {
+  bool visible = false;
   bool isDataNullOrEmpty() {
     var tgt = widget.data;
     if (tgt != null) {
