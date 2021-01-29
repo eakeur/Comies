@@ -3,8 +3,6 @@ import 'package:comies_entities/comies_entities.dart';
 
 class ProductsService extends GeneralService<Product> {
   dynamic _context;
-
-  Product product = new Product();
   List<Product> products = [];
 
   ProductsService() {
@@ -15,12 +13,12 @@ class ProductsService extends GeneralService<Product> {
     this._context = context;
   }
 
-  Future<List<Product>> getProducts() async {
+  Future<List<Product>> getProducts(Product filter) async {
     Response res;
     try {
       List<Product> prods = [];
       res = await super
-          .get(query: super.getQueryString(_serializeProduct(product)));
+          .get(query: super.getQueryString(_serializeProduct(filter)));
       if (!(res.data is List)) {
         throw new Exception();
       } else {
@@ -114,10 +112,6 @@ class ProductsService extends GeneralService<Product> {
     } catch (e) {
       throw e;
     }
-  }
-
-  void addProperty(Function(Product) additionProcedure) {
-    additionProcedure(product);
   }
 
   Product createProduct() {

@@ -4,18 +4,10 @@ import 'package:comies_entities/comies_entities.dart';
 import 'package:flutter/material.dart';
 
 class ProductsListComponent extends StatefulWidget {
-  final ProductsService service;
   final Function(int) onListClick;
-  final Function(String) onSearchFieldChange;
-  final LoadStatus status;
-  final Function onSearchClick;
 
   ProductsListComponent({
-    this.onSearchClick,
-    this.onSearchFieldChange,
     this.onListClick,
-    this.service,
-    this.status,
     Key key,
   }) : super(key: key);
 
@@ -25,128 +17,103 @@ class ProductsListComponent extends StatefulWidget {
 
 class ProductsList extends State<ProductsListComponent> {
   TextEditingController searchController = new TextEditingController();
-  LoadStatus status = LoadStatus.loaded;
+  ProductsService service = new ProductsService();
+  List<Product> products = [];
+  Product filter = new Product();
+  LoadStatus status;
 
-  void addPropertyToSearchParams(String property) {
-    widget.service.addProperty((prod) => prod.name = property);
+  void onSearchTap() {
+    setState(() {
+      status = LoadStatus.loading;
+    });
+    service.getProducts(filter).then((value) => setState(() {
+          products = value;
+          status = LoadStatus.loaded;
+        }));
+  }
+
+  @override
+  void didUpdateWidget(ProductsListComponent oldWidget){
+    onSearchTap();
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void initState() {
+    onSearchTap();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    widget.service.setContext(context);
+    service.setContext(context);
     return ListView(
       children: [
-        SearchBar(
-          searchController: searchController,
-          onSearchTap: widget.onSearchClick,
-          onFieldChanged: widget.onSearchFieldChange,
+        Container(
+          padding: EdgeInsets.all(5),
+          child: TextFormField(
+            controller: searchController,
+            onChanged: (change) => filter.name = change,
+            onFieldSubmitted: (change) {
+              filter.name = change;
+              onSearchTap();
+            },
+            decoration: InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: "Pesquisar",
+              suffixIcon: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (searchController.text != "")
+                    IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () {
+                        searchController.text = "";
+                        filter.name = "";
+                        onSearchTap();
+                      },
+                    ),
+                  IconButton(
+                    icon: Icon(Icons.filter_alt),
+                    onPressed: null,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.search),
+                    onPressed: onSearchTap,
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
         AsyncComponent(
-          data: widget.service.products,
-          status: widget.status,
+          data: products,
+          status: status,
           messageIfNullOrEmpty:
               "Ops! Não encontramos nenhum produto! Tente especificar os filtros acima.",
           child: Container(
-            child: ListComponent(
-              onTap: widget.onListClick,
-              onEditTap: widget.onListClick,
-              list: widget.service.products,
+            child: Column(
+              children: ListTile.divideTiles(
+                context: context,
+                tiles: [
+                  for (var prod in products)
+                    ListTile(
+                      title: Text("${prod.name}"),
+                      subtitle: Text("R\$${prod.price}"),
+                      onTap: (){
+                        widget.onListClick(prod.id);
+                      },
+                      trailing: IconButton(
+                        icon: Icon(Icons.arrow_right),
+                        onPressed: () => widget.onListClick(prod.id),
+                      ),
+                    ),
+                ],
+              ).toList(),
             ),
           ),
         ),
       ],
-    );
-  }
-}
-
-class ListComponent extends StatelessWidget {
-  final TextEditingController searchController;
-  final Function(int) onTap;
-  final Function(int) onEditTap;
-  final Function(String) onFieldChanged;
-  final Function() onSearchTap;
-  final List<Product> list;
-
-  ListComponent(
-      {this.onTap,
-      this.onEditTap,
-      this.onFieldChanged,
-      this.onSearchTap,
-      this.searchController,
-      this.list,
-      Key key})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    var tiles = ListTile.divideTiles(
-      context: context,
-      tiles: [
-        for (var prod in list)
-          ListTile(
-            title: Text("${prod.name}"),
-            subtitle: Text("R\$${prod.price}"),
-            onTap: () => onTap(prod.id),
-            trailing: IconButton(
-              icon: Icon(Icons.arrow_right),
-              onPressed: () => onEditTap(prod.id),
-            ),
-          ),
-      ],
-    ).toList();
-    return Column(
-      children: tiles,
-    );
-  }
-}
-
-class SearchBar extends StatelessWidget {
-  final TextEditingController searchController;
-  final Function(String) onFieldChanged;
-  final Function() onSearchTap;
-
-  SearchBar(
-      {this.searchController, this.onFieldChanged, this.onSearchTap, Key key})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(5),
-      child: TextFormField(
-        controller: searchController,
-        onChanged: onFieldChanged,
-        onFieldSubmitted: (x) {
-          onFieldChanged(x);
-          onSearchTap();
-        },
-        decoration: InputDecoration(
-          border: UnderlineInputBorder(),
-          labelText: "Pesquisar",
-          suffixIcon: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (searchController.text != "")
-                IconButton(
-                  icon: Icon(Icons.close),
-                  onPressed: () {
-                    searchController.text = "";
-                    onFieldChanged("");
-                    onSearchTap();
-                  },
-                ),
-              IconButton(
-                icon: Icon(Icons.filter_alt),
-                onPressed: null,
-              ),
-              IconButton(
-                icon: Icon(Icons.search),
-                onPressed: onSearchTap,
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

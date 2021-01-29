@@ -55,7 +55,7 @@ var CostumerService = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.collection.save(costumer)];
+                        return [4 /*yield*/, this.collection.insert(costumer)];
                     case 1:
                         _a.sent();
                         this.response.notifications.push(new notification_1.default("Cliente adicionado com sucesso!"));
