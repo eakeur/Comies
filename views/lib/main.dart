@@ -1,9 +1,10 @@
 import 'package:comies/services/settings.service.dart';
 import 'package:comies/utils/declarations/environment.dart';
 import 'package:comies/utils/declarations/storage.dart';
-import 'package:comies/utils/declarations/menu.dart';
 import 'package:comies/views/authentication/authentication.screen.dart';
 import 'package:comies/views/costumers/costumers.screen.dart';
+import 'package:comies/views/products/edit.screen.dart';
+import 'package:comies/views/products/form.comp.dart';
 import 'package:comies/views/products/products.screen.dart';
 import 'package:comies/views/settings/settings.screen.dart';
 import 'package:comies/views/home/home.screen.dart';
@@ -45,6 +46,8 @@ class ApplicationLauncher extends StatefulWidget {
   Application createState() => Application();
 }
 
+Function(ThemeMode) themeSwitcher;
+
 class Application extends State<ApplicationLauncher> {
   ThemeMode themeMode = ThemeMode.system;
 
@@ -54,8 +57,7 @@ class Application extends State<ApplicationLauncher> {
 
   @override
   Widget build(BuildContext context) {
-    MenuEntries menu =
-        new MenuEntries(themeSwitcher: switchTheme, mode: themeMode);
+    themeSwitcher = switchTheme;
     return MaterialApp(
       title: 'Comies',
       theme: mainTheme(Brightness.light),
@@ -63,10 +65,10 @@ class Application extends State<ApplicationLauncher> {
       themeMode: themeMode,
       initialRoute: initialPage,
       routes: {
-        '/': (context) => HomeScreen(menu: menu),
-        '/products': (context) => ProductsScreen(menu: menu),
+        '/': (context) => HomeScreen(),
+        '/products': (context) => ProductsScreen(),
         '/authentication': (context) => AuthenticationScreen(),
-        '/costumers': (context) => CostumersScreen(menu: menu),
+        '/costumers': (context) => CostumersScreen(),
         '/welcome': (context) => WelcomeScreen(),
         '/settings': (context) => SettingsScreen()
       },

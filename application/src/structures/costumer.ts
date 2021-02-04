@@ -13,10 +13,6 @@ export default class Costumer {
     @Column()
     name: string;
 
-
-    @Column({nullable:true})
-    token: string;
-
     @OneToMany(()=> Phone, phone => phone.costumer)
     phones: Phone[];
 

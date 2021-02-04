@@ -2,16 +2,16 @@ import 'package:comies/utils/declarations/environment.dart';
 import 'package:comies/views/costumers/form.comp.dart';
 import 'package:flutter/material.dart';
 
-class DetailedScreen extends StatefulWidget {
+class DetailedCostumerScreen extends StatefulWidget {
   final int id;
 
-  DetailedScreen({this.id});
+  DetailedCostumerScreen({this.id});
 
   @override
   Detailed createState() => Detailed();
 }
 
-class Detailed extends State<DetailedScreen> {
+class Detailed extends State<DetailedCostumerScreen> {
 
   bool isBigScreen() => MediaQuery.of(context).size.width > widthDivisor;
   bool hasID() => widget.id != null && widget.id != 0;

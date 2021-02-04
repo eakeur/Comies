@@ -115,9 +115,10 @@ class GeneralService<T> {
   }
 
   @flutter.protected
-  Future<dynamic> getExternal(String externalURL) async {
+  Future<Response> getExternal(String externalURL) async {
     try {
-      return await service.get(externalURL);
+      var resp = await service.get(externalURL);
+      return new Response(success: true, data: resp.body);
     } catch (e) {
       print(e);
       return new Response(notifications: [

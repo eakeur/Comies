@@ -103,6 +103,24 @@ var CostumerController = /** @class */ (function () {
             });
         });
     };
+    CostumerController.prototype.removePhone = function (operator, id) {
+        return __awaiter(this, void 0, void 0, function () {
+            var service;
+            return __generator(this, function (_a) {
+                service = new costumer_service_1.default(operator);
+                return [2 /*return*/, service.removePhone(id)];
+            });
+        });
+    };
+    CostumerController.prototype.removeAddress = function (operator, id) {
+        return __awaiter(this, void 0, void 0, function () {
+            var service;
+            return __generator(this, function (_a) {
+                service = new costumer_service_1.default(operator);
+                return [2 /*return*/, service.removeAddress(id)];
+            });
+        });
+    };
     __decorate([
         routing_controllers_1.Authorized('getCostumers'),
         routing_controllers_1.Get("/:id"),
@@ -146,6 +164,24 @@ var CostumerController = /** @class */ (function () {
         __metadata("design:paramtypes", [operator_1.default, Number]),
         __metadata("design:returntype", Promise)
     ], CostumerController.prototype, "removeCostumer", null);
+    __decorate([
+        routing_controllers_1.Authorized('removePhones'),
+        routing_controllers_1.Delete("/phones/:id"),
+        routing_controllers_1.UseBefore(body_parser_1.json()),
+        __param(0, routing_controllers_1.CurrentUser({ required: true })), __param(1, routing_controllers_1.Param("id")),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [operator_1.default, Number]),
+        __metadata("design:returntype", Promise)
+    ], CostumerController.prototype, "removePhone", null);
+    __decorate([
+        routing_controllers_1.Authorized('removeAddresses'),
+        routing_controllers_1.Delete("/addresses/:id"),
+        routing_controllers_1.UseBefore(body_parser_1.json()),
+        __param(0, routing_controllers_1.CurrentUser({ required: true })), __param(1, routing_controllers_1.Param("id")),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [operator_1.default, Number]),
+        __metadata("design:returntype", Promise)
+    ], CostumerController.prototype, "removeAddress", null);
     CostumerController = __decorate([
         routing_controllers_1.Controller("/costumers")
     ], CostumerController);

@@ -47,4 +47,20 @@ export default class CostumerController {
         return service.removeCostumer(id);
     }
 
+    @Authorized('removePhones')
+    @Delete("/phones/:id")
+    @UseBefore(json())
+    public async removePhone(@CurrentUser({required:true}) operator: Operator, @Param("id") id:number){
+        const service:CostumerService = new CostumerService(operator);
+        return service.removePhone(id);
+    }
+
+    @Authorized('removeAddresses')
+    @Delete("/addresses/:id")
+    @UseBefore(json())
+    public async removeAddress(@CurrentUser({required:true}) operator: Operator, @Param("id") id:number){
+        const service:CostumerService = new CostumerService(operator);
+        return service.removeAddress(id);
+    }
+
 }

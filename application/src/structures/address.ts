@@ -8,13 +8,13 @@ export default class Address {
     id: number;
 
     @Column({nullable:false})
-    cep: number;
+    cep: string;
 
     @Column({nullable:false})
-    number: number;
+    number: string;
 
     @Column({nullable:false})
-    district: number;
+    district: string;
 
     @Column()
     complement: string;

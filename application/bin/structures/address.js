@@ -23,15 +23,15 @@ var Address = /** @class */ (function () {
     ], Address.prototype, "id", void 0);
     __decorate([
         typeorm_1.Column({ nullable: false }),
-        __metadata("design:type", Number)
+        __metadata("design:type", String)
     ], Address.prototype, "cep", void 0);
     __decorate([
         typeorm_1.Column({ nullable: false }),
-        __metadata("design:type", Number)
+        __metadata("design:type", String)
     ], Address.prototype, "number", void 0);
     __decorate([
         typeorm_1.Column({ nullable: false }),
-        __metadata("design:type", Number)
+        __metadata("design:type", String)
     ], Address.prototype, "district", void 0);
     __decorate([
         typeorm_1.Column(),

@@ -1,12 +1,7 @@
-import 'dart:io';
-
-import 'package:comies/utils/declarations/menu.dart';
+import 'package:comies/components/menu.comp.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
-
-  final MenuEntries menu;
-  HomeScreen({Key key, this.menu}) : super(key: key); 
 
   @override
   Home createState() => Home();
@@ -24,7 +19,7 @@ class Home extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: widget.menu.drawer(context),
+      drawer: ComiesDrawer(),
       appBar: appBar(),
       body: Center(),
     );

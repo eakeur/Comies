@@ -12,4 +12,4 @@ enum Status {
   finished
 }
 
-enum LoadStatus { loading, loaded }
+enum LoadStatus { loading, loaded, failed }

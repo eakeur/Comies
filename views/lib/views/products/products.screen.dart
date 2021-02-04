@@ -1,15 +1,12 @@
+import 'package:comies/components/menu.comp.dart';
 import 'package:comies/services/products.service.dart';
 import 'package:comies/utils/declarations/environment.dart';
-import 'package:comies/utils/declarations/menu.dart';
 import 'package:comies/views/products/edit.screen.dart';
 import 'package:comies/views/products/form.comp.dart';
 import 'package:comies/views/products/list.comp.dart';
 import 'package:flutter/material.dart';
 
 class ProductsScreen extends StatefulWidget {
-  final MenuEntries menu;
-  ProductsScreen({Key key, this.menu}) : super(key: key);
-
   @override
   Products createState() => Products();
 }
@@ -24,7 +21,7 @@ class Products extends State<ProductsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: widget.menu.drawer(context),
+        drawer: ComiesDrawer(),
         //The top bar app
         appBar: AppBar(title: Text('Produtos'), elevation: 8),
         //The body of the app
@@ -72,7 +69,7 @@ class Products extends State<ProductsScreen> {
                                  Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (BuildContext context) => new DetailedScreen(id: id)));
+                                    builder: (BuildContext context) => new DetailedProductScreen(id: id)));
                               });
                             }),
                       )
@@ -98,10 +95,10 @@ class AddButton extends StatelessWidget {
         onPressed: (){
           isBigScreen() ? 
             Scaffold.of(context).showBottomSheet((context) => 
-              Container(height: MediaQuery.of(context).size.height - 100, child: DetailedScreen()),
+              Container(height: MediaQuery.of(context).size.height - 100, child: DetailedProductScreen()),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)))
           : Navigator.push(context, MaterialPageRoute(
-              builder: (BuildContext context) => new DetailedScreen()));
+              builder: (BuildContext context) => new DetailedProductScreen()));
         },
         tooltip: 'Adicionar produto',
         child: Icon(Icons.add));

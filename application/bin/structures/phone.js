@@ -23,11 +23,11 @@ var Phone = /** @class */ (function () {
     ], Phone.prototype, "id", void 0);
     __decorate([
         typeorm_1.Column({ nullable: false }),
-        __metadata("design:type", Number)
+        __metadata("design:type", String)
     ], Phone.prototype, "ddd", void 0);
     __decorate([
         typeorm_1.Column({ nullable: false }),
-        __metadata("design:type", Number)
+        __metadata("design:type", String)
     ], Phone.prototype, "number", void 0);
     __decorate([
         typeorm_1.ManyToOne(function () { return costumer_1.default; }, function (costumer) { return costumer.phones; }, { eager: true }),

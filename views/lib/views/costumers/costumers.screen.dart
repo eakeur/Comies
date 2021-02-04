@@ -1,15 +1,12 @@
+import 'package:comies/components/menu.comp.dart';
 import 'package:comies/services/costumers.service.dart';
 import 'package:comies/utils/declarations/environment.dart';
-import 'package:comies/utils/declarations/menu.dart';
 import 'package:comies/views/costumers/form.comp.dart';
 import 'package:comies/views/costumers/list.comp.dart';
 import 'package:flutter/material.dart';
 import 'package:comies/views/costumers/edit.screen.dart';
 
 class CostumersScreen extends StatefulWidget {
-  final MenuEntries menu;
-  CostumersScreen({Key key, this.menu}) : super(key: key);
-
   @override
   Costumers createState() => Costumers();
 }
@@ -24,7 +21,7 @@ class Costumers extends State<CostumersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: widget.menu.drawer(context),
+        drawer: ComiesDrawer(),
         //The top bar app
         appBar: AppBar(title: Text('Clientes'), elevation: 8),
         //The body of the app
@@ -72,7 +69,7 @@ class Costumers extends State<CostumersScreen> {
                                  Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (BuildContext context) => new DetailedScreen(id: id)));
+                                    builder: (BuildContext context) => new DetailedCostumerScreen(id: id)));
                               });
                             }),
                       )
@@ -93,10 +90,10 @@ class AddButton extends StatelessWidget {
         onPressed: (){
           isBigScreen() ? 
             Scaffold.of(context).showBottomSheet((context) => 
-              Container(height: MediaQuery.of(context).size.height - 100, child: DetailedScreen()),
+              Container(height: MediaQuery.of(context).size.height - 100, child: DetailedCostumerScreen()),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)))
           : Navigator.push(context, MaterialPageRoute(
-              builder: (BuildContext context) => new DetailedScreen()));
+              builder: (BuildContext context) => new DetailedCostumerScreen()));
         },
         tooltip: 'Adicionar cliente',
         child: Icon(Icons.add));

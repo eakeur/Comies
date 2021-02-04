@@ -28,10 +28,6 @@ var Costumer = /** @class */ (function () {
         __metadata("design:type", String)
     ], Costumer.prototype, "name", void 0);
     __decorate([
-        typeorm_1.Column({ nullable: true }),
-        __metadata("design:type", String)
-    ], Costumer.prototype, "token", void 0);
-    __decorate([
         typeorm_1.OneToMany(function () { return phone_1.default; }, function (phone) { return phone.costumer; }),
         __metadata("design:type", Array)
     ], Costumer.prototype, "phones", void 0);

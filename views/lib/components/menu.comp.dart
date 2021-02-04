@@ -1,22 +1,24 @@
 import 'package:comies/services/authentication.service.dart';
 import 'package:flutter/material.dart';
+import '../main.dart' show themeSwitcher;
 
-class MenuEntries {
+class ComiesDrawer extends StatefulWidget {
+  @override
+  DrawerState createState() => DrawerState();
+}
 
-  Function(ThemeMode) themeSwitcher;
-
-  ThemeMode mode;
-
-  MenuEntries({this.themeSwitcher, this.mode});
+class DrawerState extends State<ComiesDrawer> {
+  ThemeMode themeMode = ThemeMode.system;
 
   List<Map<String, dynamic>> menuEntries = [
     {'name': 'Início', 'path': '/', 'icon': Icons.home},
-    {'name': 'Pedidos', 'path': '/orders', 'icon': Icons.post_add},
+    // {'name': 'Pedidos', 'path': '/orders', 'icon': Icons.post_add},
     {'name': 'Produtos', 'path': '/products', 'icon': Icons.category},
     {'name': 'Clientes', 'path': '/costumers', 'icon': Icons.people},
   ];
 
-  Widget drawer(context) {
+  @override
+  Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,

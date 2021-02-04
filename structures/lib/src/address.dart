@@ -3,7 +3,7 @@ import 'package:comies_entities/src/costumer.dart';
 class Address {
   int id;
   String cep;
-  int number;
+  String number;
   String district;
   String complement;
   String reference;

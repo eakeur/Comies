@@ -8,10 +8,10 @@ export default class Phone {
     id: number;
 
     @Column({nullable:false})
-    ddd: number;
+    ddd: string;
 
     @Column({nullable:false})
-    number: number;
+    number: string;
 
     @ManyToOne(()=> Costumer, costumer => costumer.phones, { eager: true })
     costumer:Costumer;
