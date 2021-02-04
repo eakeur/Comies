@@ -15,17 +15,19 @@ class Authentication extends State<AuthenticationScreen> {
       body: Container(
         height: MediaQuery.of(context).size.height,
         padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Theme.of(context).brightness == Brightness.light
-              ? Colors.white
-              : Theme.of(context).primaryColorDark,
-          borderRadius: BorderRadius.circular(16),
-        ),
         child: Scrollbar(
           child: SingleChildScrollView(
             child: Center(
-              heightFactor: 2.5,
-              child:AuthenticationComponent(),
+              child: Column(
+                children: [
+                  SizedBox(height: 90),
+                  Text("Bem-vindo(a)!", textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline4,),
+                  SizedBox(height: 30),
+                  Text("Insira seu nome de usuário e senha para acessar sua conta" , textAlign: TextAlign.center),
+                  SizedBox(height: 30),
+                  AuthenticationComponent(),
+                ],
+              )
             ),
           ),
         ),

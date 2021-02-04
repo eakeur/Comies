@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:comies/services/settings.service.dart';
 import 'package:comies_entities/comies_entities.dart';
 import 'package:flutter/material.dart' as flutter;
 import 'package:comies/utils/declarations/environment.dart';
@@ -17,11 +18,12 @@ class GeneralService<T> {
 
   @flutter.protected
   void notify(Response response, dynamic context) {
+    bool isBigScreen() => flutter.MediaQuery.of(context).size.width > widthDivisor;
     for (var not in response.notifications) {
-      flutter.Scaffold.of(context).showSnackBar(
+      flutter.ScaffoldMessenger.of(context).showSnackBar(
         flutter.SnackBar(
-          content: flutter.Text(not.message),
-          duration: Duration(seconds: 2),
+          content: isBigScreen() ? flutter.Text(not.message, style: flutter.TextStyle(fontSize: 20)) : null,
+          duration: Duration(seconds: 3),
           action: not.action != null
               ? flutter.SnackBarAction(
                   label: not.action.name,
@@ -36,10 +38,10 @@ class GeneralService<T> {
   @flutter.protected
   Future<Response> add(Map<String, dynamic> data) async {
     try {
-      _setHeaders();
+      await _setHeaders();
       String body = jsonEncode(data);
 
-      dynamic response =
+      service.Response response =
           await service.post(this._url, headers: this.headers, body: body);
       return _dealWithResponse(response);
     } catch (e) {
@@ -53,8 +55,8 @@ class GeneralService<T> {
   @flutter.protected
   Future<Response> get({String query}) async {
     try {
-      _setHeaders();
-      dynamic response = await service.get(
+      await _setHeaders();
+      service.Response  response = await service.get(
           this._url + "${query == null ? '' : query}",
           headers: this.headers);
       return _dealWithResponse(response);
@@ -69,8 +71,8 @@ class GeneralService<T> {
   @flutter.protected
   Future<Response> getOne(dynamic key) async {
     try {
-      _setHeaders();
-      dynamic response =
+      await _setHeaders();
+      service.Response  response =
           await service.get(this._url + '/$key', headers: this.headers);
       return _dealWithResponse(response);
     } catch (e) {
@@ -84,9 +86,9 @@ class GeneralService<T> {
   @flutter.protected
   Future<Response> update(Map<String, dynamic> data) async {
     try {
-      _setHeaders();
+      await _setHeaders();
       String body = jsonEncode(data);
-      dynamic response =
+      service.Response  response =
           await service.put(this._url, headers: this.headers, body: body);
       return _dealWithResponse(response);
     } catch (e) {
@@ -100,8 +102,8 @@ class GeneralService<T> {
   @flutter.protected
   Future<Response> delete(dynamic id) async {
     try {
-      _setHeaders();
-      dynamic response =
+      await _setHeaders();
+      service.Response  response =
           await service.delete('${this._url}/$id', headers: this.headers);
       return _dealWithResponse(response);
     } catch (e) {
@@ -141,8 +143,13 @@ class GeneralService<T> {
     }
   }
 
-  Response _dealWithResponse(dynamic responseParam) {
+  Future<Response> _dealWithResponse(service.Response responseParam) async {
     try {
+      if (responseParam.statusCode == 401 || responseParam.statusCode == 403){
+        return new Response(notifications: [
+        Notification(message: "Opa! Você não tem acesso a esse recurso ou não está autenticado. Por favor, faça seu login novamente", action: {'name': 'Login', 'href': '/authentication'})
+      ], success: false);
+      }
       Map<dynamic, dynamic> rets = jsonDecode(responseParam.body);
       List<Notification> notifs = [];
       if (rets['notifications'] is List) {
@@ -159,7 +166,7 @@ class GeneralService<T> {
           notifications: notifs,
           success: rets['success']);
 
-      if (rets["access"] != null) access = rets["access"];
+      if (response.access != null) await SettingsService().addSetting('access', response.access);
       return response;
     } catch (e) {
       return new Response(notifications: [
@@ -168,8 +175,8 @@ class GeneralService<T> {
     }
   }
 
-  void _setHeaders() {
-    this.headers['Authorization'] = access;
+  Future<void> _setHeaders() async {
+    this.headers['Authorization'] = await SettingsService().getSetting('access');
     this.headers["Accept-Language"] = "pt-BR";
     this.headers["Content-Type"] = "application/json";
   }

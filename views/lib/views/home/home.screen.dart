@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:comies/utils/declarations/menu.dart';
 import 'package:flutter/material.dart';
 
@@ -11,8 +13,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class Home extends State<HomeScreen> {
-  
-  String str = "TEST";
+
   PreferredSizeWidget appBar() {
     return AppBar(
       title: Text('Início'),

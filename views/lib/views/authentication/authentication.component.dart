@@ -16,6 +16,7 @@ class Authentication extends State<AuthenticationComponent> {
   TextEditingController passwordController = new TextEditingController();
 
   bool obscureText = true;
+  bool passwordFocus = false;
 
   dynamic buttonAction(bool isLogin) {
     if (isLogin) {
@@ -47,12 +48,13 @@ class Authentication extends State<AuthenticationComponent> {
   TextFormField passwordField() {
     return TextFormField(
       controller: passwordController,
-      keyboardType: TextInputType.text,
+      keyboardType: TextInputType.visiblePassword,
+      onChanged: (c) => setState((){}),
       obscureText: obscureText,
       decoration: InputDecoration(
         labelText: "Senha",
-        suffix: IconButton(
-          icon: Icon(Icons.visibility_off_rounded),
+        suffixIcon: IconButton(
+          icon: Icon( obscureText ? Icons.visibility_rounded : Icons.visibility_off_rounded),
           onPressed: () => setState(() {
             obscureText = !obscureText;
           }),
@@ -65,9 +67,11 @@ class Authentication extends State<AuthenticationComponent> {
   TextFormField operatorNameField() {
     return TextFormField(
       controller: operatorController,
-      keyboardType: TextInputType.text,
+      autofocus: true,
+      keyboardType: TextInputType.name,
+      onChanged: (c) => setState((){}),
       decoration: InputDecoration(
-        labelText: "Apelido",
+        labelText: "Usuário",
         suffixIcon: Icon(Icons.person),
       ),
       maxLines: 1,
@@ -89,13 +93,13 @@ class Authentication extends State<AuthenticationComponent> {
               ),
               passwordField(),
               const SizedBox(
-                height: 30,
+                height: 30
               ),
               ElevatedButton.icon(
                   icon: Icon(Icons.login),
                   onPressed: operatorController.text.trim() != "" &&
                           passwordController.text.trim() != ""
-                      ? buttonAction(true)
+                      ? login
                       : null,
                   label: Text('Entrar'))
             ],

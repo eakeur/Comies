@@ -93,7 +93,7 @@ export default class OperatorService {
             if (!operator.active){throw new Error("Operator "+filter.identification+" is unactive and tried to login.");}
             if (operator.password === authParams.password){
                 operator.lastLogin = new Date(Date.now());
-                this.response.access = jwt.sign(operator.id.toString(), Connection.secret);
+                this.response.access = jwt.sign({id: operator.id}, Connection.secret, { expiresIn: 3600 });
                 this.response.success = true;
             } else {
                 this.response.success = false;
@@ -131,11 +131,12 @@ export default class OperatorService {
 
     public async getOperatorByToken(action: Action):Promise<Operator>{
         try {
-            const identification = jwt.verify(action.request.headers.authorization, Connection.secret);
-            action.response.locals.jwtPayload = identification;
-            return await this.collection.findOne(identification.toString())
+            const identification : { id: number, iat:number, exp:number } = jwt.verify(action.request.headers.authorization, Connection.secret) as { id: number, iat:number, exp:number };
+            const operator = await this.collection.findOne(identification.id)
+            action.response.locals.jwtPayload = jwt.sign({id: operator.id}, Connection.secret, { expiresIn: 3600 });
+            return operator;
         } catch (error) {
-            console.error(error)
+            console.log("Operador não autorizado com token: " + action.request.headers.authorization)
             return undefined;
         }
     }

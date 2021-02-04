@@ -26,11 +26,7 @@ var Costumer = /** @class */ (function () {
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
-    ], Costumer.prototype, "firstName", void 0);
-    __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", String)
-    ], Costumer.prototype, "lastName", void 0);
+    ], Costumer.prototype, "name", void 0);
     __decorate([
         typeorm_1.Column({ nullable: true }),
         __metadata("design:type", String)

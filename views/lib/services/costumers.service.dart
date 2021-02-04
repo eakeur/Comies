@@ -4,8 +4,6 @@ import 'package:comies_entities/comies_entities.dart';
 class CostumersService extends GeneralService<Costumer> {
   dynamic _context;
 
-  Costumer costumer = new Costumer();
-  List<Costumer> costumers = [];
 
   CostumersService() {
     this.path = 'costumers';
@@ -15,12 +13,12 @@ class CostumersService extends GeneralService<Costumer> {
     this._context = context;
   }
 
-  Future<List<Costumer>> getCostumers() async {
+  Future<List<Costumer>> getCostumers(Costumer filter) async {
     Response res;
     try {
       List<Costumer> costm = [];
       res = await super
-          .get(query: super.getQueryString(_serializeCostumer(costumer)));
+          .get(query: super.getQueryString(_serializeCostumer(filter)));
       if (!(res.data is List)) {
         throw new Exception();
       } else {
@@ -28,7 +26,6 @@ class CostumersService extends GeneralService<Costumer> {
           costm.add(_deserializeMap(item));
         }
       }
-      costumers = costm;
       return costm;
     } catch (e) {
       notify(res, _context);
@@ -108,7 +105,7 @@ class CostumersService extends GeneralService<Costumer> {
     try {
       return {
         if (prod.id != null) "id": prod.id,
-        if (prod.name != null) "firstName": prod.name,
+        if (prod.name != null) "name": prod.name,
         if (prod.phones != null) "phones": prod.phones,
         if (prod.addresses != null) "addresses": prod.active,
         if (prod.orders != null) "orders": prod.orders,
@@ -117,10 +114,6 @@ class CostumersService extends GeneralService<Costumer> {
     } catch (e) {
       throw e;
     }
-  }
-
-  void addProperty(Function(Costumer) additionProcedure) {
-    additionProcedure(costumer);
   }
 
   Costumer createProduct() {

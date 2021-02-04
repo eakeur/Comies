@@ -201,7 +201,7 @@ var OperatorService = /** @class */ (function () {
                         }
                         if (operator.password === authParams.password) {
                             operator.lastLogin = new Date(Date.now());
-                            this.response.access = jwt.sign(operator.id.toString(), connection_1.default.secret);
+                            this.response.access = jwt.sign({ id: operator.id }, connection_1.default.secret, { expiresIn: 3600 });
                             this.response.success = true;
                         }
                         else {
@@ -223,18 +223,20 @@ var OperatorService = /** @class */ (function () {
     // Internal use. Nothing here is used by controllers
     OperatorService.prototype.getOperatorByToken = function (action) {
         return __awaiter(this, void 0, void 0, function () {
-            var identification, error_7;
+            var identification, operator, error_7;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
                         identification = jwt.verify(action.request.headers.authorization, connection_1.default.secret);
-                        action.response.locals.jwtPayload = identification;
-                        return [4 /*yield*/, this.collection.findOne(identification.toString())];
-                    case 1: return [2 /*return*/, _a.sent()];
+                        return [4 /*yield*/, this.collection.findOne(identification.id)];
+                    case 1:
+                        operator = _a.sent();
+                        action.response.locals.jwtPayload = jwt.sign({ id: operator.id }, connection_1.default.secret, { expiresIn: 3600 });
+                        return [2 /*return*/, operator];
                     case 2:
                         error_7 = _a.sent();
-                        console.error(error_7);
+                        console.log("Operador não autorizado com token: " + action.request.headers.authorization);
                         return [2 /*return*/, undefined];
                     case 3: return [2 /*return*/];
                 }

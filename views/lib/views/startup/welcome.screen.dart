@@ -38,6 +38,12 @@ class Welcome extends State<WelcomeScreen> {
     service.addSetting('allSet', true);
     setState(() {
       allSet = true;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Ok, tudo pronto. Podemos iniciar agora!"),
+          action: SnackBarAction(label: "Iniciar", onPressed: () => Navigator.pushNamed(context, "/authentication"))
+        )
+      );
     });
   }
 
@@ -47,6 +53,12 @@ class Welcome extends State<WelcomeScreen> {
     service.addSetting('allSet', true);
     setState(() {
       allSet = true;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Ok, tudo pronto. Podemos iniciar agora!"),
+          action: SnackBarAction(label: "Iniciar", onPressed: () => Navigator.pushNamed(context, "/authentication"))
+        )
+      );
     });
   }
 
@@ -59,23 +71,6 @@ class Welcome extends State<WelcomeScreen> {
         actionIfUserHasOwnServer: actionIfUserHasOwnServer,
         actionIfUserIsInTheCloud: actionIfUserIsInTheCloud,
       ),
-      BaseWelcomeCard(children: [
-        Container(
-          alignment: Alignment.bottomCenter,
-          child: Column(
-            children: [
-              Text(
-                  "Agora, entre em sua conta e estaremos prontos para começar!",
-                  style: Theme.of(context).textTheme.caption,
-                  textAlign: TextAlign.justify),
-              SizedBox(height: 30),
-              AuthenticationComponent(
-                canGo: allSet,
-              )
-            ],
-          ),
-        ),
-      ])
     ];
   }
 
@@ -106,7 +101,7 @@ class Welcome extends State<WelcomeScreen> {
           SizedBox(width: 50),
           IconButton(
             icon: Icon(Icons.keyboard_arrow_right_outlined),
-            onPressed: onScreen == 2 ? null : nextPage,
+            onPressed: onScreen == 1 ? null : nextPage,
           )
         ],
       ),
@@ -230,6 +225,7 @@ class SettingAPIAddressCard extends StatefulWidget {
 
 class SettingAPIAddressState extends State<SettingAPIAddressCard> {
   int optionSet = -1;
+  bool enableButton = false;
 
   RadioListTile option(String optionLabel, int optionValue) {
     return RadioListTile<int>(
@@ -240,7 +236,10 @@ class SettingAPIAddressState extends State<SettingAPIAddressCard> {
       onChanged: (value) {
         setState(() {
           optionSet = value;
-          if (optionSet == 0) widget.actionIfUserIsInTheCloud();
+          if (optionSet == 0){
+            widget.actionIfUserIsInTheCloud();
+            enableButton = true;
+          } 
         });
       },
     );
@@ -268,18 +267,23 @@ class SettingAPIAddressState extends State<SettingAPIAddressCard> {
         if (optionSet == 1)
           TextFormField(
             controller: controller,
-            onFieldSubmitted: (value) => widget.actionIfUserHasOwnServer(value),
+            onFieldSubmitted: (value){ widget.actionIfUserHasOwnServer(value); setState((){enableButton = true;});},
             keyboardType: TextInputType.url,
             decoration: InputDecoration(
                 suffix: IconButton(
                   icon: Icon(Icons.check),
-                  onPressed: () =>
-                      widget.actionIfUserHasOwnServer(controller.text),
+                  onPressed: () { widget.actionIfUserHasOwnServer(controller.text); setState((){enableButton = true;});},
                 ),
                 labelText: "URL de acesso",
                 helperText: 'Pergunte a um responsável.'),
             maxLines: 1,
           ),
+        SizedBox(height: 20),
+        ElevatedButton(
+          child: Text("Continuar"),
+          onPressed: enableButton ? () => Navigator.pushNamed(context, "/authentication") : null,
+        ),
+        SizedBox(height: 30),
       ],
     );
   }

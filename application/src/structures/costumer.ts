@@ -11,10 +11,8 @@ export default class Costumer {
     id: number;
 
     @Column()
-    firstName: string;
+    name: string;
 
-    @Column()
-    lastName: string;
 
     @Column({nullable:true})
     token: string;
