@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:comies/components/async.comp.dart';
 import 'package:comies/services/costumers.service.dart';
 import 'package:comies/utils/declarations/environment.dart';

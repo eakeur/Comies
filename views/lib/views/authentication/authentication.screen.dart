@@ -21,7 +21,10 @@ class Authentication extends State<AuthenticationScreen> {
               child: Column(
                 children: [
                   SizedBox(height: 90),
-                  Text("Bem-vindo(a)!", textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline4,),
+                  Text("Bem-vindo(a)!", textAlign: TextAlign.center, style: TextStyle(
+                    color: Theme.of(context).accentColor,
+                    fontSize: 48,
+                  )),
                   SizedBox(height: 30),
                   Text("Insira seu nome de usuário e senha para acessar sua conta" , textAlign: TextAlign.center),
                   SizedBox(height: 30),

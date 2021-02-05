@@ -12,7 +12,7 @@ class DrawerState extends State<ComiesDrawer> {
 
   List<Map<String, dynamic>> menuEntries = [
     {'name': 'Início', 'path': '/', 'icon': Icons.home},
-    // {'name': 'Pedidos', 'path': '/orders', 'icon': Icons.post_add},
+    {'name': 'Pedidos', 'path': '/orders', 'icon': Icons.post_add},
     {'name': 'Produtos', 'path': '/products', 'icon': Icons.category},
     {'name': 'Clientes', 'path': '/costumers', 'icon': Icons.people},
   ];

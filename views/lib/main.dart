@@ -3,8 +3,8 @@ import 'package:comies/utils/declarations/environment.dart';
 import 'package:comies/utils/declarations/storage.dart';
 import 'package:comies/views/authentication/authentication.screen.dart';
 import 'package:comies/views/costumers/costumers.screen.dart';
-import 'package:comies/views/products/edit.screen.dart';
-import 'package:comies/views/products/form.comp.dart';
+import 'package:comies/views/orders/orders.screen.dart';
+import 'package:comies/views/orders/panel.screen.dart';
 import 'package:comies/views/products/products.screen.dart';
 import 'package:comies/views/settings/settings.screen.dart';
 import 'package:comies/views/home/home.screen.dart';
@@ -69,8 +69,10 @@ class Application extends State<ApplicationLauncher> {
         '/products': (context) => ProductsScreen(),
         '/authentication': (context) => AuthenticationScreen(),
         '/costumers': (context) => CostumersScreen(),
+        '/orders': (context) => OrdersScreen(),
         '/welcome': (context) => WelcomeScreen(),
-        '/settings': (context) => SettingsScreen()
+        '/settings': (context) => SettingsScreen(),
+        '/panel': (context) => OrdersPanelScreen(),
       },
     );
   }
