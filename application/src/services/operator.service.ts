@@ -1,5 +1,5 @@
 import Connection from "../utils/connection";
-import { Repository } from "typeorm";
+import { FindConditions, Like, Repository } from "typeorm";
 import Operator from "../structures/operator";
 import Response from "../structures/response";
 import Notification from "../structures/notification";
@@ -17,6 +17,8 @@ export default class OperatorService {
     response: Response = new Response();
 
     collection:Repository<Operator> = Connection.db.getRepository<Operator>(Operator);
+
+    conditions: FindConditions<Operator> = {}
 
     public async addOperator(operator:Operator):Promise<Response>{
         try {
@@ -58,7 +60,7 @@ export default class OperatorService {
     public async getOperatorById(id:number):Promise<Response>{
         try {
             const result = await this.collection.findOne(id);
-            result.password = '';
+            delete result.password;
             this.response.data = result;
         } catch (error) {
             console.error(error);
@@ -70,12 +72,10 @@ export default class OperatorService {
 
     public async getOperators(filters:Operator):Promise<Response>{
         try {
-            const query = this.collection.createQueryBuilder(); query.where("active = 1");
-            if (filters.firstName ) query.andWhere(`firstName LIKE '%${filters.firstName}%'`);
-            if (filters.lastName ) query.andWhere(`lastName LIKE '%${filters.lastName}%'`);
-            if (filters.store) query.andWhere(`storeId = ${filters.store.id}`     );
-            const results = await query.getMany();
-            results.forEach( result => result.password = '');
+            this.conditions.active = true;
+            if (filters.name) this.conditions.name = Like(filters.name);
+            const results = await this.collection.find(this.conditions);
+            results.forEach( result => delete result.password);
             this.response.data = results;
         } catch (error) {
             console.error(error);
@@ -85,7 +85,7 @@ export default class OperatorService {
         return this.response;
     }
 
-    public async authenticate(authParams: { identification:string, password:string }): Promise<Response>{
+    public async authenticate(authParams: { identification:string, password:string, remember: boolean}): Promise<Response>{
         try {
             const filter:Operator = new Operator();
             filter.identification = authParams.identification;
@@ -93,7 +93,7 @@ export default class OperatorService {
             if (!operator.active){throw new Error("Operator "+filter.identification+" is unactive and tried to login.");}
             if (operator.password === authParams.password){
                 operator.lastLogin = new Date(Date.now());
-                this.response.access = jwt.sign({id: operator.id}, Connection.secret, { expiresIn: 3600 });
+                this.response.access = jwt.sign({id: operator.id}, Connection.secret, { expiresIn: authParams.remember ? 86400 : 3600});
                 this.response.success = true;
             } else {
                 this.response.success = false;
@@ -132,8 +132,9 @@ export default class OperatorService {
     public async getOperatorByToken(action: Action):Promise<Operator>{
         try {
             const identification : { id: number, iat:number, exp:number } = jwt.verify(action.request.headers.authorization, Connection.secret) as { id: number, iat:number, exp:number };
-            const operator = await this.collection.findOne(identification.id)
-            action.response.locals.jwtPayload = jwt.sign({id: operator.id}, Connection.secret, { expiresIn: 3600 });
+            const operator = await this.collection.findOne(identification.id);
+            if (!operator.active) throw new Error('Inactive user');
+            if (new Date(identification.exp).getMinutes() < 60) action.response.locals.jwtPayload = jwt.sign({id: operator.id}, Connection.secret, { expiresIn: 3600 });
             return operator;
         } catch (error) {
             console.log("Operador não autorizado com token: " + action.request.headers.authorization)

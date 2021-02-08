@@ -1,5 +1,4 @@
-import 'package:comies/services/settings.service.dart';
-import 'package:comies/utils/declarations/environment.dart';
+import 'package:comies/utils/declarations/session.dart';
 import 'package:comies/utils/declarations/storage.dart';
 import 'package:comies/views/authentication/authentication.screen.dart';
 import 'package:comies/views/costumers/costumers.screen.dart';
@@ -16,18 +15,10 @@ import 'utils/declarations/themes.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initDB();
-  SettingsService s = new SettingsService();
-  dynamic allSet = await s.getSetting<bool>('allSet');
-  if (allSet != null && allSet is bool) {
-    if (allSet) {
-      initialPage = "/";
-      if (!(await s.getSetting<bool>('cloud'))) {
-        URL = await s.getSetting('url');
-      }
-      if ((await s.getSetting<String>('access')) == null) {
-        initialPage = "/authentication";
-      }
-    }
+  session = await new Session().loadSession();
+  bool isSet = await session.isConfigured();
+  if (isSet){
+    session.isAuthenticated() ? initialPage = '/' : initialPage = '/authentication';
   }
   runApp(MyApp());
 }
@@ -48,6 +39,8 @@ class ApplicationLauncher extends StatefulWidget {
 
 Function(ThemeMode) themeSwitcher;
 
+Session session;
+
 class Application extends State<ApplicationLauncher> {
   ThemeMode themeMode = ThemeMode.system;
 
@@ -58,6 +51,7 @@ class Application extends State<ApplicationLauncher> {
   @override
   Widget build(BuildContext context) {
     themeSwitcher = switchTheme;
+    session.loadSession();
     return MaterialApp(
       title: 'Comies',
       theme: mainTheme(Brightness.light),
@@ -65,12 +59,12 @@ class Application extends State<ApplicationLauncher> {
       themeMode: themeMode,
       initialRoute: initialPage,
       routes: {
+        '/welcome': (context) => WelcomeScreen(),
+        '/authentication': (context) => AuthenticationScreen(),
         '/': (context) => HomeScreen(),
         '/products': (context) => ProductsScreen(),
-        '/authentication': (context) => AuthenticationScreen(),
         '/costumers': (context) => CostumersScreen(),
         '/orders': (context) => OrdersScreen(),
-        '/welcome': (context) => WelcomeScreen(),
         '/settings': (context) => SettingsScreen(),
         '/panel': (context) => OrdersPanelScreen(),
       },

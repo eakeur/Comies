@@ -8,8 +8,10 @@ class AsyncComponent extends StatefulWidget {
   final String messageIfNullOrEmpty;
   final LoadStatus status;
   final dynamic data;
+  final bool animate;
 
   AsyncComponent({
+    this.animate = true,
     this.data,
     this.future,
     this.messageIfNullOrEmpty,
@@ -22,7 +24,8 @@ class AsyncComponent extends StatefulWidget {
   Async createState() => Async();
 }
 
-class Async extends State<AsyncComponent> {
+class Async extends State<AsyncComponent> with TickerProviderStateMixin {
+  AnimationController controller;
   bool visible = false;
   bool isDataNullOrEmpty() {
     var tgt = widget.data;
@@ -46,11 +49,21 @@ class Async extends State<AsyncComponent> {
     }
     return isDataNullOrEmpty()
         ? NullResultWidget(messageIfNullOrEmpty: widget.messageIfNullOrEmpty)
-        : widget.child;
+        : widget.animate ? FadeTransition(
+          opacity: controller.drive(CurveTween(curve: Curves.easeInBack)),
+          child: widget.child,
+        ): widget.child;
+  }
+
+  @override
+  void initState(){
+    controller = AnimationController(vsync: this, duration: Duration(milliseconds:1500))..addListener((){setState((){});});
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (widget.animate)controller.forward();
     return decideRender();
   }
 }

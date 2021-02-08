@@ -1,3 +1,4 @@
+import 'package:comies/main.dart';
 import 'package:comies/services/general.service.dart';
 import 'package:comies/services/settings.service.dart';
 import 'package:comies/utils/declarations/environment.dart';
@@ -12,12 +13,13 @@ class AuthenticationService extends GeneralService<dynamic> {
     this.path = 'operators';
   }
 
-  Future<Response> login({String nickname, String password}) async {
+  Future<Response> login({String nickname, String password, bool stayConnected = false}) async {
     try {
       if (isTextValid(nickname) && isTextValid(password)) {
         this.path = 'operators/login';
-        var response =
-            await super.add({"identification": nickname, "password": password});
+        var response = await super.add({"identification": nickname, "password": password, "remember": stayConnected});
+        if (response.success) await session.loadSession();
+        new SettingsService().addSetting('access', response.access);
         this.path = 'operators';
         notify(response, context);
         return response;

@@ -51,7 +51,7 @@ export default class OperatorController {
 
     @Post("/login")
     @UseBefore(json())
-    public async login(@Body() operator: { identification:string, password:string }){
+    public async login(@Body() operator: { identification:string, password:string, remember: boolean}){
         const service:OperatorService = new OperatorService();
         return service.authenticate(operator);
 

@@ -23,7 +23,7 @@ var Profile = /** @class */ (function () {
         __metadata("design:type", Number)
     ], Profile.prototype, "id", void 0);
     __decorate([
-        typeorm_1.Column({ default: 'Sem nome' }),
+        typeorm_1.Column({ default: 'Perfil sem nome' }),
         __metadata("design:type", String)
     ], Profile.prototype, "name", void 0);
     __decorate([

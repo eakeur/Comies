@@ -1,4 +1,5 @@
 import 'package:comies/components/menu.comp.dart';
+import 'package:comies/main.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -8,6 +9,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class Home extends State<HomeScreen> {
+  
 
   PreferredSizeWidget appBar() {
     return AppBar(
@@ -16,12 +18,13 @@ class Home extends State<HomeScreen> {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return session.isAuthenticated() ? Scaffold(
       drawer: ComiesDrawer(),
       appBar: appBar(),
       body: Center(),
-    );
+    ) : session.goToAuthenticationScreen();
   }
 }

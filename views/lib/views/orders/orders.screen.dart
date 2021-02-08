@@ -1,4 +1,5 @@
 import 'package:comies/components/menu.comp.dart';
+import 'package:comies/main.dart';
 import 'package:comies/services/costumers.service.dart';
 import 'package:comies/utils/declarations/environment.dart';
 import 'package:comies/views/costumers/list.comp.dart';
@@ -13,6 +14,7 @@ class OrdersScreen extends StatefulWidget {
 }
 
 class Orders extends State<OrdersScreen> {
+  
   CostumersService service = new CostumersService();
   int id;
 
@@ -21,7 +23,7 @@ class Orders extends State<OrdersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return session.isAuthenticated() ? Scaffold(
         drawer: ComiesDrawer(),
         //The top bar app
         appBar: AppBar(title: Text('Pedidos'), elevation: 8, actions: [
@@ -37,13 +39,13 @@ class Orders extends State<OrdersScreen> {
                         elevation: 8,
                         child: CostumersListComponent(
                             onListClick: (value) =>
-                                setState(() => id = value)))),
+                                setState(() => id = value.id)))),
                 if (hasID())
                   Expanded(
                       flex: 65,
                       child: Center(
                           child: Container(
-                              width: 600,
+                              width: 900,
                               child: OrderFormComponent(
                                   id: id,
                                   afterDelete: () {setState(() { id = null;});},
@@ -68,7 +70,7 @@ class Orders extends State<OrdersScreen> {
                         child: CostumersListComponent(
                             onListClick: (value){
                               setState((){
-                                id = value;
+                                id = value.id;
                                  Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -80,7 +82,8 @@ class Orders extends State<OrdersScreen> {
                 onRefresh: () => new Future(() => setState(() {})),
               ),
         // The FAB button at the bottom of the screen
-        floatingActionButton: AddButton());
+        floatingActionButton: AddButton()
+      ) : session.goToAuthenticationScreen();
   }
 }
 
@@ -98,7 +101,7 @@ class AddButton extends StatelessWidget {
           : Navigator.push(context, MaterialPageRoute(
               builder: (BuildContext context) => new DetailedOrderScreen()));
         },
-        tooltip: 'Adicionar cliente',
+        tooltip: 'Adicionar pedido',
         child: Icon(Icons.add));
   }
 }

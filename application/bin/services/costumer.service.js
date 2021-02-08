@@ -40,6 +40,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var connection_1 = __importDefault(require("../utils/connection"));
 var costumer_1 = __importDefault(require("../structures/costumer"));
+var typeorm_1 = require("typeorm");
 var response_1 = __importDefault(require("../structures/response"));
 var notification_1 = __importDefault(require("../structures/notification"));
 var phone_1 = __importDefault(require("../structures/phone"));
@@ -47,6 +48,7 @@ var address_1 = __importDefault(require("../structures/address"));
 var CostumerService = /** @class */ (function () {
     function CostumerService(operator) {
         this.response = new response_1.default();
+        this.conditions = {};
         this.collection = connection_1.default.db.getRepository(costumer_1.default);
         this.operator = operator;
     }
@@ -215,14 +217,40 @@ var CostumerService = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 2, , 3]);
+                        this.conditions.active = true;
+                        if (costumer.name !== null && undefined && '')
+                            this.conditions.name = typeorm_1.Like(costumer.name);
                         _a = this.response;
-                        return [4 /*yield*/, this.collection.find(costumer)];
+                        return [4 /*yield*/, this.collection.find(this.conditions)];
                     case 1:
                         _a.data = _b.sent();
                         return [3 /*break*/, 3];
                     case 2:
                         error_7 = _b.sent();
                         console.error(error_7);
+                        this.response.success = false;
+                        this.response.notifications.push(new notification_1.default("Ocorreu um erro ao procurar por clientes. Por favor, tente mais tarde ou fale com um administrador."));
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/, this.response];
+                }
+            });
+        });
+    };
+    CostumerService.prototype.getCostumersByPhone = function (phone) {
+        return __awaiter(this, void 0, void 0, function () {
+            var phones, error_8;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, connection_1.default.db.getRepository(phone_1.default).find({ number: typeorm_1.Like(phone) })];
+                    case 1:
+                        phones = _a.sent();
+                        this.response.data = phones.map(function (phone) { return phone.costumer; });
+                        return [3 /*break*/, 3];
+                    case 2:
+                        error_8 = _a.sent();
+                        console.error(error_8);
                         this.response.success = false;
                         this.response.notifications.push(new notification_1.default("Ocorreu um erro ao procurar por clientes. Por favor, tente mais tarde ou fale com um administrador."));
                         return [3 /*break*/, 3];

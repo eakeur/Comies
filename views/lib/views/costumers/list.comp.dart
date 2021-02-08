@@ -4,7 +4,7 @@ import 'package:comies_entities/comies_entities.dart';
 import 'package:flutter/material.dart';
 
 class CostumersListComponent extends StatefulWidget {
-  final Function(int) onListClick;
+  final Function(Costumer) onListClick;
 
   CostumersListComponent({
     this.onListClick,
@@ -22,14 +22,21 @@ class CostumersList extends State<CostumersListComponent> {
   Costumer filter = new Costumer();
   LoadStatus status;
 
-  void onSearchTap() {
-    setState(() {
-      status = LoadStatus.loading;
-    });
-    service.getCostumers(filter).then((value) => setState(() {
+  void onSearchTap({setLoading = false}) {
+    if (setLoading) setState(() => status = LoadStatus.loading);
+    try{
+      if (searchController.text.trim() == '') throw Exception();
+      int.tryParse(searchController.text.substring(0, searchController.text.length > 4 ? 4 : searchController.text.length));
+      service.getCostumersByPhone(searchController.text).then((value) => setState(() {
           costumers = value;
           status = LoadStatus.loaded;
         }));
+    } catch(e){
+      service.getCostumers(filter).then((value) => setState(() {
+          costumers = value;
+          status = LoadStatus.loaded;
+        }));
+    }
   }
 
   @override
@@ -40,7 +47,7 @@ class CostumersList extends State<CostumersListComponent> {
 
   @override
   void initState() {
-    onSearchTap();
+    onSearchTap(setLoading: true);
     super.initState();
   }
 
@@ -61,6 +68,7 @@ class CostumersList extends State<CostumersListComponent> {
             decoration: InputDecoration(
               border: UnderlineInputBorder(),
               labelText: "Pesquisar",
+              helperText: "Pesquise por um nome ou telefone",
               suffixIcon: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -100,11 +108,11 @@ class CostumersList extends State<CostumersListComponent> {
                     ListTile(
                       title: Text("${cost.name}"),
                       onTap: (){
-                        widget.onListClick(cost.id);
+                        widget.onListClick(cost);
                       },
                       trailing: IconButton(
                         icon: Icon(Icons.arrow_right),
-                        onPressed: () => widget.onListClick(cost.id),
+                        onPressed: () => widget.onListClick(cost),
                       ),
                     ),
                 ],

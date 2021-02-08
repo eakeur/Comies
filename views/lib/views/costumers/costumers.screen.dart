@@ -1,4 +1,5 @@
 import 'package:comies/components/menu.comp.dart';
+import 'package:comies/main.dart';
 import 'package:comies/services/costumers.service.dart';
 import 'package:comies/utils/declarations/environment.dart';
 import 'package:comies/views/costumers/form.comp.dart';
@@ -18,9 +19,11 @@ class Costumers extends State<CostumersScreen> {
   bool hasID() => id != null;
   bool isBigScreen() => MediaQuery.of(context).size.width > widthDivisor;
 
+
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return session.isAuthenticated() ? Scaffold(
         drawer: ComiesDrawer(),
         //The top bar app
         appBar: AppBar(title: Text('Clientes'), elevation: 8),
@@ -34,13 +37,13 @@ class Costumers extends State<CostumersScreen> {
                         elevation: 8,
                         child: CostumersListComponent(
                             onListClick: (value) =>
-                                setState(() => id = value)))),
+                                setState(() => id = value.id)))),
                 if (hasID())
                   Expanded(
                       flex: 65,
                       child: Center(
                           child: Container(
-                              width: 600,
+                              width: 900,
                               child: CostumerFormComponent(
                                   id: id,
                                   afterDelete: () {setState(() { id = null;});},
@@ -65,7 +68,7 @@ class Costumers extends State<CostumersScreen> {
                         child: CostumersListComponent(
                             onListClick: (value){
                               setState((){
-                                id = value;
+                                id = value.id;
                                  Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -77,7 +80,8 @@ class Costumers extends State<CostumersScreen> {
                 onRefresh: () => new Future(() => setState(() {})),
               ),
         // The FAB button at the bottom of the screen
-        floatingActionButton: AddButton());
+        floatingActionButton: AddButton()
+      ) : session.goToAuthenticationScreen();
   }
 }
 

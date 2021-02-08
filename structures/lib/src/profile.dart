@@ -1,4 +1,4 @@
-import 'enum.dart';
+import 'package:comies_entities/comies_entities.dart';
 
 /// A group of settings that will allow or disallow operators to do things
 class Profile {
@@ -8,15 +8,39 @@ class Profile {
   ///The name of the profile setting
   String name;
 
-  ///Level of permission for dealing with orders
-  Permission orders;
+  bool canAddOrders;
 
-  ///Level of permission for dealing with orders
-  Permission products;
+  bool canAddProducts;
 
-  ///Level of permission for dealing with orders
-  Permission stores;
+  bool canAddCostumers;
 
-  ///Level of permission for dealing with orders
-  Permission costumers;
+  bool canAddStores;
+
+  bool canUpdateOrders;
+
+  bool canUpdateProducts;
+
+  bool canUpdateCostumers;
+
+  bool canUpdateStores;
+
+  bool canGetOrders;
+
+  bool canGetProducts;
+
+  bool canGetCostumers;
+
+  bool canGetStores;
+
+  bool canRemoveOrders;
+
+  bool canRemoveProducts;
+
+  bool canRemoveCostumers;
+
+  bool canRemoveStores;
+
+  Partner partner;
+
+  List<Operator> operators;
 }

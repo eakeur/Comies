@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:comies/services/settings.service.dart';
+import 'package:comies/main.dart';
 import 'package:comies_entities/comies_entities.dart';
 import 'package:flutter/material.dart' as flutter;
 import 'package:comies/utils/declarations/environment.dart';
@@ -8,12 +8,12 @@ import 'package:http/http.dart' as service;
 class GeneralService<T> {
   String _url;
 
-  set path(String path) => _url = '$URL/$path';
+  set path(String path) => _url = '${session.server}/$path';
 
   Map<String, String> headers = new Map<String, String>();
 
   GeneralService() {
-    _url = URL;
+    _url = session.server;
   }
 
   @flutter.protected
@@ -38,7 +38,7 @@ class GeneralService<T> {
   @flutter.protected
   Future<Response> add(Map<String, dynamic> data) async {
     try {
-      await _setHeaders();
+      _setHeaders();
       String body = jsonEncode(data);
 
       service.Response response =
@@ -55,7 +55,7 @@ class GeneralService<T> {
   @flutter.protected
   Future<Response> get({String query}) async {
     try {
-      await _setHeaders();
+      _setHeaders();
       service.Response  response = await service.get(
           this._url + "${query == null ? '' : query}",
           headers: this.headers);
@@ -71,7 +71,7 @@ class GeneralService<T> {
   @flutter.protected
   Future<Response> getOne(dynamic key) async {
     try {
-      await _setHeaders();
+      _setHeaders();
       service.Response  response =
           await service.get(this._url + '/$key', headers: this.headers);
       return _dealWithResponse(response);
@@ -86,7 +86,7 @@ class GeneralService<T> {
   @flutter.protected
   Future<Response> update(Map<String, dynamic> data) async {
     try {
-      await _setHeaders();
+      _setHeaders();
       String body = jsonEncode(data);
       service.Response  response =
           await service.put(this._url, headers: this.headers, body: body);
@@ -102,7 +102,7 @@ class GeneralService<T> {
   @flutter.protected
   Future<Response> delete(dynamic id) async {
     try {
-      await _setHeaders();
+      _setHeaders();
       service.Response  response =
           await service.delete('${this._url}/$id', headers: this.headers);
       return _dealWithResponse(response);
@@ -144,8 +144,9 @@ class GeneralService<T> {
     }
   }
 
-  Future<Response> _dealWithResponse(service.Response responseParam) async {
+  Response _dealWithResponse(service.Response responseParam) {
     try {
+      print(_url);
       if (responseParam.statusCode == 401 || responseParam.statusCode == 403){
         return new Response(notifications: [
         Notification(message: "Opa! Você não tem acesso a esse recurso ou não está autenticado. Por favor, faça seu login novamente", action: {'name': 'Login', 'href': '/authentication'})
@@ -167,7 +168,7 @@ class GeneralService<T> {
           notifications: notifs,
           success: rets['success']);
 
-      if (response.access != null) await SettingsService().addSetting('access', response.access);
+      if (response.access != null) session.token = response.access;
       return response;
     } catch (e) {
       return new Response(notifications: [
@@ -176,8 +177,8 @@ class GeneralService<T> {
     }
   }
 
-  Future<void> _setHeaders() async {
-    this.headers['Authorization'] = await SettingsService().getSetting('access');
+  void _setHeaders() {
+    this.headers['Authorization'] = session.token;
     this.headers["Accept-Language"] = "pt-BR";
     this.headers["Content-Type"] = "application/json";
   }

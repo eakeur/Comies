@@ -1,6 +1,6 @@
 import Connection from "../utils/connection";
 import Costumer from "../structures/costumer";
-import { Repository } from "typeorm";
+import { FindConditions, FindOperator, Like, Repository } from "typeorm";
 import Operator from "../structures/operator";
 import Response from "../structures/response";
 import Notification from "../structures/notification";
@@ -16,6 +16,8 @@ export default class CostumerService {
     response: Response = new Response();
 
     operator: Operator;
+
+    conditions: FindConditions<Costumer> = {};
 
     collection:Repository<Costumer> = Connection.db.getRepository<Costumer>(Costumer);
 
@@ -114,7 +116,21 @@ export default class CostumerService {
 
     public async getCostumers(costumer?:Costumer):Promise<Response>{
         try {
-            this.response.data = await this.collection.find(costumer);
+            this.conditions.active = true;
+            if (costumer.name !== null && undefined && '') this.conditions.name = Like(costumer.name);
+            this.response.data = await this.collection.find(this.conditions);
+        } catch (error) {
+            console.error(error);
+            this.response.success = false;
+            this.response.notifications.push(new Notification("Ocorreu um erro ao procurar por clientes. Por favor, tente mais tarde ou fale com um administrador."))
+        }
+        return this.response;
+    }
+
+    public async getCostumersByPhone(phone: string):Promise<Response>{
+        try {
+            const phones = await Connection.db.getRepository<Phone>(Phone).find({number: Like(phone)});
+            this.response.data = phones.map(phone => phone.costumer);
         } catch (error) {
             console.error(error);
             this.response.success = false;

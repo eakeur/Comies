@@ -17,6 +17,7 @@ class Authentication extends State<AuthenticationComponent> {
 
   bool obscureText = true;
   bool passwordFocus = false;
+  bool stayConnected = false;
 
   dynamic buttonAction(bool isLogin) {
     if (isLogin) {
@@ -38,7 +39,8 @@ class Authentication extends State<AuthenticationComponent> {
     service
         .login(
             nickname: operatorController.text,
-            password: passwordController.text)
+            password: passwordController.text,
+            stayConnected: stayConnected)
         .then((response) =>
             response.success ? Navigator.pushNamed(context, '/') : null);
   }
@@ -93,6 +95,18 @@ class Authentication extends State<AuthenticationComponent> {
               ),
               passwordField(),
               const SizedBox(
+                height: 30
+              ),
+              Center(
+                child: Row(
+                children: [
+                  Checkbox(value: stayConnected, onChanged: (value) => setState((){stayConnected = value;}), activeColor: Theme.of(context).accentColor),
+                  SizedBox(width: 20),
+                  Text("Me mantenha conectado(a)"),
+                ],
+              ),
+              ),
+              SizedBox(
                 height: 30
               ),
               ElevatedButton.icon(

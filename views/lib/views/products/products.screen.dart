@@ -1,4 +1,5 @@
 import 'package:comies/components/menu.comp.dart';
+import 'package:comies/main.dart';
 import 'package:comies/services/products.service.dart';
 import 'package:comies/utils/declarations/environment.dart';
 import 'package:comies/views/products/edit.screen.dart';
@@ -18,9 +19,10 @@ class Products extends State<ProductsScreen> {
   bool hasID() => id != null;
   bool isBigScreen() => MediaQuery.of(context).size.width > widthDivisor;
 
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return session.isAuthenticated() ? Scaffold(
         drawer: ComiesDrawer(),
         //The top bar app
         appBar: AppBar(title: Text('Produtos'), elevation: 8),
@@ -40,7 +42,7 @@ class Products extends State<ProductsScreen> {
                       flex: 65,
                       child: Center(
                           child: Container(
-                              width: 600,
+                              width: 900,
                               child: ProductFormComponent(
                                   id: id,
                                   afterDelete: () {setState(() { id = null;});},
@@ -77,7 +79,8 @@ class Products extends State<ProductsScreen> {
                 onRefresh: () => new Future(() => setState(() {})),
               ),
         // The FAB button at the bottom of the screen
-        floatingActionButton: AddButton());
+        floatingActionButton: session.permissions.canAddProducts ? AddButton() : null 
+      ) : session.goToAuthenticationScreen();
   }
 }
 

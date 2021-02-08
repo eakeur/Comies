@@ -6,11 +6,13 @@ import 'package:comies_entities/comies_entities.dart';
 import 'package:flutter/material.dart';
 
 class CostumerFormComponent extends StatefulWidget {
+  final bool readonly;
+  final Function(Address) onSelectedAddress;
   final Function afterSave;
   final Function afterDelete;
   final int id;
 
-  CostumerFormComponent({Key key, this.id, this.afterSave, this.afterDelete})
+  CostumerFormComponent({Key key, this.id, this.afterSave, this.afterDelete, this.readonly = false, this.onSelectedAddress})
       : super(key: key);
 
   @override
@@ -37,15 +39,14 @@ class CostumerForm extends State<CostumerFormComponent> {
 
   LoadStatus status;
 
+  int orderAddress = 0;
   bool isBigScreen() => MediaQuery.of(context).size.width > widthDivisor;
   bool hasID() => widget.id != null && widget.id != 0;
   bool hasPhones() =>
       costumer.phones != null &&
-      costumer.phones is List &&
       costumer.phones.isNotEmpty;
   bool hasAddresses() =>
       costumer.addresses != null &&
-      costumer.addresses is List &&
       costumer.addresses.isNotEmpty;
 
   void onCodeChange(int change) =>
@@ -110,14 +111,23 @@ class CostumerForm extends State<CostumerFormComponent> {
           ? costumer.phones = [phone]
           : costumer.phones.add(phone);
     }
-    if (hasID()) service.updateCostumer(costumer);
-    setState(() {});
+    if (hasID()) service.updateCostumer(costumer).then((value) => getCostumer());
+    else setState(() {});
     onPhoneClean();
   }
 
   void onPhoneClean() {
     dddController.text = '';
     phoneController.text = '';
+  }
+
+  void onPhoneRemove(Phone phone){
+    if (phone.id != null){
+      service.removeCostumerPhone(phone.id)
+      .then((value) => setState((){costumer.phones.removeAt(costumer.phones.indexOf(phone));}));
+    } else {
+      setState((){costumer.phones.removeAt(costumer.phones.indexOf(phone));});
+    }
   }
 
   void onAddressSave() {
@@ -137,8 +147,8 @@ class CostumerForm extends State<CostumerFormComponent> {
           ? costumer.addresses = [address]
           : costumer.addresses.add(address);
     }
-    if (hasID()) service.updateCostumer(costumer);
-    setState(() {});
+    if (hasID()) service.updateCostumer(costumer).then((value) => getCostumer());
+    else setState(() {});
     onAddressClean();
   }
 
@@ -154,17 +164,27 @@ class CostumerForm extends State<CostumerFormComponent> {
     countryController.text = '';
   }
 
+  void onAddressRemove(Address addr){
+    if (addr.id != null){
+      service.removeCostumerAddress(addr.id)
+      .then((value) => setState((){costumer.addresses.removeAt(costumer.addresses.indexOf(addr));}));
+    } else {
+      setState((){costumer.addresses.removeAt(costumer.addresses.indexOf(addr));});
+      
+    }
+  }
 
-  void getCostumer() {
-    setState(() => status = LoadStatus.loading);
+  void getCostumer({setLoading = false}) {
+    if (setLoading) setState(() => status = LoadStatus.loading);
     service.getById(widget.id).then((cost) => setState(() {
           costumer = cost;
           nameController.text = costumer.name;
           status = LoadStatus.loaded;
+          if (widget.readonly && costumer.addresses.length == 1){
+            orderAddress = costumer.addresses[0].id;
+          }
         }));
   }
-
-
 
   void onCEPChange(String change) {
     if (change.length == 8) {
@@ -188,13 +208,13 @@ class CostumerForm extends State<CostumerFormComponent> {
 
   @override
   void initState() {
-    if (hasID()) getCostumer();
+    if (hasID()) getCostumer(setLoading: true);
     super.initState();
   }
 
   @override
   void didUpdateWidget(CostumerFormComponent oldWidget) {
-    if (hasID()) getCostumer();
+    if (hasID()) getCostumer(setLoading: true);
     super.didUpdateWidget(oldWidget);
   }
 
@@ -413,6 +433,7 @@ class CostumerForm extends State<CostumerFormComponent> {
         ]),
         TextFormField(
             autofocus: true,
+            readOnly: widget.readonly,
             controller: nameController,
             keyboardType: TextInputType.name,
             decoration: decorateField("Nome do cliente", Icons.person),
@@ -426,7 +447,7 @@ class CostumerForm extends State<CostumerFormComponent> {
             Column(
               children: [
                 Text(
-                  hasID() ? "Telefones de " + costumer.name : "Telefones",
+                  "Telefones",
                   style: TextStyle(
                     color: Theme.of(context).primaryColor,
                   ),
@@ -439,14 +460,14 @@ class CostumerForm extends State<CostumerFormComponent> {
               Column(
                 children: ListTile.divideTiles(
                   context: context,
-                  tiles: [
+                  tiles: hasPhones() ? [
                     for (var phone in costumer.phones)
                       ListTile(
                           title: Text("(${phone.ddd}) ${phone.number}"),
                           leading: Icon(Icons.phone),
-                          trailing: phone.id != null ? IconButton(onPressed:() => service.removeCostumerPhone(phone.id), icon: Icon(Icons.delete), tooltip:"Excluir telefone") : null,
+                          trailing: IconButton(onPressed:() => onPhoneRemove(phone), icon: Icon(Icons.delete), tooltip:"Excluir telefone"),
                         ),
-                  ],
+                  ] : [],
                 ).toList(),
               )
             else
@@ -463,7 +484,7 @@ class CostumerForm extends State<CostumerFormComponent> {
             Column(
               children: [
                 Text(
-                  hasID() ? "Endereços de " + costumer.name : "Endereços",
+                  "Endereços",
                   style: TextStyle(
                     color: Theme.of(context).primaryColor,
                   ),
@@ -476,7 +497,7 @@ class CostumerForm extends State<CostumerFormComponent> {
               Column(
                 children: ListTile.divideTiles(
                   context: context,
-                  tiles: [
+                  tiles: hasAddresses() ? [
                     for (var addr in costumer.addresses)
                       ListTile(
                           title: Text(
@@ -485,9 +506,10 @@ class CostumerForm extends State<CostumerFormComponent> {
                           subtitle: Text(
                               "${addr.city} - ${addr.state} - ${addr.reference}",
                               softWrap: true),
-                          trailing: addr.id != null ? IconButton(onPressed:() => service.removeCostumerAddress(addr.id), icon: Icon(Icons.delete), tooltip:"Excluir endereço") : null,
-                          leading: Icon(Icons.map)),
-                  ],
+                          trailing: IconButton(onPressed: () => onAddressRemove(addr), icon: Icon(Icons.delete), tooltip:"Excluir endereço"),
+                          leading: !widget.readonly ? Icon(Icons.map) : Checkbox(activeColor: Theme.of(context).accentColor, value: addr.id == orderAddress, onChanged: (b){ setState((){orderAddress = addr.id;}); widget.onSelectedAddress(addr);})
+                          ),
+                  ] : [],
                 ).toList(),
               )
             else

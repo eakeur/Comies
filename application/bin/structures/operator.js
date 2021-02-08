@@ -27,11 +27,7 @@ var Operator = /** @class */ (function () {
     __decorate([
         typeorm_1.Column({ nullable: false }),
         __metadata("design:type", String)
-    ], Operator.prototype, "firstName", void 0);
-    __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", String)
-    ], Operator.prototype, "lastName", void 0);
+    ], Operator.prototype, "name", void 0);
     __decorate([
         typeorm_1.Column({ nullable: false }),
         __metadata("design:type", String)
@@ -40,10 +36,6 @@ var Operator = /** @class */ (function () {
         typeorm_1.Column({ nullable: false }),
         __metadata("design:type", String)
     ], Operator.prototype, "password", void 0);
-    __decorate([
-        typeorm_1.Column({ nullable: true }),
-        __metadata("design:type", String)
-    ], Operator.prototype, "token", void 0);
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", Date)

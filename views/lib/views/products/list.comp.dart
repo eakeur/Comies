@@ -22,10 +22,8 @@ class ProductsList extends State<ProductsListComponent> {
   Product filter = new Product();
   LoadStatus status;
 
-  void onSearchTap() {
-    setState(() {
-      status = LoadStatus.loading;
-    });
+  void onSearchTap({setLoading = false}) {
+    if (setLoading) setState(() => status = LoadStatus.loading);
     service.getProducts(filter).then((value) => setState(() {
           products = value;
           status = LoadStatus.loaded;
@@ -40,7 +38,7 @@ class ProductsList extends State<ProductsListComponent> {
 
   @override
   void initState() {
-    onSearchTap();
+    onSearchTap(setLoading: true);
     super.initState();
   }
 

@@ -67,6 +67,15 @@ var CostumerController = /** @class */ (function () {
             });
         });
     };
+    CostumerController.prototype.getCostumersByPhone = function (operator, phone) {
+        return __awaiter(this, void 0, void 0, function () {
+            var service;
+            return __generator(this, function (_a) {
+                service = new costumer_service_1.default(operator);
+                return [2 /*return*/, service.getCostumersByPhone(phone)];
+            });
+        });
+    };
     CostumerController.prototype.getCostumers = function (operator, params) {
         return __awaiter(this, void 0, void 0, function () {
             var service;
@@ -129,6 +138,14 @@ var CostumerController = /** @class */ (function () {
         __metadata("design:paramtypes", [operator_1.default, Number]),
         __metadata("design:returntype", Promise)
     ], CostumerController.prototype, "getCostumerById", null);
+    __decorate([
+        routing_controllers_1.Authorized('getCostumers'),
+        routing_controllers_1.Get("/extraget/keys"),
+        __param(0, routing_controllers_1.CurrentUser({ required: true })), __param(1, routing_controllers_1.QueryParam("phone")),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [operator_1.default, String]),
+        __metadata("design:returntype", Promise)
+    ], CostumerController.prototype, "getCostumersByPhone", null);
     __decorate([
         routing_controllers_1.Authorized('getCostumers'),
         routing_controllers_1.Get(""),

@@ -1,3 +1,4 @@
+import 'package:comies/main.dart';
 import 'package:comies/utils/declarations/environment.dart';
 import 'package:comies/views/costumers/form.comp.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,7 @@ class Detailed extends State<DetailedCostumerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return session.isAuthenticated() ? Scaffold(
             //The top bar app
             appBar: AppBar(
               title: Text(hasID() ? 'Detalhes' : 'Adicionar'),
@@ -27,7 +28,7 @@ class Detailed extends State<DetailedCostumerScreen> {
 
             //The body of the app
             body: CostumerFormComponent(id:widget.id, afterDelete:(){Navigator.pop(context);}, afterSave: (){Navigator.pop(context);})
-          );
+          ) : session.goToAuthenticationScreen();
   }
 }
 

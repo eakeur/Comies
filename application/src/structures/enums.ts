@@ -29,3 +29,5 @@ export enum Status {
     delivered = 5,
     finished = 6
 }
+
+enum Permission { get, put, add, del }

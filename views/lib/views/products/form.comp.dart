@@ -65,8 +65,8 @@ class ProductForm extends State<ProductFormComponent> {
         })
   );
 
-  void getProduct(){
-    setState(() => status = LoadStatus.loading);
+  void getProduct({setLoading = false}) {
+    if (setLoading) setState(() => status = LoadStatus.loading);
     service.getById(widget.id).then((prod) => setState(() {
             product = prod;
             codeController.text = product.code;
@@ -83,13 +83,13 @@ class ProductForm extends State<ProductFormComponent> {
 
   @override
   void initState() {
-    if (hasID()) getProduct();
+    if (hasID()) getProduct(setLoading: true);
     super.initState();
   }
 
     @override
   void didUpdateWidget(ProductFormComponent oldWidget){
-    if (hasID()) getProduct();
+    if (hasID()) getProduct(setLoading: true);
     super.didUpdateWidget(oldWidget);
   }
 

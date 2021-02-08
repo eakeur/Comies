@@ -8,7 +8,7 @@ export class Profile {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({default:'Sem nome'})
+    @Column({default:'Perfil sem nome'})
     name: string;
 
     @Column({default: false})

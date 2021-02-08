@@ -35,6 +35,29 @@ class CostumersService extends GeneralService<Costumer> {
     }
   }
 
+  Future<List<Costumer>> getCostumersByPhone(String phone) async {
+    Response res;
+    try {
+      List<Costumer> costm = [];
+      this.path = 'costumers/extraget/keys';
+      res = await super
+          .get(query: super.getQueryString({'phone':phone}));
+      if (!(res.data is List)) {
+        throw new Exception();
+      } else {
+        for (var item in res.data) {
+          costm.add(_deserializeMap(item));
+        }
+      this.path = 'costumers';
+      }
+      return costm;
+    } catch (e) {
+      this.path = 'costumers';
+      notify(res, _context);
+      return [];
+    }
+  }
+
   Future<Costumer> getById(int id) async {
     Response res;
     try {

@@ -46,6 +46,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var connection_1 = __importDefault(require("../utils/connection"));
+var typeorm_1 = require("typeorm");
 var operator_1 = __importDefault(require("../structures/operator"));
 var response_1 = __importDefault(require("../structures/response"));
 var notification_1 = __importDefault(require("../structures/notification"));
@@ -54,6 +55,7 @@ var OperatorService = /** @class */ (function () {
     function OperatorService(operator) {
         this.response = new response_1.default();
         this.collection = connection_1.default.db.getRepository(operator_1.default);
+        this.conditions = {};
         this.operator = operator;
     }
     OperatorService.prototype.addOperator = function (operator) {
@@ -138,7 +140,7 @@ var OperatorService = /** @class */ (function () {
                         return [4 /*yield*/, this.collection.findOne(id)];
                     case 1:
                         result = _a.sent();
-                        result.password = '';
+                        delete result.password;
                         this.response.data = result;
                         return [3 /*break*/, 3];
                     case 2:
@@ -154,23 +156,18 @@ var OperatorService = /** @class */ (function () {
     };
     OperatorService.prototype.getOperators = function (filters) {
         return __awaiter(this, void 0, void 0, function () {
-            var query, results, error_5;
+            var results, error_5;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        query = this.collection.createQueryBuilder();
-                        query.where("active = 1");
-                        if (filters.firstName)
-                            query.andWhere("firstName LIKE '%" + filters.firstName + "%'");
-                        if (filters.lastName)
-                            query.andWhere("lastName LIKE '%" + filters.lastName + "%'");
-                        if (filters.store)
-                            query.andWhere("storeId = " + filters.store.id);
-                        return [4 /*yield*/, query.getMany()];
+                        this.conditions.active = true;
+                        if (filters.name)
+                            this.conditions.name = typeorm_1.Like(filters.name);
+                        return [4 /*yield*/, this.collection.find(this.conditions)];
                     case 1:
                         results = _a.sent();
-                        results.forEach(function (result) { return result.password = ''; });
+                        results.forEach(function (result) { return delete result.password; });
                         this.response.data = results;
                         return [3 /*break*/, 3];
                     case 2:
@@ -201,7 +198,7 @@ var OperatorService = /** @class */ (function () {
                         }
                         if (operator.password === authParams.password) {
                             operator.lastLogin = new Date(Date.now());
-                            this.response.access = jwt.sign({ id: operator.id }, connection_1.default.secret, { expiresIn: 3600 });
+                            this.response.access = jwt.sign({ id: operator.id }, connection_1.default.secret, { expiresIn: authParams.remember ? 86400 : 3600 });
                             this.response.success = true;
                         }
                         else {
@@ -232,7 +229,10 @@ var OperatorService = /** @class */ (function () {
                         return [4 /*yield*/, this.collection.findOne(identification.id)];
                     case 1:
                         operator = _a.sent();
-                        action.response.locals.jwtPayload = jwt.sign({ id: operator.id }, connection_1.default.secret, { expiresIn: 3600 });
+                        if (!operator.active)
+                            throw new Error('Inactive user');
+                        if (new Date(identification.exp).getMinutes() < 60)
+                            action.response.locals.jwtPayload = jwt.sign({ id: operator.id }, connection_1.default.secret, { expiresIn: 3600 });
                         return [2 /*return*/, operator];
                     case 2:
                         error_7 = _a.sent();

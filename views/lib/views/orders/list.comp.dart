@@ -22,10 +22,8 @@ class OrdersList extends State<OrdersListComponent> {
   Costumer filter = new Costumer();
   LoadStatus status;
 
-  void onSearchTap() {
-    setState(() {
-      status = LoadStatus.loading;
-    });
+  void onSearchTap({setLoading = false}) {
+    if (setLoading) setState(() => status = LoadStatus.loading);
     service.getCostumers(filter).then((value) => setState(() {
           costumers = value;
           status = LoadStatus.loaded;
@@ -40,7 +38,7 @@ class OrdersList extends State<OrdersListComponent> {
 
   @override
   void initState() {
-    onSearchTap();
+    onSearchTap(setLoading: true);
     super.initState();
   }
 

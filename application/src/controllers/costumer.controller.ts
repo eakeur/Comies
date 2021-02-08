@@ -1,4 +1,4 @@
-import { Controller, Param, Body, Get, Post, Put, Delete, State, UseBefore, UploadedFile, Authorized, CurrentUser, QueryParams } from "routing-controllers";
+import { Controller, Param, Body, Get, Post, Put, Delete, State, UseBefore, UploadedFile, Authorized, CurrentUser, QueryParams, QueryParam } from "routing-controllers";
 import { json } from 'body-parser'
 import Costumer from '../structures/costumer';
 import CostumerService from '../services/costumer.service';
@@ -14,6 +14,13 @@ export default class CostumerController {
     public async getCostumerById(@CurrentUser({required:true}) operator: Operator, @Param("id") id:number){
         const service:CostumerService = new CostumerService(operator);
         return service.getCostumerById(id);
+    }
+
+    @Authorized('getCostumers')
+    @Get("/extraget/keys")
+    public async getCostumersByPhone(@CurrentUser({required:true}) operator: Operator, @QueryParam("phone") phone: string){
+        const service:CostumerService = new CostumerService(operator);
+        return service.getCostumersByPhone(phone);
     }
 
     @Authorized('getCostumers')

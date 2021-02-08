@@ -11,10 +11,7 @@ export default class Operator {
     id: number;
 
     @Column({nullable:false})
-    firstName: string;
-
-    @Column()
-    lastName: string;
+    name: string;
 
     @Column({nullable:false})
     identification: string;
@@ -22,8 +19,6 @@ export default class Operator {
     @Column({nullable:false})
     password: string;
 
-    @Column({nullable:true})
-    token: string;
 
     @Column()
     lastLogin: Date;

@@ -31,4 +31,11 @@ var Status;
     Status[Status["delivered"] = 5] = "delivered";
     Status[Status["finished"] = 6] = "finished";
 })(Status = exports.Status || (exports.Status = {}));
+var Permission;
+(function (Permission) {
+    Permission[Permission["get"] = 0] = "get";
+    Permission[Permission["put"] = 1] = "put";
+    Permission[Permission["add"] = 2] = "add";
+    Permission[Permission["del"] = 3] = "del";
+})(Permission || (Permission = {}));
 //# sourceMappingURL=enums.js.map

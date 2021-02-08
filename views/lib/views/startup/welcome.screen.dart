@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:comies/main.dart';
 import 'package:comies/services/settings.service.dart';
 import 'package:comies/utils/declarations/environment.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,7 @@ class Welcome extends State<WelcomeScreen> {
   }
 
   void actionIfUserIsInTheCloud() {
-    URL = onlineURL;
+    session.server = onlineURL;
     service.addSetting('cloud', true);
     service.addSetting('allSet', true);
     setState(() {
@@ -40,7 +41,7 @@ class Welcome extends State<WelcomeScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Ok, tudo pronto. Podemos iniciar agora!"),
-          action: SnackBarAction(label: "Iniciar", onPressed: () => Navigator.pushNamed(context, "/authentication"))
+          action: SnackBarAction(label: "Iniciar", onPressed: () => Navigator.pushNamed(context, "/"))
         )
       );
     });
@@ -51,11 +52,12 @@ class Welcome extends State<WelcomeScreen> {
     service.addSetting('url', serverURL);
     service.addSetting('allSet', true);
     setState(() {
+      session.server = serverURL;
       allSet = true;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Ok, tudo pronto. Podemos iniciar agora!"),
-          action: SnackBarAction(label: "Iniciar", onPressed: () => Navigator.pushNamed(context, "/authentication"))
+          action: SnackBarAction(label: "Iniciar", onPressed: () => Navigator.pushNamed(context, "/"))
         )
       );
     });

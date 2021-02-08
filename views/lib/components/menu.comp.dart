@@ -1,6 +1,6 @@
 import 'package:comies/services/authentication.service.dart';
 import 'package:flutter/material.dart';
-import '../main.dart' show themeSwitcher;
+import '../main.dart' show session, themeSwitcher;
 
 class ComiesDrawer extends StatefulWidget {
   @override
@@ -24,7 +24,15 @@ class DrawerState extends State<ComiesDrawer> {
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
-            child: Text('Comies'),
+            child: Column(
+              children: [
+                ListTile(
+                  leading: Icon(Icons.person, size:24),
+                  title: Text(session.operator.name),
+                  subtitle: Text("Perfil: " + session.permissions.name),
+                ),
+              ],
+            ),
             decoration: BoxDecoration(
               color: Theme.of(context).primaryColorDark,
             ),
