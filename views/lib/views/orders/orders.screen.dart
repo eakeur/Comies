@@ -82,7 +82,7 @@ class Orders extends State<OrdersScreen> {
                 onRefresh: () => new Future(() => setState(() {})),
               ),
         // The FAB button at the bottom of the screen
-        floatingActionButton: AddButton()
+        floatingActionButton: AddButton(),
       ) : session.goToAuthenticationScreen();
   }
 }
@@ -91,14 +91,9 @@ class AddButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isBigScreen() => MediaQuery.of(context).size.width > widthDivisor;
     return FloatingActionButton(
         onPressed: (){
-          isBigScreen() ? 
-            Scaffold.of(context).showBottomSheet((context) => 
-              Container(height: MediaQuery.of(context).size.height - 100, child: DetailedOrderScreen()),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)))
-          : Navigator.push(context, MaterialPageRoute(
+          Navigator.push(context, MaterialPageRoute(
               builder: (BuildContext context) => new DetailedOrderScreen()));
         },
         tooltip: 'Adicionar pedido',

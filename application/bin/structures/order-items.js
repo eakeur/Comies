@@ -29,6 +29,10 @@ var ProductItem = /** @class */ (function () {
         __metadata("design:type", order_1.default)
     ], ProductItem.prototype, "order", void 0);
     __decorate([
+        typeorm_1.Column({ nullable: false }),
+        __metadata("design:type", Number)
+    ], ProductItem.prototype, "group", void 0);
+    __decorate([
         typeorm_1.ManyToMany(function () { return ProductItem_1; }, function (productItem) { return productItem.order; }, { eager: true }),
         __metadata("design:type", product_1.default)
     ], ProductItem.prototype, "product", void 0);

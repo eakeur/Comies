@@ -57,7 +57,7 @@ class Async extends State<AsyncComponent> with TickerProviderStateMixin {
 
   @override
   void initState(){
-    controller = AnimationController(vsync: this, duration: Duration(milliseconds:1500))..addListener((){setState((){});});
+    controller = AnimationController(vsync: this, duration: Duration(milliseconds:100))..addListener((){setState((){});});
     super.initState();
   }
 

@@ -117,7 +117,7 @@ export default class CostumerService {
     public async getCostumers(costumer?:Costumer):Promise<Response>{
         try {
             this.conditions.active = true;
-            if (costumer.name !== null && undefined && '') this.conditions.name = Like(costumer.name);
+            if (costumer.name !== null && undefined && '') this.conditions.name = Like(`%${costumer.name}%`);
             this.response.data = await this.collection.find(this.conditions);
         } catch (error) {
             console.error(error);
@@ -129,7 +129,7 @@ export default class CostumerService {
 
     public async getCostumersByPhone(phone: string):Promise<Response>{
         try {
-            const phones = await Connection.db.getRepository<Phone>(Phone).find({number: Like(phone)});
+            const phones = await Connection.db.getRepository<Phone>(Phone).find({number: Like(`%${phone}%`)});
             this.response.data = phones.map(phone => phone.costumer);
         } catch (error) {
             console.error(error);

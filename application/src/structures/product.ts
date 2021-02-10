@@ -16,7 +16,7 @@ export default class Product {
     @Column({nullable:false})
     code: string;
 
-    @Column({nullable:false, default:1})
+    @Column({nullable:false, default:1, type:"float"})
     min: number;
 
     @Column({nullable:false})

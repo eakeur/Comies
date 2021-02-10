@@ -4,7 +4,7 @@ import 'package:comies_entities/comies_entities.dart';
 import 'package:flutter/material.dart';
 
 class ProductsListComponent extends StatefulWidget {
-  final Function(int) onListClick;
+  final Function(Product) onListClick;
 
   ProductsListComponent({
     this.onListClick,
@@ -99,11 +99,11 @@ class ProductsList extends State<ProductsListComponent> {
                       title: Text("${prod.name}"),
                       subtitle: Text("R\$${prod.price}"),
                       onTap: (){
-                        widget.onListClick(prod.id);
+                        widget.onListClick(prod);
                       },
                       trailing: IconButton(
                         icon: Icon(Icons.arrow_right),
-                        onPressed: () => widget.onListClick(prod.id),
+                        onPressed: () => widget.onListClick(prod),
                       ),
                     ),
                 ],

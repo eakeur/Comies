@@ -36,7 +36,7 @@ class Products extends State<ProductsScreen> {
                         elevation: 8,
                         child: ProductsListComponent(
                             onListClick: (value) =>
-                                setState(() => id = value)))),
+                                setState(() => id = value.id)))),
                 if (hasID())
                   Expanded(
                       flex: 65,
@@ -67,7 +67,7 @@ class Products extends State<ProductsScreen> {
                         child: ProductsListComponent(
                             onListClick: (value){
                               setState((){
-                                id = value;
+                                id = value.id;
                                  Navigator.push(
                                 context,
                                 MaterialPageRoute(

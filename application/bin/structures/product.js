@@ -32,7 +32,7 @@ var Product = /** @class */ (function () {
         __metadata("design:type", String)
     ], Product.prototype, "code", void 0);
     __decorate([
-        typeorm_1.Column({ nullable: false, default: 1 }),
+        typeorm_1.Column({ nullable: false, default: 1, type: "float" }),
         __metadata("design:type", Number)
     ], Product.prototype, "min", void 0);
     __decorate([

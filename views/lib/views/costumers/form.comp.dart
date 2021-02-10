@@ -182,6 +182,7 @@ class CostumerForm extends State<CostumerFormComponent> {
           status = LoadStatus.loaded;
           if (widget.readonly && costumer.addresses.length == 1){
             orderAddress = costumer.addresses[0].id;
+            widget.onSelectedAddress(costumer.addresses[0]);
           }
         }));
   }

@@ -219,7 +219,7 @@ var CostumerService = /** @class */ (function () {
                         _b.trys.push([0, 2, , 3]);
                         this.conditions.active = true;
                         if (costumer.name !== null && undefined && '')
-                            this.conditions.name = typeorm_1.Like(costumer.name);
+                            this.conditions.name = typeorm_1.Like("%" + costumer.name + "%");
                         _a = this.response;
                         return [4 /*yield*/, this.collection.find(this.conditions)];
                     case 1:
@@ -243,7 +243,7 @@ var CostumerService = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, connection_1.default.db.getRepository(phone_1.default).find({ number: typeorm_1.Like(phone) })];
+                        return [4 /*yield*/, connection_1.default.db.getRepository(phone_1.default).find({ number: typeorm_1.Like("%" + phone + "%") })];
                     case 1:
                         phones = _a.sent();
                         this.response.data = phones.map(function (phone) { return phone.costumer; });

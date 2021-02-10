@@ -11,6 +11,9 @@ export default class ProductItem {
     @ManyToOne(() => Order, order => order.products)
     order: Order;
 
+    @Column({nullable: false})
+    group: number;
+
     @ManyToMany(() => ProductItem, productItem => productItem.order, { eager: true })
     product: Product;
 
