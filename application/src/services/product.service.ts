@@ -1,5 +1,5 @@
 import Connection from "../utils/connection";
-import { Repository } from "typeorm";
+import { FindConditions, Like, Repository } from "typeorm";
 import Product from "../structures/product";
 import Response from "../structures/response";
 import Notification from "../structures/notification";
@@ -16,6 +16,8 @@ export default class ProductService {
     operator: Operator;
 
     collection:Repository<Product> = Connection.db.getRepository<Product>(Product);
+
+    conditions: FindConditions<Product> = {}
 
     public async addProduct(product:Product):Promise<Response>{
         try {
@@ -68,11 +70,11 @@ export default class ProductService {
 
     public async getProducts(filters:Product):Promise<Response>{
         try {
-            const query = this.collection.createQueryBuilder(); query.where("active = 1");
-            if (filters.code) query.andWhere(`code LIKE '%${filters.code}%'`);
-            if (filters.name) query.andWhere(`name LIKE '%${filters.name}%'`);
-            if (filters.price) query.andWhere(`price = ${filters.price}`);
-            this.response.data = await query.getMany();
+            this.conditions.active = true;
+            if (filters.code) this.conditions.code = Like(filters.code);
+            if (filters.name) this.conditions.name = Like(filters.name);
+            if (filters.price) this.conditions.price = Like(filters.price);
+            this.response.data = await this.collection.find(this.conditions);
         } catch (error) {
             console.error(error);
             this.response.success = false;

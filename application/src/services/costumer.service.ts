@@ -117,7 +117,7 @@ export default class CostumerService {
     public async getCostumers(costumer?:Costumer):Promise<Response>{
         try {
             this.conditions.active = true;
-            if (costumer.name !== null && undefined && '') this.conditions.name = Like(`%${costumer.name}%`);
+            if (costumer.name) this.conditions.name = Like(`%${costumer.name}%`);
             this.response.data = await this.collection.find(this.conditions);
         } catch (error) {
             console.error(error);
