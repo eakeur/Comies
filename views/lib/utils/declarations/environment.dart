@@ -1,5 +1,5 @@
 // ignore: non_constant_identifier_names
-String URL = "http://100.64.14.32:8080";
-String onlineURL = "http://100.64.14.32:8080";
+String URL = "https://comies.eakeur.com";
+String onlineURL = "https://comies.eakeur.com";
 String access;
 int widthDivisor = 700;
