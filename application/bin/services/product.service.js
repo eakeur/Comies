@@ -39,6 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var connection_1 = __importDefault(require("../utils/connection"));
+var typeorm_1 = require("typeorm");
 var product_1 = __importDefault(require("../structures/product"));
 var response_1 = __importDefault(require("../structures/response"));
 var notification_1 = __importDefault(require("../structures/notification"));
@@ -46,6 +47,7 @@ var ProductService = /** @class */ (function () {
     function ProductService(operator) {
         this.response = new response_1.default();
         this.collection = connection_1.default.db.getRepository(product_1.default);
+        this.conditions = {};
         this.operator = operator;
     }
     ProductService.prototype.addProduct = function (product) {
@@ -144,21 +146,20 @@ var ProductService = /** @class */ (function () {
     };
     ProductService.prototype.getProducts = function (filters) {
         return __awaiter(this, void 0, void 0, function () {
-            var query, _a, error_5;
+            var _a, error_5;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 2, , 3]);
-                        query = this.collection.createQueryBuilder();
-                        query.where("active = 1");
+                        this.conditions.active = true;
                         if (filters.code)
-                            query.andWhere("code LIKE '%" + filters.code + "%'");
+                            this.conditions.code = typeorm_1.Like(filters.code);
                         if (filters.name)
-                            query.andWhere("name LIKE '%" + filters.name + "%'");
+                            this.conditions.name = typeorm_1.Like(filters.name);
                         if (filters.price)
-                            query.andWhere("price = " + filters.price);
+                            this.conditions.price = typeorm_1.Like(filters.price);
                         _a = this.response;
-                        return [4 /*yield*/, query.getMany()];
+                        return [4 /*yield*/, this.collection.find(this.conditions)];
                     case 1:
                         _a.data = _b.sent();
                         return [3 /*break*/, 3];

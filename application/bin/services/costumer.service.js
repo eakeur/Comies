@@ -218,7 +218,7 @@ var CostumerService = /** @class */ (function () {
                     case 0:
                         _b.trys.push([0, 2, , 3]);
                         this.conditions.active = true;
-                        if (costumer.name !== null && undefined && '')
+                        if (costumer.name)
                             this.conditions.name = typeorm_1.Like("%" + costumer.name + "%");
                         _a = this.response;
                         return [4 /*yield*/, this.collection.find(this.conditions)];

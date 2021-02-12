@@ -1,10 +1,10 @@
 {
    "name": "production",
    "type": "mysql",
-   "host": "localhost",
+   "host": "den1.mysql1.gear.host",
    "port": 3306,
-   "username": "igor",
-   "password": "2001Database@))!",
+   "username": "comies",
+   "password": "Jc4A62Q0L~_7",
    "database": "comies",
    "synchronize": true,
    "logging": false,

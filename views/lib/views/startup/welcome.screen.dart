@@ -35,6 +35,7 @@ class Welcome extends State<WelcomeScreen> {
   void actionIfUserIsInTheCloud() {
     session.server = onlineURL;
     service.addSetting('cloud', true);
+    service.addSetting('url', session.server);
     service.addSetting('allSet', true);
     setState(() {
       allSet = true;
