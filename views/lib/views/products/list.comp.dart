@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 
 class ProductsListComponent extends StatefulWidget {
   final Function(Product) onListClick;
+  final Widget underList;
 
   ProductsListComponent({
     this.onListClick,
+    this.underList,
     Key key,
   }) : super(key: key);
 
@@ -18,6 +20,7 @@ class ProductsListComponent extends StatefulWidget {
 class ProductsList extends State<ProductsListComponent> {
   TextEditingController searchController = new TextEditingController();
   ProductsService service = new ProductsService();
+  int clicked = 0;
   List<Product> products = [];
   Product filter = new Product();
   LoadStatus status;
@@ -96,14 +99,18 @@ class ProductsList extends State<ProductsListComponent> {
                 tiles: [
                   for (var prod in products)
                     ListTile(
-                      title: Text("${prod.name}"),
-                      subtitle: Text("R\$${prod.price}"),
+                      title:  widget.underList != null && clicked == prod.id ? Text("${prod.name}", style: TextStyle(fontSize: 20)) : Text("${prod.name}"),
+                      subtitle: widget.underList != null && clicked == prod.id ? Container(
+                        padding: EdgeInsets.all(10),
+                        child: widget.underList,
+                        ) : Text("R\$${prod.price}"),
                       onTap: (){
+                        clicked = clicked == prod.id ? clicked = 0 : clicked = prod.id;
                         widget.onListClick(prod);
                       },
-                      trailing: IconButton(
+                      trailing: widget.underList != null && clicked == prod.id ? null : IconButton(
                         icon: Icon(Icons.arrow_right),
-                        onPressed: () => widget.onListClick(prod),
+                        onPressed: (){clicked = clicked == prod.id ? clicked = 0 : clicked = prod.id; widget.onListClick(prod);},
                       ),
                     ),
                 ],
