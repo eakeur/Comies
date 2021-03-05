@@ -1,215 +1,134 @@
 import 'package:comies/components/async.comp.dart';
-import 'package:comies/services/products.service.dart';
+import 'package:comies/components/responsebar.comp.dart';
+import 'package:comies/components/textfield.comp.dart';
+import 'package:comies/components/titlebox.comp.dart';
+import 'package:comies/controllers/product.controller.dart';
 import 'package:comies/utils/declarations/environment.dart';
+import 'package:comies/utils/declarations/themes.dart';
+import 'package:comies/utils/notifier.dart';
 import 'package:comies_entities/comies_entities.dart';
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
+import 'package:select_form_field/select_form_field.dart';
 
 class ProductFormComponent extends StatefulWidget {
   final Function afterDelete;
   final Function afterSave;
-  final int id;
-  ProductFormComponent({this.afterSave, this.afterDelete, this.id});
+  final bool isAddition;
+  ProductFormComponent({this.afterSave, this.afterDelete, this.isAddition = false});
+
   @override
   ProductForm createState() => ProductForm();
 }
 
 class ProductForm extends State<ProductFormComponent> {
-  TextEditingController codeController = new TextEditingController();
-
-  TextEditingController nameController = new TextEditingController();
-
-  TextEditingController priceController = new TextEditingController();
 
   TextEditingController unityController = new TextEditingController();
-
-  TextEditingController minController = new TextEditingController();
-
-  ProductsService service = new ProductsService();
-
-  Product product = new Product();
 
   LoadStatus status;
 
   bool isBigScreen() => MediaQuery.of(context).size.width > widthDivisor;
-  bool hasID() => widget.id != null && widget.id != 0;
 
-  void onDropdownChange(int change) =>
-      setState(() => unityController.text = change.toString());
-
-  void onSave() {
-    product.code = codeController.text;
-          product.name = nameController.text;
-          product.price = double.parse(priceController.text);
-          product.min = double.parse(minController.text);
-          product.active = true;
-          product.unity = Unity.values[int.parse(unityController.text)];
-          product.id = widget.id;
-          hasID()
-              ? service.updateProduct(product).then((value){
-                new Future.delayed(const Duration(milliseconds: 750), () => widget.afterSave());
-                
-              })
-              : service.addProduct(product).then((value){
-                new Future.delayed(const Duration(milliseconds: 750), () => widget.afterSave());
-              });
-  }
-
-  void onDelete() => showDialog(
-      context: context,
-      builder: (context) =>
-        DeleteDialog(onDelete:(){
-          service.removeProduct(widget.id).then((value){
-                new Future.delayed(const Duration(milliseconds: 750), () => widget.afterDelete());
-              });
-        })
-  );
-
-  void getProduct({setLoading = false}) {
-    if (setLoading) setState(() => status = LoadStatus.loading);
-    service.getById(widget.id).then((prod) => setState(() {
-            product = prod;
-            codeController.text = product.code;
-            nameController.text = product.name;
-            priceController.text = product.price.toString();
-            minController.text = product.min.toString();
-            unityController.text = product.unity.index.toString();
-            status = LoadStatus.loaded;
-          }));
-  }
-
-  InputDecoration decorateField(String label, IconData icon) =>
-      InputDecoration(labelText: label, suffixIcon: Icon(icon));
-
-  @override
-  void initState() {
-    if (hasID()) getProduct(setLoading: true);
-    super.initState();
-  }
-
-    @override
-  void didUpdateWidget(ProductFormComponent oldWidget){
-    if (hasID()) getProduct(setLoading: true);
-    super.didUpdateWidget(oldWidget);
-  }
+  void onSave() => Provider.of<ProductsController>(context, listen: false).addProduct()
+    .then((value) => ScaffoldMessenger.of(context).showSnackBar(ResponseBar(value.notifications[0])))
+    .catchError((value) => ScaffoldMessenger.of(context).showSnackBar(ResponseBar(value.notifications[0])));
+  void onDelete() => Provider.of<ProductsController>(context, listen: false).removeProduct()
+    .then((value) => ScaffoldMessenger.of(context).showSnackBar(ResponseBar(value.notifications[0])))
+    .catchError((value) => ScaffoldMessenger.of(context).showSnackBar(ResponseBar(value.notifications[0])));
+  void onUpdate() => Provider.of<ProductsController>(context, listen: false).updateProduct()
+    .then((value) => ScaffoldMessenger.of(context).showSnackBar(ResponseBar(value.notifications[0])))
+    .catchError((value) => ScaffoldMessenger.of(context).showSnackBar(ResponseBar(value.notifications[0])));
 
   @override
   Widget build(BuildContext context) {
-    //Text forms declarations before rendering anything
-    service.setContext(context);
-    return AsyncComponent(
-        data: {'id': widget.id},
-        status: status,
-        child: Form(
-            child: ListView(padding: EdgeInsets.all(30), children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(children: [
-                Text("Informações básicas",
-                    style: TextStyle(color: Theme.of(context).primaryColor),
-                    textAlign: TextAlign.left),
-                Divider(thickness: 1.2, height: 20.2)
-              ]),
-              Row(
+    
+    return Consumer<ProductsController>(builder: (context, data, child) {
+      if (!widget.isAddition && data.product != null) unityController.text = data.product.unity.index.toString();
+      return AsyncComponent(
+          data: widget.isAddition ? {widget: "new"} : data.product,
+          messageIfNullOrEmpty: "Selecione um produto para ver seus detalhes",
+          status: data.productLoadStatus,
+          snackbar: data.snackbar,
+          child: widget.isAddition || data.product != null 
+            ? Form(
+              child: ListView(padding: EdgeInsets.all(30), 
                 children: [
-                  Expanded(
-                    flex: 40,
-                    //Product code input
-                    child: TextFormField(
-                        controller: codeController,
-                        autofocus: true,
-                        readOnly: hasID(),
-                        keyboardType: TextInputType.text,
-                        decoration: decorateField("Código", Icons.qr_code),
-                        maxLines: 1),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TitleBox("Informações básicas"),
+                      Row(
+                        children: [
+                          Expanded( flex: 40,
+                            child: TextFieldComponent(
+                              fieldName: "Código",
+                              value: data.product.code,
+                              icon: Icon(Icons.qr_code), onFieldChange: (c) => data.product.code = c,
+                            )),
+                          SizedBox(width: 10),
+                          Expanded(flex: 60,
+                            child: TextFieldComponent(
+                              fieldName: "Nome do produto",
+                              value: data.product.name,
+                              icon: Icon(Icons.category), onFieldChange: (c) => data.product.name = c,
+                            ))
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      TextFieldComponent(
+                        fieldName: "Preço",
+                        value: (data.product.price  ?? 0.00).toString(),
+                        textInputType: TextInputType.numberWithOptions(decimal: true),
+                        icon: Icon(Icons.attach_money), onFieldChange: (c) => data.product.price = double.tryParse(c),
+                      ),
+                      SizedBox(height: 20),
+                    ],
                   ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    flex: 60,
-                    // Product name input
-                    child: TextFormField(
-                        controller: nameController,
-                        keyboardType: TextInputType.text,
-                        decoration: decorateField("Nome", Icons.category),
-                        maxLines: 1),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TitleBox("Detalhes"),
+                      Row(
+                        children: [
+                          Expanded(flex: 50,
+                            child: SelectFormField(
+                              decoration: InputDecoration(labelText: "Unidade", suffixIcon: Icon(Icons.format_list_numbered)),
+                              enableSearch: true,
+                              controller: unityController,
+                              onChanged: (value) => data.product.unity = Unity.values[int.tryParse(value)],
+                              items: [{"label": "Quilogramas", "value": "0"}, {"label": "Miligramas", "value": "1"}, 
+                                      {"label": "Litros", "value": "2"}, {"label": "Mililitros", "value": "3"}, {"label": "Unidade", "value": "4"}],
+                            )
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            flex: 50,
+                            child: TextFieldComponent(
+                              fieldName: "Mínimo",
+                              value: (data.product.min ?? 0.00).toString(),
+                              onFieldChange: (s) => data.product.min = double.tryParse(s),
+                              textInputType: TextInputType.numberWithOptions(decimal: true),
+                              icon: Icon(Icons.shopping_cart),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                    ],
                   ),
-                ],
-              ),
-              SizedBox(height: 20),
-              TextFormField(
-                  controller: priceController,
-                  keyboardType: TextInputType.number,
-                  decoration: decorateField("Preço", Icons.attach_money),
-                  maxLines: 1),
-              SizedBox(height: 20),
-            ],
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(children: [
-                Text("Detalhes do produto",
-                    style: TextStyle(color: Theme.of(context).primaryColor),
-                    textAlign: TextAlign.left),
-                Divider(thickness: 1.2, height: 20.2)
-              ]),
-              Row(
-                children: [
-                  Expanded(
-                      flex: 50,
-                      child: Column(children: [
-                        SizedBox(height: 17),
-                        DropdownButton(
-                            isExpanded: true,
-                            value: unityController.text == ""
-                                ? null
-                                : int.parse(unityController.text),
-                            onChanged: onDropdownChange,
-                            items: [
-                              DropdownMenuItem(
-                                  child: Text("Quilogramas"), value: 0),
-                              DropdownMenuItem(
-                                  child: Text("Miligramas"), value: 1),
-                              DropdownMenuItem(child: Text("Litros"), value: 2),
-                              DropdownMenuItem(
-                                  child: Text("Mililitros"), value: 3),
-                              DropdownMenuItem(
-                                  child: Text("Unidade"), value: 4),
-                            ])
-                      ])),
-                  SizedBox(width: 10),
-                  Expanded(
-                    flex: 50,
-                    child: TextFormField(
-                        controller: minController,
-                        keyboardType: TextInputType.number,
-                        decoration: decorateField(
-                            "Mínimo", Icons.shopping_cart),
-                        maxLines: 1),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-            ],
-          ),
-          Row(children: [
-            ElevatedButton.icon(
-                onPressed: onSave,
-                icon: Icon(Icons.save),
-                label: Text(hasID() ? "Atualizar" : "Salvar")),
-            SizedBox(width: 20),
-            if (hasID())
-              ElevatedButton.icon(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateColor.resolveWith(
-                        (states) => Colors.red[700]),
-                  ),
-                  onPressed: onDelete,
-                  icon: Icon(Icons.delete),
-                  label: Text("Excluir"))
-          ])
-        ])));
+                  child
+          ]))
+          : Center()
+        );
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          if (!widget.isAddition) OutlinedButton.icon(onPressed: onDelete, icon: Icon(Icons.delete), label: Text("EXCLUIR")),
+          SizedBox(width: 20),
+          ElevatedButton(onPressed: !widget.isAddition ? onUpdate : onSave, child: Text(!widget.isAddition ? "ATUALIZAR" : "SALVAR"), style: successButton) 
+      ]),
+    );
   }
 }
 

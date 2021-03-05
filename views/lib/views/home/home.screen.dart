@@ -13,8 +13,7 @@ class Home extends State<HomeScreen> {
 
   PreferredSizeWidget appBar() {
     return AppBar(
-      title: Text('Início'),
-      elevation: 8,
+      title: Text("Home"),
     );
   }
 
@@ -23,8 +22,11 @@ class Home extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return session.isAuthenticated() ? Scaffold(
       drawer: ComiesDrawer(),
-      appBar: appBar(),
       body: Center(),
+      bottomNavigationBar: Container(
+        height: 60,
+        child: appBar(),
+      ),
     ) : session.goToAuthenticationScreen();
   }
 }

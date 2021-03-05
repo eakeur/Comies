@@ -7,6 +7,7 @@ class AsyncComponent extends StatefulWidget {
   final Future Function() future;
   final String messageIfNullOrEmpty;
   final LoadStatus status;
+  final SnackBar snackbar;
   final dynamic data;
   final bool animate;
 
@@ -17,6 +18,7 @@ class AsyncComponent extends StatefulWidget {
     this.messageIfNullOrEmpty,
     this.status,
     this.child,
+    this.snackbar,
     Key key,
   }) : super(key: key);
 
@@ -31,8 +33,9 @@ class Async extends State<AsyncComponent> with TickerProviderStateMixin {
     var tgt = widget.data;
     if (tgt != null) {
       if (tgt is List) return tgt.length <= 0;
-      if (tgt is Set) return tgt.length <= 0;
-      if (tgt is Map) return tgt.length <= 0;
+      else if (tgt is Set) return tgt.length <= 0;
+      else if (tgt is Map) return tgt.length <= 0;
+      else return false;
     }
     return true;
   }
@@ -46,24 +49,29 @@ class Async extends State<AsyncComponent> with TickerProviderStateMixin {
           child: CircularProgressIndicator(),
         ),
       );
+    } else if (widget.status == LoadStatus.failed){
+      return Container(
+        height: 50,
+        child: Center(
+          child: Text("Ops! Um erro ocorreu!"),
+        ),
+      );
     }
     return isDataNullOrEmpty()
         ? NullResultWidget(messageIfNullOrEmpty: widget.messageIfNullOrEmpty)
-        : widget.animate ? FadeTransition(
-          opacity: controller.drive(CurveTween(curve: Curves.easeInBack)),
-          child: widget.child,
-        ): widget.child;
+        : widget.child;
   }
 
   @override
   void initState(){
-    controller = AnimationController(vsync: this, duration: Duration(milliseconds:100))..addListener((){setState((){});});
     super.initState();
   }
 
+
+
+
   @override
   Widget build(BuildContext context) {
-    if (widget.animate)controller.forward();
     return decideRender();
   }
 }

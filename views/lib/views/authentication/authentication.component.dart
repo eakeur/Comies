@@ -109,13 +109,12 @@ class Authentication extends State<AuthenticationComponent> {
               SizedBox(
                 height: 30
               ),
-              ElevatedButton.icon(
-                  icon: Icon(Icons.login),
+              TextButton(
                   onPressed: operatorController.text.trim() != "" &&
                           passwordController.text.trim() != ""
                       ? login
                       : null,
-                  label: Text('Entrar'))
+                  child: Text('ENTRAR'))
             ],
           ),
         ),

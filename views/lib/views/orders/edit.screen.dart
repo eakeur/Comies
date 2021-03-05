@@ -26,7 +26,6 @@ class Order extends State<DetailedOrderScreen> {
               title: Text(hasID() ? 'Detalhes' : 'Adicionar'),
               elevation: 8
             ),
-
             //The body of the app
             body: OrderFormComponent(id:widget.id, afterDelete:(){Navigator.pop(context);}, afterSave: (){Navigator.pop(context);})
           ) : session.goToAuthenticationScreen();

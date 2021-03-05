@@ -1,80 +1,88 @@
+import 'dart:collection';
 import 'package:comies_entities/comies_entities.dart';
+import 'package:flutter/widgets.dart';
 
-class NewOrderController {
 
-  Item item;
-  List<Item> items = [];
+
+class CostumerOrderSelectionController extends ChangeNotifier {
+
+  Costumer _costumer;
+  Address _address;
+
+  Address get address => _address;
+  Costumer get costumer => _costumer;
+  bool get hasCostumer => _costumer != null && _costumer.id != null && _costumer.id != 0;
+  bool get hasAddress => _address != null && _address.id != null && _address.id != 0;
+  bool get valid => _costumer != null && _costumer.id != null && _costumer.id != 0 && _address != null && _address.id != null && _address.id != 0;
+
+  void setCostumer(Costumer costumer){
+    _costumer = costumer;
+    notifyListeners();
+  }
   
-  
-  setItem(Product product, {bool trigger = true}){
-    var existents = items.where((item) => item.product == product).toList();
-    if (existents.isNotEmpty){
-      item = items[items.indexOf(existents[0])];
-    } else {
-      item = new Item();
-      item.quantity = product.min;
-      item.group = 1;
-      item.product = product;
-    }
-    if (trigger) callListeners(NewOrderTriggerType.itemCreation, item);
+  void setAddress(Address address){
+    _address = address;
   }
 
-  bool get hasItemPositioned => item != null && item.product != null;
-
-
-  void addItem({bool trigger = true}){
-    if (!items.contains(item)) items.add(item);
-    else items[items.indexOf(item)] = item;
-    if (trigger) callListeners(NewOrderTriggerType.itemAddition, item);
-
-  }
-
-  void cancelItemEdition({bool trigger = true}){
-    item = null;
-    if (trigger) callListeners(NewOrderTriggerType.itemCancellation, item);
-  }
-
-  void removeItem(Item item, {bool trigger = true}){
-    if (this.item == item) cancelItemEdition();
-    items.remove(item);
-    if (trigger) callListeners(NewOrderTriggerType.itemDeletion, item);
-  }
-
-  void changeItemQuantity(double quantity, {bool trigger = true}){
-    item.quantity = quantity;
-    if (trigger) callListeners(NewOrderTriggerType.itemQuantityChange, item);
-  }
-
-  void onItemQuantityChange(String change){
-    change = change.replaceAll(',', '.');
-    var q = double.tryParse(change);
-    if (q >= item.product.min) {changeItemQuantity(q % item.product.min == 0 ? q : q - (q % item.product.min));}
-  }
-
-  //STATIC REGION OF THE CONTROLLER
-
-  static Map<String, Map<NewOrderTriggerType, List<Function(Item)>>> listeners = new Map<String, Map<NewOrderTriggerType, List<Function(Item)>>>();
-
-  static void addListener(String id, NewOrderTriggerType type, Function(Item) listener){
-    listeners[id] != null
-      ? listeners[id][type] != null ? listeners[id][type].add(listener) : listeners[id][type] = [listener]
-      : listeners[id] = {type : [listener]};
-  }
-  static void callListeners(NewOrderTriggerType type, Item item){
-    listeners.forEach((key, list){
-        if (list[type] != null)list[type]
-        .forEach((listener) => {if (listener != null)listener(item)});
-      }
-    );
-  }
-  static void removeListeners(String id, {NewOrderTriggerType type}){
-    if (id != null){
-      if (type != null) listeners[id].remove(type);
-      else listeners.remove(id);
-    }
-  }
 }
 
-enum NewOrderTriggerType {
-  itemCreation, itemQuantityChange, itemAddition, itemDeletion, itemCancellation
+class OrderItemsSelectionController extends ChangeNotifier {
+
+  final List<Item> _items = [];
+  Item _item;
+  Item get item => _item;
+  bool get areItemsValid {
+    return _items.isNotEmpty &&
+    _items.every((item) => item.quantity > 0.0) &&
+    _items.every((item) => item.product != null && item.product.id != null) &&
+    _items.map((order) => order.group).map((group) =>
+    _items.where((item) => item.group == group).fold<double>(0,
+    (previousValue, item) => previousValue + item.quantity) >= 1)
+    .toList().every((groupStatus) => groupStatus);
+  }
+  UnmodifiableListView<Item> get items => UnmodifiableListView(_items);
+  UnmodifiableListView<int> get itemsGroups {
+    List<int> gr = [];
+    _items.forEach((item) {
+      if (!gr.contains(item.group)) gr.add(item.group);
+    });
+    return UnmodifiableListView(gr);
+  }
+
+  void setItem(Product product){
+    if (product != null){
+      var existents = items.where((item) => item.product.id == product.id).toList();
+      if (existents.isNotEmpty){
+        _item = items[items.indexOf(existents[0])];
+      } else {
+        _item = new Item(); _item.quantity = product.min;
+        _item.group = 1; _item.product = product;
+      }
+    } else {
+      _item = null;
+    }
+    notifyListeners();
+  }
+
+  void setItemQuantity(double quantity){
+    _item.quantity = quantity;
+    notifyListeners();
+  }
+
+  void addItem(Item item) {
+    _items.add(item);
+    notifyListeners();
+  }
+
+  void removeItem(Item item) {
+    _items.remove(item);
+    notifyListeners();
+  }
+
+  void removeAllItems() {
+    _items.clear();
+    notifyListeners();
+  }
+
+
 }

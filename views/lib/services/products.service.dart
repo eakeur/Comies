@@ -12,23 +12,22 @@ class ProductsService extends GeneralService<Product> {
     this._context = context;
   }
 
-  Future<List<Product>> getProducts(Product filter) async {
+  Future<Response> getProducts(Product filter) async {
     Response res;
     try {
       List<Product> prods = [];
       res = await super
           .get(query: super.getQueryString(_serializeProduct(filter)));
-      if (!(res.data is List)) {
-        throw new Exception();
-      } else {
+      if (!(res.data is List)) throw res;
+      else {
         for (var item in res.data) {
           prods.add(_deserializeMap(item));
         }
       }
-      return prods;
+      res.data = prods;
+      return res;
     } catch (e) {
-      notify(res, _context);
-      return [];
+      throw e;
     }
   }
 
@@ -44,34 +43,27 @@ class ProductsService extends GeneralService<Product> {
     }
   }
 
-  Future<void> removeProduct(int id) async {
-    Response res;
-    try {
-      res = await super.delete(id);
-      notify(res, _context);
-    } catch (e) {
-      notify(res, _context);
-    }
+  Future<Response> removeProduct(int id) async {
+    Response res = await super.delete(id);
+    if (!res.success) throw res;
+    return res;
   }
 
-  Future<void> addProduct(Product product) async {
+  Future<Response> addProduct(Product product) async {
     Response res;
     try {
       res = await super.add(_serializeProduct(product));
-      notify(res, _context);
+      if (!res.success) throw res;
+      return res;
     } catch (e) {
-      notify(res, _context);
+      throw e;
     }
   }
 
-  Future<void> updateProduct(Product product) async {
-    Response res;
-    try {
-      res = await super.update(_serializeProduct(product));
-      notify(res, _context);
-    } catch (e) {
-      notify(res, _context);
-    }
+  Future<Response> updateProduct(Product product) async {
+    var res = await super.update(_serializeProduct(product));
+    if (!res.success) throw res;
+    return res;
   }
 
   Product _deserializeMap(dynamic map) {

@@ -10,6 +10,8 @@ import 'package:comies/views/home/home.screen.dart';
 import 'package:comies/utils/declarations/themes.dart';
 import 'package:comies/views/startup/welcome.screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'controllers/main.controller.dart';
 import 'utils/declarations/themes.dart';
 
 Future<void> main() async {
@@ -20,7 +22,11 @@ Future<void> main() async {
   if (isSet){
     session.isAuthenticated() ? initialPage = '/' : initialPage = '/authentication';
   }
-  runApp(MyApp());
+  runApp(ChangeNotifierProvider(
+    create: (context) => MainController(),
+    child: MyApp(),
+    )
+  );
 }
 
 String initialPage = "/welcome";
