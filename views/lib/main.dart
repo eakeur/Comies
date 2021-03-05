@@ -54,6 +54,64 @@ class Application extends State<ApplicationLauncher> {
     setState(() => themeMode = mode);
   }
 
+  Route onGeneratedRoute(RouteSettings route){
+    switch (route.name) {
+      case '/': return MaterialPageRoute(
+        builder: (context){
+          return HomeScreen();
+        }
+      );
+
+      case '/products': return MaterialPageRoute(
+        builder: (context){
+          return ProductsScreen();
+        }
+      );
+
+      case '/authentication': return MaterialPageRoute(
+        builder: (context){
+          return AuthenticationScreen();
+        }
+      );
+
+      case '/welcome': return MaterialPageRoute(
+        builder: (context){
+          return WelcomeScreen();
+        }
+      );
+
+      case '/costumers': return MaterialPageRoute(
+        builder: (context){
+          return CostumersScreen();
+        }
+      );
+
+      case '/orders': return MaterialPageRoute(
+        builder: (context){
+          return OrdersScreen();
+        }
+      );
+
+      case '/settings': return MaterialPageRoute(
+        builder: (context){
+          return SettingsScreen();
+        }
+      );
+
+      case '/panel': return MaterialPageRoute(
+        builder: (context){
+          return OrdersPanelScreen();
+        }
+      );
+        
+      default: return MaterialPageRoute(
+        builder: (context){
+          return WelcomeScreen();
+        }
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     themeSwitcher = switchTheme;
@@ -64,16 +122,7 @@ class Application extends State<ApplicationLauncher> {
       darkTheme: mainTheme(Brightness.dark),
       themeMode: themeMode,
       initialRoute: initialPage,
-      routes: {
-        '/welcome': (context) => WelcomeScreen(),
-        '/authentication': (context) => AuthenticationScreen(),
-        '/': (context) => HomeScreen(),
-        '/products': (context) => ProductsScreen(),
-        '/costumers': (context) => CostumersScreen(),
-        '/orders': (context) => OrdersScreen(),
-        '/settings': (context) => SettingsScreen(),
-        '/panel': (context) => OrdersPanelScreen(),
-      },
+      onGenerateRoute: onGeneratedRoute,
     );
   }
 }

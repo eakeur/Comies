@@ -24,11 +24,8 @@ class Orders extends State<OrdersScreen> {
   @override
   Widget build(BuildContext context) {
     return session.isAuthenticated() ? Scaffold(
-        drawer: ComiesDrawer(),
-        //The top bar app
-        appBar: AppBar(title: Text('Pedidos'), elevation: 8, actions: [
-          IconButton(icon: Icon(Icons.queue_play_next_outlined), onPressed: (){Navigator.pushNamed(context, '/panel');})
-        ]),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+        bottomNavigationBar: NavigationBar(),
         //The body of the app
         body: isBigScreen()
             ? Row(children: [
@@ -37,6 +34,7 @@ class Orders extends State<OrdersScreen> {
                     child: Card(
                         margin: EdgeInsets.all(0),
                         elevation: 8,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(0))),
                         child: CostumersListComponent(
                             onListClick: (value) =>
                                 setState(() => id = value.id)))),

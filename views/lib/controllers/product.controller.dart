@@ -12,6 +12,9 @@ class ProductsController extends ChangeNotifier {
   SnackBar snackbar;
   LoadStatus productsLoadStatus = LoadStatus.loaded; 
   LoadStatus productLoadStatus = LoadStatus.loaded;
+  bool updatePending = false;
+  bool deletePending = false;
+  bool addPending = false;
   Product get product => _product;
   UnmodifiableListView<Product> get products => UnmodifiableListView<Product>(_products);
   ProductsService service = new ProductsService();
@@ -51,22 +54,26 @@ class ProductsController extends ChangeNotifier {
 
   Future<Response> addProduct() async {
     productLoadStatus = LoadStatus.loading;
+    addPending = true;
+    notifyListeners();
     try {
       var res = await service.addProduct(product);
       productLoadStatus = LoadStatus.loaded;
       if (!res.success) throw res;
-      getProducts();
       return res;
     } catch (e) {
       productLoadStatus = LoadStatus.failed;
       throw e;
     } finally {
+      addPending = false;
       notifyListeners();
     }
   }
 
   Future<Response> removeProduct() async {
     productLoadStatus = LoadStatus.loading;
+    deletePending = true;
+    notifyListeners();
     try {
       _products.remove(_product);
       var res = await service.removeProduct(product.id);
@@ -78,22 +85,25 @@ class ProductsController extends ChangeNotifier {
       productLoadStatus = LoadStatus.failed;
       throw e;
     } finally {
+      deletePending = false;
       notifyListeners();
     }
   }
 
   Future<Response> updateProduct() async {
     productLoadStatus = LoadStatus.loading;
+    updatePending = true;
+    notifyListeners();
     try {
       var res = await service.updateProduct(product);
       productLoadStatus = LoadStatus.loaded;
       if (!res.success) throw res;
-      getProducts();
       return res;
     } catch (e) {
       productLoadStatus = LoadStatus.failed;
       throw e;
     } finally {
+      updatePending = false;
       notifyListeners();
     }
   }

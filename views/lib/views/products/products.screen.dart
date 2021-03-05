@@ -27,19 +27,19 @@ class Products extends State<ProductsScreen> {
       ?  ChangeNotifierProvider(
         create: (context) => ProductsController(),
         child: Scaffold(
-          drawer: ComiesDrawer(),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
 
-          appBar: AppBar(
-            title: Text('Produtos'), elevation: 8
-          ),
+          bottomNavigationBar: NavigationBar(),
 
           body: isBigScreen()
               ? Row(children: [
                   Expanded(flex: 35,
                     child: Card(
-                      elevation: 2, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
-                      child: ProductsListComponent(),
-                    )),
+                        margin: EdgeInsets.all(0),
+                        elevation: 8,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(0))),
+                        child: ProductsListComponent())
+                  ),
                   Expanded(flex: 65, child: Center(child: Container(child: ProductFormComponent())))
                 ])
               : Container(

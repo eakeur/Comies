@@ -102,3 +102,33 @@ class NullResultWidget extends StatelessWidget {
     );
   }
 }
+
+
+
+
+class AsyncButton extends StatelessWidget {
+  final String text;
+  final Icon icon;
+  final ButtonStyle style;
+  final Function onPressed;
+  final bool isLoading;
+
+  AsyncButton({this.text, this.icon, this.style, this.onPressed, this.isLoading});
+  @override
+  Widget build(BuildContext context) {
+    var button;
+    if (text != null && icon == null) button = ElevatedButton(onPressed: onPressed, child: Text(text), style: style);
+    if (text != null && icon != null) button = ElevatedButton.icon(onPressed: onPressed, label: Text(text), icon: icon, style: style);
+    if (text == null && icon != null) button = IconButton(icon: icon, onPressed: onPressed);
+    
+    return AnimatedSwitcher(
+      duration: Duration(milliseconds: 400),
+      switchInCurve: Curves.easeInBack,
+      switchOutCurve: Curves.easeOutBack,
+      transitionBuilder: (child, animation) => SizeTransition(child: child, sizeFactor: animation, axis: Axis.horizontal),
+      child: isLoading 
+        ? Container(width: 55, height: 55, child: CircularProgressIndicator(), padding: EdgeInsets.all(10), key: ValueKey(1)) 
+        : Container(height: 55, child:Center(child: button), key: ValueKey(2)),
+    );
+  }
+}

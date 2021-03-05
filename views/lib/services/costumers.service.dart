@@ -30,7 +30,6 @@ class CostumersService extends GeneralService<Costumer> {
       }
       return costm;
     } catch (e) {
-      notify(res, _context);
       return [];
     }
   }

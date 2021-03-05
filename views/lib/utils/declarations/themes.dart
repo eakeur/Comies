@@ -8,14 +8,18 @@ ThemeData mainTheme(Brightness brightness) {
     primaryColor: Colors.deepOrange,
     fontFamily: "Poppins",
     appBarTheme: AppBarTheme(color: Colors.deepOrange, centerTitle: true, elevation: 20, systemOverlayStyle: SystemUiOverlayStyle.dark),
+    bottomAppBarTheme: BottomAppBarTheme(elevation: 8, shape: CircularNotchedRectangle()),
     accentColor: Colors.yellow[800],
+
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
+        elevation: MaterialStateProperty.all(1.5),
         minimumSize: MaterialStateProperty.all(Size(90, 45)),
         visualDensity: VisualDensity.comfortable,
         shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.0)))
       )
     ),
+
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: ButtonStyle(
         minimumSize: MaterialStateProperty.all(Size(90, 45)),
@@ -23,6 +27,12 @@ ThemeData mainTheme(Brightness brightness) {
         shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.0), side: BorderSide(color: Colors.deepOrange)))
       )
     ),
+
+    snackBarTheme: SnackBarThemeData(
+      elevation: 7,
+      shape: RoundedRectangleBorder()
+    ),
+
     accentColorBrightness: Brightness.light,
     floatingActionButtonTheme: FloatingActionButtonThemeData(
         hoverColor: Colors.deepOrange, focusColor: Colors.deepOrange),
@@ -47,6 +57,5 @@ ButtonStyle successButton = ButtonStyle(
 );
 
 ButtonStyle dangerButton = ButtonStyle(
-  shape: MaterialStateProperty.all(RoundedRectangleBorder(side: BorderSide(color: Colors.red[600]))),
   backgroundColor: MaterialStateProperty.all(Colors.red[600])
 );

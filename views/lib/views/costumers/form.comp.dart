@@ -1,6 +1,7 @@
 import 'package:comies/components/async.comp.dart';
 import 'package:comies/services/costumers.service.dart';
 import 'package:comies/utils/declarations/environment.dart';
+import 'package:comies/utils/declarations/themes.dart';
 import 'package:comies/utils/validators.dart';
 import 'package:comies_entities/comies_entities.dart';
 import 'package:flutter/material.dart';
@@ -402,6 +403,7 @@ class CostumerForm extends State<CostumerFormComponent> {
       Row(
         children: [
           ElevatedButton.icon(
+            style: successButton,
             onPressed: onSave,
             icon: Icon(Icons.save),
             label: Text(hasID() ? "Atualizar" : "Salvar"),

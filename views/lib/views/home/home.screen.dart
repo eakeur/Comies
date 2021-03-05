@@ -10,23 +10,12 @@ class HomeScreen extends StatefulWidget {
 
 class Home extends State<HomeScreen> {
   
-
-  PreferredSizeWidget appBar() {
-    return AppBar(
-      title: Text("Home"),
-    );
-  }
-
-
+  
   @override
   Widget build(BuildContext context) {
     return session.isAuthenticated() ? Scaffold(
-      drawer: ComiesDrawer(),
-      body: Center(),
-      bottomNavigationBar: Container(
-        height: 60,
-        child: appBar(),
-      ),
-    ) : session.goToAuthenticationScreen();
+      bottomNavigationBar: NavigationBar(),
+      body: Hero(tag:"home", child: Text("Hello")), 
+    ): session.goToAuthenticationScreen();
   }
 }

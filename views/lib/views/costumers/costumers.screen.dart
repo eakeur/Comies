@@ -24,9 +24,8 @@ class Costumers extends State<CostumersScreen> {
   @override
   Widget build(BuildContext context) {
     return session.isAuthenticated() ? Scaffold(
-        drawer: ComiesDrawer(),
-        //The top bar app
-        appBar: AppBar(title: Text('Clientes'), elevation: 8),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+        bottomNavigationBar: NavigationBar(),
         //The body of the app
         body: isBigScreen()
             ? Row(children: [
@@ -34,6 +33,7 @@ class Costumers extends State<CostumersScreen> {
                     flex: 35,
                     child: Card(
                         margin: EdgeInsets.all(0),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(0))),
                         elevation: 8,
                         child: CostumersListComponent(
                             onListClick: (value) =>

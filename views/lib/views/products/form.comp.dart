@@ -5,7 +5,6 @@ import 'package:comies/components/titlebox.comp.dart';
 import 'package:comies/controllers/product.controller.dart';
 import 'package:comies/utils/declarations/environment.dart';
 import 'package:comies/utils/declarations/themes.dart';
-import 'package:comies/utils/notifier.dart';
 import 'package:comies_entities/comies_entities.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -25,19 +24,21 @@ class ProductForm extends State<ProductFormComponent> {
 
   TextEditingController unityController = new TextEditingController();
 
-  LoadStatus status;
+  bool loaded = true;
 
   bool isBigScreen() => MediaQuery.of(context).size.width > widthDivisor;
 
   void onSave() => Provider.of<ProductsController>(context, listen: false).addProduct()
-    .then((value) => ScaffoldMessenger.of(context).showSnackBar(ResponseBar(value.notifications[0])))
-    .catchError((value) => ScaffoldMessenger.of(context).showSnackBar(ResponseBar(value.notifications[0])));
+    .then((value) => ScaffoldMessenger.of(context).showSnackBar(ResponseBar(value)))
+    .catchError((value) => ScaffoldMessenger.of(context).showSnackBar(ResponseBar(value, action: onSave)));
+    
   void onDelete() => Provider.of<ProductsController>(context, listen: false).removeProduct()
-    .then((value) => ScaffoldMessenger.of(context).showSnackBar(ResponseBar(value.notifications[0])))
-    .catchError((value) => ScaffoldMessenger.of(context).showSnackBar(ResponseBar(value.notifications[0])));
+    .then((value){ScaffoldMessenger.of(context).showSnackBar(ResponseBar(value));if (isBigScreen()) Navigator.pop(context);})
+    .catchError((value) => ScaffoldMessenger.of(context).showSnackBar(ResponseBar(value, action: onDelete)));
+
   void onUpdate() => Provider.of<ProductsController>(context, listen: false).updateProduct()
-    .then((value) => ScaffoldMessenger.of(context).showSnackBar(ResponseBar(value.notifications[0])))
-    .catchError((value) => ScaffoldMessenger.of(context).showSnackBar(ResponseBar(value.notifications[0])));
+    .then((value) => ScaffoldMessenger.of(context).showSnackBar(ResponseBar(value)))
+    .catchError((value) => ScaffoldMessenger.of(context).showSnackBar(ResponseBar(value, action: onUpdate)));
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +48,7 @@ class ProductForm extends State<ProductFormComponent> {
       return AsyncComponent(
           data: widget.isAddition ? {widget: "new"} : data.product,
           messageIfNullOrEmpty: "Selecione um produto para ver seus detalhes",
-          status: data.productLoadStatus,
+          status: LoadStatus.loaded,
           snackbar: data.snackbar,
           child: widget.isAddition || data.product != null 
             ? Form(
@@ -116,18 +117,20 @@ class ProductForm extends State<ProductFormComponent> {
                       SizedBox(height: 20),
                     ],
                   ),
-                  child
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      if (!widget.isAddition)
+                      AsyncButton(icon: Icon(Icons.delete), text: "EXCLUIR", style: dangerButton, onPressed: onDelete, isLoading: data.deletePending),
+                      SizedBox(width: 20),
+                      AsyncButton(icon: Icon(Icons.save), text: "SALVAR", style: successButton, 
+                      onPressed: widget.isAddition ? onSave : onUpdate, 
+                      isLoading: widget.isAddition ? data.addPending : data.updatePending),
+                  ])
           ]))
           : Center()
         );
       },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          if (!widget.isAddition) OutlinedButton.icon(onPressed: onDelete, icon: Icon(Icons.delete), label: Text("EXCLUIR")),
-          SizedBox(width: 20),
-          ElevatedButton(onPressed: !widget.isAddition ? onUpdate : onSave, child: Text(!widget.isAddition ? "ATUALIZAR" : "SALVAR"), style: successButton) 
-      ]),
     );
   }
 }
