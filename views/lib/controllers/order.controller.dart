@@ -50,6 +50,8 @@ class OrderController extends ChangeNotifier {
 
   bool get areDetailsValid => order.payment != null && order.deliverType != null;
 
+  double get totalPrice => _order.items.fold(0.00, (previousValue, element) => previousValue + (element.quantity * element.product.price));
+
 
 
   String get paymentMethodText {
@@ -74,7 +76,7 @@ class OrderController extends ChangeNotifier {
 
   Future<Response> addOrder(){
     _order.placed = DateTime.now();
-    _order.price = _order.items.fold(0.00, (previousValue, element) => previousValue + (element.quantity * element.product.price));
+    _order.price = totalPrice;
     return service.add(order);
   }
 

@@ -67,18 +67,18 @@ class OrderForm extends State<OrderFormComponent> {
         Step(
             state: getCostumerStepState(true),
             title: TitleBox('Selecione ou adicione um cliente'),
-            content: SizedBox(height: 600,
+            content: SizedBox(height: 400,
               child: CostumerSelection())),
         Step(
           state: getProductsStepState(true),
           title: TitleBox('Selecione os produtos do pedido'),
-          content: SizedBox(height: 600, 
+          content: SizedBox(height: 400, 
             child: ProductsSelection())),
         
         Step(
           state: getProductsStepState(true),
           title: TitleBox('Detalhes do pedido'),
-          content: SizedBox(height: 600, 
+          content: SizedBox(height: 400, 
             child: OrderRevisionComponent())),
         ],
       )
@@ -243,8 +243,12 @@ class ProductSelectedListComponent extends StatelessWidget {
   Widget build(BuildContext context) {
     bool isBigScreen = MediaQuery.of(context).size.width > widthDivisor;
     return Consumer<OrderController>(builder: (context, data, child) {
-      return data.itemsGroups.isNotEmpty
-          ? Column(children: [
+      return Column(
+        children: [
+          Container(
+            height: 350,
+            child: data.itemsGroups.isNotEmpty
+          ? ListView(children: [
               TitleBox("No carrinho", paint: !isBigScreen),
               for (var group in data.itemsGroups)
                 Column(
@@ -272,7 +276,17 @@ class ProductSelectedListComponent extends StatelessWidget {
               children: [
                 Center(child: Text("Nenhum produto selecionado ainda"))
               ],
-            );
+            ),
+          ),
+          Container(
+            height: 50,
+            child: ListTile(
+              title: Text("TOTAL: R\$ "+data.totalPrice.toString()),
+              leading: Icon(Icons.add_chart)
+            )
+          )
+        ],
+      );  
     });
   }
 }
@@ -371,7 +385,7 @@ class _OrderRevisionComponentState extends State<OrderRevisionComponent> {
     void onListClick(Costumer costumer) => Provider.of<OrderController>(context, listen: false).setCostumer(costumer);
 
   Widget getDetailed(OrderController pr){
-    return Column(
+    return ListView(
       children:[
         TitleBox("RESUMO DO PEDIDO"),
         if (pr.costumer != null)ListTile(
@@ -428,6 +442,12 @@ class _OrderRevisionComponentState extends State<OrderRevisionComponent> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(16))),
                 child: ProductSelectedListComponent(),
+              ),
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(16))),
+                child: getDetailed(data),
               )
             ],
             options: CarouselOptions(
@@ -452,33 +472,39 @@ class OrderPaymentComponent extends StatelessWidget {
     TextEditingController paymentMethodC = new TextEditingController();
     return Consumer<OrderController>(
       builder: (context, data, child){
-        return Column(
-          children: [
-            SelectFormField(
-              decoration: InputDecoration(labelText: "Forma de pagamento", suffixIcon: Icon(Icons.payment)),
-              enableSearch: true,
-              enableInteractiveSelection: true,
-              enableSuggestions: true,
-              controller: paymentMethodC,
-              onChanged: (value) => data.setPaymentMethod(PaymentMethod.values[int.tryParse(value)]),
-              items: [{"label": "Dinheiro", "value": "0"}, {"label": "Débito", "value": "1"}, 
-                {"label": "Crédito", "value": "2"}, {"label": "Pix", "value": "3"}, {"label": "Transferência", "value": "4"}],
-            ),
-            RadioListTile<DeliverType>(
-              title: Text("Retirada", style: Theme.of(context).textTheme.caption),
-              value: DeliverType.takeout,
-              groupValue: data.order.deliverType,
-              activeColor: Theme.of(context).accentColor,
-              onChanged: (value) => data.setDeliverType(value),
-            ),
-            RadioListTile<DeliverType>(
-              title: Text("Entrega", style: Theme.of(context).textTheme.caption),
-              value: DeliverType.delivery,
-              groupValue: data.order.deliverType,
-              activeColor: Theme.of(context).accentColor,
-              onChanged: (value) => data.setDeliverType(value),
-            )
-          ],
+        return Container(
+          padding: EdgeInsets.all(10),
+          child:Column(
+            children: [
+              TitleBox("Forma de pagamento"),
+              SelectFormField(
+                decoration: InputDecoration(labelText: "Forma de pagamento", suffixIcon: Icon(Icons.payment)),
+                enableSearch: true,
+                enableInteractiveSelection: true,
+                enableSuggestions: true,
+                controller: paymentMethodC,
+                onChanged: (value) => data.setPaymentMethod(PaymentMethod.values[int.tryParse(value)]),
+                items: [{"label": "Dinheiro", "value": "0"}, {"label": "Débito", "value": "1"}, 
+                  {"label": "Crédito", "value": "2"}, {"label": "Pix", "value": "3"}, {"label": "Transferência", "value": "4"}],
+              ),
+              SizedBox(height: 20),
+              TitleBox("Tipo de entrega"),
+              RadioListTile<DeliverType>(
+                title: Text("Retirada", style: Theme.of(context).textTheme.caption),
+                value: DeliverType.takeout,
+                groupValue: data.order.deliverType,
+                activeColor: Theme.of(context).accentColor,
+                onChanged: (value) => data.setDeliverType(value),
+              ),
+              RadioListTile<DeliverType>(
+                title: Text("Entrega", style: Theme.of(context).textTheme.caption),
+                value: DeliverType.delivery,
+                groupValue: data.order.deliverType,
+                activeColor: Theme.of(context).accentColor,
+                onChanged: (value) => data.setDeliverType(value),
+              )
+            ],
+          )
         );
       }
     );
