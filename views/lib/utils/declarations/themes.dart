@@ -37,14 +37,19 @@ ThemeData mainTheme(Brightness brightness) {
     floatingActionButtonTheme: FloatingActionButtonThemeData(
         hoverColor: Colors.deepOrange, focusColor: Colors.deepOrange),
     primaryColorDark: Colors.deepOrange[800],
+
+
     inputDecorationTheme: InputDecorationTheme(
-      border: UnderlineInputBorder(),
+      filled: true,
       contentPadding: EdgeInsets.only(
         left: 15,
         bottom: 5,
       ),
       focusColor: Colors.yellow[800],
     ),
+
+
+
     toggleButtonsTheme:
         ToggleButtonsThemeData(selectedColor: Colors.yellow[800]),
   );

@@ -1,3 +1,4 @@
+import 'package:comies_entities/comies_entities.dart';
 import 'package:comies_entities/src/costumer.dart';
 
 class Address {
@@ -12,4 +13,5 @@ class Address {
   String state;
   String country;
   Costumer costumer;
+  List<Order> orders;
 }

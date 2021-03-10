@@ -67,24 +67,6 @@ var CostumerController = /** @class */ (function () {
             });
         });
     };
-    CostumerController.prototype.getCostumersByPhone = function (operator, phone) {
-        return __awaiter(this, void 0, void 0, function () {
-            var service;
-            return __generator(this, function (_a) {
-                service = new costumer_service_1.default(operator);
-                return [2 /*return*/, service.getCostumersByPhone(phone)];
-            });
-        });
-    };
-    CostumerController.prototype.getCostumers = function (operator, params) {
-        return __awaiter(this, void 0, void 0, function () {
-            var service;
-            return __generator(this, function (_a) {
-                service = new costumer_service_1.default(operator);
-                return [2 /*return*/, service.getCostumers(params)];
-            });
-        });
-    };
     CostumerController.prototype.addCostumer = function (operator, costumer) {
         return __awaiter(this, void 0, void 0, function () {
             var service;
@@ -103,30 +85,25 @@ var CostumerController = /** @class */ (function () {
             });
         });
     };
-    CostumerController.prototype.removeCostumer = function (operator, id) {
+    CostumerController.prototype.removeCostumer = function (id) {
         return __awaiter(this, void 0, void 0, function () {
             var service;
             return __generator(this, function (_a) {
-                service = new costumer_service_1.default(operator);
+                service = new costumer_service_1.default();
                 return [2 /*return*/, service.removeCostumer(id)];
             });
         });
     };
-    CostumerController.prototype.removePhone = function (operator, id) {
+    CostumerController.prototype.getCostumers = function (operator, params) {
         return __awaiter(this, void 0, void 0, function () {
-            var service;
+            var service, costumerQuery, phoneQuery;
             return __generator(this, function (_a) {
                 service = new costumer_service_1.default(operator);
-                return [2 /*return*/, service.removePhone(id)];
-            });
-        });
-    };
-    CostumerController.prototype.removeAddress = function (operator, id) {
-        return __awaiter(this, void 0, void 0, function () {
-            var service;
-            return __generator(this, function (_a) {
-                service = new costumer_service_1.default(operator);
-                return [2 /*return*/, service.removeAddress(id)];
+                costumerQuery = params;
+                phoneQuery = params;
+                if (phoneQuery.number)
+                    return [2 /*return*/, service.getCostumersByPhone(phoneQuery.number)];
+                return [2 /*return*/, service.getCostumers(costumerQuery)];
             });
         });
     };
@@ -138,22 +115,6 @@ var CostumerController = /** @class */ (function () {
         __metadata("design:paramtypes", [operator_1.default, Number]),
         __metadata("design:returntype", Promise)
     ], CostumerController.prototype, "getCostumerById", null);
-    __decorate([
-        routing_controllers_1.Authorized('getCostumers'),
-        routing_controllers_1.Get("/extraget/keys"),
-        __param(0, routing_controllers_1.CurrentUser({ required: true })), __param(1, routing_controllers_1.QueryParam("phone")),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [operator_1.default, String]),
-        __metadata("design:returntype", Promise)
-    ], CostumerController.prototype, "getCostumersByPhone", null);
-    __decorate([
-        routing_controllers_1.Authorized('getCostumers'),
-        routing_controllers_1.Get(""),
-        __param(0, routing_controllers_1.CurrentUser({ required: true })), __param(1, routing_controllers_1.QueryParams()),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [operator_1.default, costumer_1.default]),
-        __metadata("design:returntype", Promise)
-    ], CostumerController.prototype, "getCostumers", null);
     __decorate([
         routing_controllers_1.Authorized('addCostumers'),
         routing_controllers_1.Post(""),
@@ -173,32 +134,21 @@ var CostumerController = /** @class */ (function () {
         __metadata("design:returntype", Promise)
     ], CostumerController.prototype, "updateCostumer", null);
     __decorate([
-        routing_controllers_1.Authorized('removeCostumers'),
         routing_controllers_1.Delete("/:id"),
         routing_controllers_1.UseBefore(body_parser_1.json()),
-        __param(0, routing_controllers_1.CurrentUser({ required: true })), __param(1, routing_controllers_1.Param("id")),
+        __param(0, routing_controllers_1.Param("id")),
         __metadata("design:type", Function),
-        __metadata("design:paramtypes", [operator_1.default, Number]),
+        __metadata("design:paramtypes", [Number]),
         __metadata("design:returntype", Promise)
     ], CostumerController.prototype, "removeCostumer", null);
     __decorate([
-        routing_controllers_1.Authorized('removePhones'),
-        routing_controllers_1.Delete("/phones/:id"),
-        routing_controllers_1.UseBefore(body_parser_1.json()),
-        __param(0, routing_controllers_1.CurrentUser({ required: true })), __param(1, routing_controllers_1.Param("id")),
+        routing_controllers_1.Authorized('getCostumers'),
+        routing_controllers_1.Get(""),
+        __param(0, routing_controllers_1.CurrentUser({ required: true })), __param(1, routing_controllers_1.QueryParams()),
         __metadata("design:type", Function),
-        __metadata("design:paramtypes", [operator_1.default, Number]),
+        __metadata("design:paramtypes", [operator_1.default, Object]),
         __metadata("design:returntype", Promise)
-    ], CostumerController.prototype, "removePhone", null);
-    __decorate([
-        routing_controllers_1.Authorized('removeAddresses'),
-        routing_controllers_1.Delete("/addresses/:id"),
-        routing_controllers_1.UseBefore(body_parser_1.json()),
-        __param(0, routing_controllers_1.CurrentUser({ required: true })), __param(1, routing_controllers_1.Param("id")),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [operator_1.default, Number]),
-        __metadata("design:returntype", Promise)
-    ], CostumerController.prototype, "removeAddress", null);
+    ], CostumerController.prototype, "getCostumers", null);
     CostumerController = __decorate([
         routing_controllers_1.Controller("/costumers")
     ], CostumerController);

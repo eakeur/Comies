@@ -30,4 +30,8 @@ export enum Status {
     finished = 6
 }
 
-enum Permission { get, put, add, del }
+export enum PaymentMethod {cash, debit, credit, pix, transference}
+
+export enum DeliverType {takeout, delivery}
+
+export enum Permission { get, put, add, del }

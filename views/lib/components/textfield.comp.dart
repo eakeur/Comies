@@ -1,3 +1,4 @@
+import 'package:comies/utils/declarations/environment.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -50,6 +51,41 @@ class TextFieldComponentState extends State<TextFieldComponent> {
   // }
 }
 
+class FormGroup extends StatefulWidget {
+  final Map<int, Map<String, List<dynamic>>> build;
+  final Widget title;
+  FormGroup({this.title, this.build});
+  @override
+  _FormGroupState createState() => _FormGroupState();
+}
+
+class _FormGroupState extends State<FormGroup> {
+
+  bool get isBigScreen => MediaQuery.of(context).size.width > widthDivisor - 150;
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      child: Column(
+        children: [
+          widget.title,
+          for (var row in widget.build.keys) isBigScreen 
+           ? Row(children: [
+            for (var field in widget.build[row]['fields']) 
+              Expanded(flex: widget.build[row]['spaces'][widget.build[row]['fields'].indexOf(field)??0] ?? 100,
+              child: Container(child: field, margin: EdgeInsets.only(left: 5, right: 5, bottom: 5)),
+            ),
+          ])
+          : Column(children: [
+            for (var field in widget.build[row]['fields']) 
+              Container(child: field, margin: EdgeInsets.only(left: 5, right: 5, bottom: 5))
+          ])
+        ]
+      )
+    );
+  }
+}
+
 class SearchBarComponent extends StatefulWidget {
 
   final Function onSearchTap;
@@ -81,6 +117,7 @@ class SearchBarState extends State<SearchBarComponent> {
         border: UnderlineInputBorder(),
         prefixIcon: filter.icon == null ? null : Icon(filter.icon),
         labelText: filter.fieldName,
+        filled: false,
         suffixIcon: controllers[filter.fieldName].text != "" 
           ? IconButton(onPressed: (){controllers[filter.fieldName].clear(); setState(() {});}, icon: Icon(Icons.close)) 
           : null 
@@ -99,6 +136,7 @@ class SearchBarState extends State<SearchBarComponent> {
       onFieldSubmitted: (s) => widget.onSearchTap(),
       decoration: InputDecoration(
         border: UnderlineInputBorder(),
+        filled: false,
         prefixIcon: params.icon == null ? null : Icon(params.icon),
         labelText: params.fieldName,
         suffixIcon: Row(

@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var typeorm_1 = require("typeorm");
 var costumer_1 = __importDefault(require("./costumer"));
+var order_1 = __importDefault(require("./order"));
 var Address = /** @class */ (function () {
     function Address() {
     }
@@ -58,9 +59,13 @@ var Address = /** @class */ (function () {
         __metadata("design:type", String)
     ], Address.prototype, "country", void 0);
     __decorate([
-        typeorm_1.ManyToOne(function () { return costumer_1.default; }, function (costumer) { return costumer.addresses; }, { eager: true }),
+        typeorm_1.ManyToOne(function () { return costumer_1.default; }, function (costumer) { return costumer.addresses; }),
         __metadata("design:type", costumer_1.default)
     ], Address.prototype, "costumer", void 0);
+    __decorate([
+        typeorm_1.OneToMany(function () { return order_1.default; }, function (order) { return order.address; }),
+        __metadata("design:type", Array)
+    ], Address.prototype, "orders", void 0);
     Address = __decorate([
         typeorm_1.Entity()
     ], Address);

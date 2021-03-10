@@ -12,4 +12,22 @@ enum Status {
   finished
 }
 
-enum LoadStatus { loading, loaded, failed }
+enum PaymentMethod {cash, debit, credit, pix, transference}
+
+enum DeliverType {takeout, delivery}
+
+enum LoadStatus { loading, loaded, failed, waitingStart }
+
+enum ConfigKey {
+
+    allowStoresToAddProducts,
+    allowStoresToChangeProducts,
+    allowDividedUnity,
+}
+
+enum ConfigValue {
+    Allowed,
+    NotAllowed,
+    HalvesOnly,
+    ThirdAndHalvesOnly
+}

@@ -4,13 +4,10 @@ import express from 'express';
 import {Action, createExpressServer, useExpressServer} from 'routing-controllers';
 import CostumerController from './controllers/costumer.controller';
 import ProductController from './controllers/product.controller';
-import OperatorService from './services/operator.service';
 import OrderController from './controllers/order.controller';
 import OperatorController from './controllers/operator.controller';
-import https from 'https';
-import fs from 'fs';
 import servefiles from "serve-static";
-import path from 'path';
+import AuthenticationController from './controllers/authentication.controller';
 
 class ServerInitializer {
 
@@ -33,10 +30,10 @@ class ServerInitializer {
         const port = process.env.port || 8080;
         useExpressServer(express().use("/", servefiles("public")), {
             cors: true,
-            currentUserChecker: (action: Action) => new OperatorService().getOperatorByToken(action),
+            currentUserChecker: (action: Action) => new AuthenticationController().getOperatorByToken(action),
             classTransformer:true,
-            authorizationChecker:  (action: Action, roles: any[]) => new OperatorService().authorizeOperator(action, roles),
-            controllers: [CostumerController, ProductController, OrderController, OperatorController]
+            authorizationChecker:  (action: Action, roles: any[]) => new AuthenticationController().authorizeOperator(action, roles),
+            controllers: [CostumerController, ProductController, OrderController, OperatorController, AuthenticationController]
         }).listen(port);
         console.log(`Comies server started on port ${port}`);
     }

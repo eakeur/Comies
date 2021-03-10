@@ -1,7 +1,10 @@
 import 'package:comies/components/async.comp.dart';
-import 'package:comies/services/costumers.service.dart';
+import 'package:comies/components/responsebar.comp.dart';
+import 'package:comies/components/textfield.comp.dart';
+import 'package:comies/controllers/costumer.controller.dart';
 import 'package:comies_entities/comies_entities.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CostumersListComponent extends StatefulWidget {
   final Function(Costumer) onListClick;
@@ -16,110 +19,65 @@ class CostumersListComponent extends StatefulWidget {
 }
 
 class CostumersList extends State<CostumersListComponent> {
-  TextEditingController searchController = new TextEditingController();
-  CostumersService service = new CostumersService();
-  List<Costumer> costumers = [];
-  Costumer filter = new Costumer();
-  LoadStatus status;
+  bool searchByPhone = false;
 
-  void onSearchTap({setLoading = false}) {
-    if (setLoading) setState(() => status = LoadStatus.loading);
-    try{
-      if (searchController.text.trim() == '') throw Exception();
-      int.tryParse(searchController.text.substring(0, searchController.text.length > 4 ? 4 : searchController.text.length));
-      service.getCostumersByPhone(searchController.text).then((value) => setState(() {
-          costumers = value;
-          status = LoadStatus.loaded;
-        }));
-    } catch(e){
-      service.getCostumers(filter).then((value) => setState(() {
-          costumers = value;
-          status = LoadStatus.loaded;
-        }));
-    }
+  void onSearchTap() {
+    searchByPhone
+      ? Provider.of<CostumerController>(context, listen: false).getCostumersByPhone()
+      .catchError((value){ScaffoldMessenger.of(context).showSnackBar(ResponseBar(value));})
+      : Provider.of<CostumerController>(context, listen: false).getCostumers()
+      .catchError((value){ScaffoldMessenger.of(context).showSnackBar(ResponseBar(value));});
   }
 
-  @override
-  void didUpdateWidget(CostumersListComponent oldWidget){
-    onSearchTap();
-    super.didUpdateWidget(oldWidget);
-  }
 
-  @override
-  void initState() {
-    onSearchTap(setLoading: true);
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
-    service.setContext(context);
     return ListView(
       children: [
-        Container(
-          padding: EdgeInsets.all(5),
-          child: TextFormField(
-            controller: searchController,
-            onChanged: (change) => filter.name = change,
-            onFieldSubmitted: (change) {
-              filter.name = change;
-              onSearchTap();
-            },
-            decoration: InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: "Pesquisar",
-              helperText: "Pesquise por um nome ou telefone",
-              suffixIcon: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (searchController.text != "")
-                    IconButton(
-                      icon: Icon(Icons.close),
-                      onPressed: () {
-                        searchController.text = "";
-                        filter.name = "";
-                        onSearchTap();
-                      },
-                    ),
-                  IconButton(
-                    icon: Icon(Icons.filter_alt),
-                    onPressed: null,
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.search),
-                    onPressed: onSearchTap,
-                  ),
-                ],
+        SearchBarComponent(
+          onSearchTap: onSearchTap,
+          filters: [SearchFilter(null, "Pesquisar", (s) {
+            searchByPhone = int.tryParse(s)!=null ? true : false;
+            searchByPhone 
+              ? Provider.of<CostumerController>(context, listen: false).phoneQuery.number = s
+              : Provider.of<CostumerController>(context, listen: false).costumerQuery.name = s;
+          })],
+        ),
+        Consumer<CostumerController>(
+          builder: (context, data, child){
+            return AsyncComponent(
+              initialMessage: "Pesquise o nome ou o número de telefone de um cliente para achá-lo.",
+              data: data.costumers,
+              status: data.costumersLoadStatus,
+              messageIfNullOrEmpty: "Ops! Não encontramos nenhum cliente! Tente especificar os filtros acima.",
+              child: Container(
+                child: Column(
+                  children: ListTile.divideTiles(
+                    context: context,
+                    tiles: [
+                      for (var cost in data.costumers)
+                        ListTile(
+                          title: Text("${cost.name}"),
+                          onTap: (){
+                            data.setCostumer(cost); 
+                            if (widget.onListClick != null)widget.onListClick(cost);
+                          },
+                          trailing: IconButton(
+                            icon: Icon(Icons.arrow_right),
+                            onPressed: (){
+                              data.setCostumer(cost); 
+                              if (widget.onListClick != null)widget.onListClick(cost);
+                            },
+                          ),
+                        ),
+                    ],
+                  ).toList(),
+                ),
               ),
-            ),
-          ),
-        ),
-        AsyncComponent(
-          data: costumers,
-          status: status,
-          messageIfNullOrEmpty:
-              "Ops! Não encontramos nenhum cliente! Tente especificar os filtros acima.",
-          child: Container(
-            child: Column(
-              children: ListTile.divideTiles(
-                context: context,
-                tiles: [
-                  for (var cost in costumers)
-                    ListTile(
-                      title: Text("${cost.name}"),
-                      onTap: (){
-                        widget.onListClick(cost);
-                      },
-                      trailing: IconButton(
-                        icon: Icon(Icons.arrow_right),
-                        onPressed: () => widget.onListClick(cost),
-                      ),
-                    ),
-                ],
-              ).toList(),
-            ),
-          ),
-        ),
+            );
+          },
+        )
       ],
     );
   }

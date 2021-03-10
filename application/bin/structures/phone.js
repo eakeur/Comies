@@ -30,7 +30,7 @@ var Phone = /** @class */ (function () {
         __metadata("design:type", String)
     ], Phone.prototype, "number", void 0);
     __decorate([
-        typeorm_1.ManyToOne(function () { return costumer_1.default; }, function (costumer) { return costumer.phones; }, { eager: true }),
+        typeorm_1.ManyToOne(function () { return costumer_1.default; }, function (costumer) { return costumer.phones; }),
         __metadata("design:type", costumer_1.default)
     ], Phone.prototype, "costumer", void 0);
     Phone = __decorate([

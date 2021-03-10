@@ -1,134 +1,123 @@
 import 'dart:convert';
 import 'package:comies/main.dart';
 import 'package:comies_entities/comies_entities.dart';
-import 'package:flutter/material.dart' as flutter;
-import 'package:comies/utils/declarations/environment.dart';
-import 'package:http/http.dart' as service;
+import 'package:http/http.dart' show get, put, post, delete;
 
-class GeneralService<T> {
+
+class Service<T> {
   String _url;
 
   set path(String path) => _url = '${session.server}/$path';
 
-  Map<String, String> headers = new Map<String, String>();
+  Map<String, String> _headers = new Map<String, String>();
 
-  GeneralService() {
-    _url = session.server;
+  Map<String, dynamic> Function(T) serializer;
+  T Function(Map<String, dynamic>) deserializer;
+
+  Service(String endpoint, this.serializer, this.deserializer) {
+    path = endpoint;
   }
 
-  @flutter.protected
-  void notify(Response response, dynamic context) {
-    bool isBigScreen() => flutter.MediaQuery.of(context).size.width > widthDivisor;
-    for (var not in response.notifications) {
-      flutter.ScaffoldMessenger.of(context).showSnackBar(
-        flutter.SnackBar(
-          content: isBigScreen() ? flutter.Text(not.message, style: flutter.TextStyle(fontSize: 20)) : null,
-          duration: Duration(seconds: 3),
-          action: not.action != null
-              ? flutter.SnackBarAction(
-                  label: not.action.name,
-                  onPressed: () =>
-                      flutter.Navigator.pushNamed(context, not.action.href))
-              : null,
-        ),
-      );
-    }
-  }
-
-  @flutter.protected
-  Future<Response> add(Map<String, dynamic> data) async {
+  Future<Response<void>> add(T object) async {
     try {
       _setHeaders();
-      String body = jsonEncode(data);
-
-      service.Response response =
-          await service.post(this._url, headers: this.headers, body: body);
-      return _dealWithResponse(response);
+      String body = jsonEncode(serializer(object));
+      var response = await post(_url, headers: _headers, body: body);
+      return _dealWithResponse<void>(response);
     } catch (e) {
-      print(e);
-      return new Response(notifications: [
-        Notification(message: "Opa! Um erro desconhecido occorreu.")
-      ], success: false);
+      if (e is Response) throw e;
+      throw  _getErrorResponse(null);
     }
   }
 
-  @flutter.protected
-  Future<Response> get({String query}) async {
+  Future<Response<void>> addMany(List<T> object) async {
     try {
       _setHeaders();
-      service.Response  response = await service.get(
-          this._url + "${query == null ? '' : query}",
-          headers: this.headers);
-      return _dealWithResponse(response);
+      String body = jsonEncode(object.map((obj) => serializer(obj)).toList());
+      var response = await post(_url, headers: _headers, body: body);
+      return _dealWithResponse<void>(response);
     } catch (e) {
-      print(e);
-      return new Response(notifications: [
-        Notification(message: "Opa! Um erro desconhecido occorreu.")
-      ], success: false);
+      if (e is Response) throw e;
+      throw  _getErrorResponse(null);
     }
   }
 
-  @flutter.protected
-  Future<Response> getOne(dynamic key) async {
+  Future<Response<void>> remove(int id) async {
     try {
       _setHeaders();
-      service.Response  response =
-          await service.get(this._url + '/$key', headers: this.headers);
-      return _dealWithResponse(response);
+      var response = await delete('$_url/$id', headers: _headers);
+      return _dealWithResponse<void>(response);
     } catch (e) {
-      print(e);
-      return new Response(notifications: [
-        Notification(message: "Opa! Um erro desconhecido occorreu.")
-      ], success: false);
+      if (e is Response) throw e;
+      throw  _getErrorResponse(null);
     }
   }
 
-  @flutter.protected
-  Future<Response> update(Map<String, dynamic> data) async {
+  Future<Response<void>> removeMany(List<int> ids) async {
     try {
       _setHeaders();
-      String body = jsonEncode(data);
-      service.Response  response =
-          await service.put(this._url, headers: this.headers, body: body);
-      return _dealWithResponse(response);
+      var response = await post('$_url', headers: _headers, body: jsonEncode(ids));
+      return _dealWithResponse<void>(response);
     } catch (e) {
-      print(e);
-      return new Response(notifications: [
-        Notification(message: "Opa! Um erro desconhecido occorreu.")
-      ], success: false);
+      if (e is Response) throw e;
+      throw  _getErrorResponse(null);
     }
   }
 
-  @flutter.protected
-  Future<Response> delete(dynamic id) async {
+  Future<Response<T>> getOne(int id) async {
     try {
       _setHeaders();
-      service.Response  response =
-          await service.delete('${this._url}/$id', headers: this.headers);
-      return _dealWithResponse(response);
+      var response = await get(_url + '/$id', headers: _headers);
+      return _dealWithResponse<T>(response);
     } catch (e) {
-      print(e);
-      return new Response(notifications: [
-        Notification(message: "Opa! Um erro desconhecido occorreu.")
-      ], success: false);
+      if (e is Response) throw e;
+      throw  _getErrorResponse(null);
     }
   }
 
-  @flutter.protected
-  Future<Response> getExternal(String externalURL) async {
+  Future<Response<List<T>>> getMany({Map<String, dynamic> query, T filter}) async {
     try {
-      var resp = await service.get(externalURL);
-      return new Response(success: true, data: resp.body);
+      _setHeaders();
+      String params = filter != null ? _getQueryString(serializer(filter)) : _getQueryString(query) ?? '';
+      var response = await get(_url + "$params", headers: _headers);
+      return _dealWithResponse<List<T>>(response);
     } catch (e) {
-      print(e);
-      return new Response(notifications: [
-        Notification(message: "Opa! Um erro desconhecido occorreu.")
-      ], success: false);
+      if (e is Response) throw e;
+      throw  _getErrorResponse(null);
     }
   }
 
-  @flutter.protected
-  String getQueryString(Map<String, dynamic> map) {
+  Future<Response<void>> update(T object) async {
+    try {
+      _setHeaders();
+      String body = jsonEncode(serializer(object));
+      var response = await put(_url, headers: _headers, body: body);
+      return _dealWithResponse<void>(response);
+    } catch (e) {
+      if (e is Response) throw e;
+      throw  _getErrorResponse(null);
+    }
+  }
+
+  Future<Response<void>> updateMany(List<T> object) async {
+    try {
+      _setHeaders();
+      String body = jsonEncode(object.map((obj) => serializer(obj)).toList());
+      var response = await put(_url, headers: _headers, body: body);
+      return _dealWithResponse<void>(response);
+    } catch (e) {
+      if (e is Response) throw e;
+      throw  _getErrorResponse(null);
+    }
+  }
+  
+  void _setHeaders(){
+    _headers['Authorization'] = session.token;
+    _headers["Accept-Language"] = "pt-BR";
+    _headers["Content-Type"] = "application/json";
+  }
+
+  String _getQueryString(Map<String, dynamic> map) {
     try {
       String query = "";
       map.keys.forEach((key) {
@@ -140,46 +129,66 @@ class GeneralService<T> {
       });
       return query;
     } catch (e) {
-      throw e;
+      return null;
     }
   }
 
-  Response _dealWithResponse(service.Response responseParam) {
+  Response<K> _dealWithResponse<K>(dynamic raw){
     try {
       print(_url);
-      if (responseParam.statusCode == 401 || responseParam.statusCode == 403){
-        return new Response(notifications: [
-        Notification(message: "Opa! Você não tem acesso a esse recurso ou não está autenticado. Por favor, faça seu login novamente", action: {'name': 'Login', 'href': '/authentication'})
-      ], success: false);
+      if (raw.statusCode == 401 || raw.statusCode == 403){
+        return new Response<K>(notification: 
+          Notification(message: "Hmm! Você não tem acesso a esse recurso ou não está autenticado. Por favor, faça seu login novamente", action: {'name': 'Login', 'href': '/authentication'}), success: false);
       }
-      Map<dynamic, dynamic> rets = jsonDecode(responseParam.body);
-      List<Notification> notifs = [];
-      if (rets['notifications'] is List) {
-        if (rets['notifications'].length > 0) {
-          for (var not in rets['notifications']) {
-            notifs.add(
-                Notification(message: not['message'], action: not['action']));
-          }
+      Map<dynamic, dynamic> rets = jsonDecode(raw.body);
+
+      Notification notif;
+      var notifdata = rets["notification"];
+      if (notifdata != null) notif = new Notification(message: rets["notification"]["message"], action: rets["notification"]["action"]);
+      dynamic data;
+      var returnData = rets['data'];
+      if (returnData != null){
+        if (returnData is List){
+          data = returnData.map((e) => deserializer(e)).toList();
+        } else {
+          data = deserializer(returnData);
         }
       }
-      Response response = new Response(
-          data: rets["data"],
+
+      Response<K> response = new Response<K>(
+          data: data,
           access: rets["access"],
-          notifications: notifs,
+          notification: notif,
           success: rets['success']);
 
       if (response.access != null) session.token = response.access;
       return response;
     } catch (e) {
-      return new Response(notifications: [
-        Notification(message: "Opa! Um erro desconhecido occorreu.")
-      ], success: false);
+      return new Response<K>(notification: 
+        Notification(message: "Eita! Um erro desconhecido occorreu.")
+      , success: false);
     }
   }
 
-  void _setHeaders() {
-    this.headers['Authorization'] = session.token;
-    this.headers["Accept-Language"] = "pt-BR";
-    this.headers["Content-Type"] = "application/json";
+  Response<K> _getErrorResponse<K>(int statusCode){
+    switch (statusCode) {
+      case 0: return new Response<K>(notification: Notification(message: "Opa! Um erro desconhecido occorreu."), success: false);
+      case 401: return new Response<K>(notification: Notification(message: "Hmm! Você não tem acesso a esse recurso ou não está autenticado. Por favor, faça seu login novamente", action: {'name': 'Login', 'href': '/authentication'}), success: false);
+      case 403: return new Response<K>(notification: Notification(message: "Hmm! Você não tem acesso a esse recurso ou não está autenticado. Por favor, faça seu login novamente", action: {'name': 'Login', 'href': '/authentication'}), success: false);
+      default: return new Response<K>(notification: Notification(message: "Opa! Um erro desconhecido occorreu."), success: false);
+    }
   }
+
+  static Future<Response<dynamic>> getExternalResource(String url) async {
+    try {
+      var resp = await get(url);
+      print(url);
+      return new Response(success: true, data: jsonDecode(resp.body));
+    } catch (e) {
+      return new Response(notification:
+        Notification(message: "Opa! Um erro desconhecido occorreu.")
+      , success: false);
+    }
+  }
+
 }

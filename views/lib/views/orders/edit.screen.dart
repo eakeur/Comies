@@ -20,7 +20,7 @@ class Order extends State<DetailedOrderScreen> {
   
   @override
   Widget build(BuildContext context) {
-    return session.isAuthenticated() ? Scaffold(
+    return session.isAuthenticated ? Scaffold(
             //The top bar app
             appBar: AppBar(
               title: Text(hasID() ? 'Detalhes' : 'Adicionar'),

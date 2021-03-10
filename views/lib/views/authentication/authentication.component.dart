@@ -1,4 +1,4 @@
-import 'package:comies/services/authentication.service.dart';
+import 'package:comies/controllers/authentication.controller.dart';
 import 'package:comies/utils/declarations/environment.dart';
 import 'package:flutter/material.dart';
 
@@ -35,8 +35,7 @@ class Authentication extends State<AuthenticationComponent> {
 
   void login() {
     FocusScope.of(context).unfocus();
-    AuthenticationService service = new AuthenticationService(context);
-    service
+    new AuthenticationController()
         .login(
             nickname: operatorController.text,
             password: passwordController.text,
@@ -44,8 +43,6 @@ class Authentication extends State<AuthenticationComponent> {
         .then((response) =>
             response.success ? Navigator.pushNamed(context, '/') : null);
   }
-
-  void register() {}
 
   TextFormField passwordField() {
     return TextFormField(

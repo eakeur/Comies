@@ -4,8 +4,9 @@ import PartnerConfiguration from "./partner-configurations";
 import Product from "./product";
 import Store from "./store";
 import ProductItem from "./order-items";
-import { Status } from "./enums";
+import { DeliverType, PaymentMethod, Status } from "./enums";
 import Operator from "./operator";
+import Address from "./address";
 
 @Entity()
 export default class Order {
@@ -18,6 +19,15 @@ export default class Order {
 
     @Column({nullable:false, default:Status.pending})
     status: Status;
+
+    @Column({nullable:false, default:PaymentMethod.cash})
+    payment: PaymentMethod;
+
+    @Column({nullable:false, default:DeliverType.takeout})
+    deliverType: DeliverType;
+
+    @ManyToOne(() => Address, address => address.orders, {cascade: true, eager:true})
+    address: Address;
 
     @ManyToOne(() => Store, store => store.orders)
     store: Store;

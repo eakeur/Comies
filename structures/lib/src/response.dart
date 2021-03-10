@@ -1,12 +1,12 @@
 import 'package:comies_entities/src/notification.dart';
 
-class Response {
+class Response<T> {
   String message;
   bool success;
   String access;
-  dynamic data;
-  List<Notification> notifications;
+  T data;
+  Notification notification;
 
   Response(
-      {this.message, this.success, this.access, this.data, this.notifications});
+      {this.message, this.success, this.access, this.data, this.notification});
 }

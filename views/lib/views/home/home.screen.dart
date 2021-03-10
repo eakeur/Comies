@@ -13,7 +13,7 @@ class Home extends State<HomeScreen> {
   
   @override
   Widget build(BuildContext context) {
-    return session.isAuthenticated() ? Scaffold(
+    return session.isAuthenticated ? Scaffold(
       bottomNavigationBar: NavigationBar(),
       body: Hero(tag:"home", child: Text("Hello")), 
     ): session.goToAuthenticationScreen();

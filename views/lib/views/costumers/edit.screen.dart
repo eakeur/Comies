@@ -1,12 +1,17 @@
-import 'package:comies/main.dart';
+import 'package:comies/components/menu.comp.dart';
+import 'package:comies/components/screen.comp.dart';
+import 'package:comies/controllers/costumer.controller.dart';
 import 'package:comies/utils/declarations/environment.dart';
 import 'package:comies/views/costumers/form.comp.dart';
+import 'package:comies_entities/comies_entities.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DetailedCostumerScreen extends StatefulWidget {
-  final int id;
+  final Costumer costumer;
+  final bool isAddition;
 
-  DetailedCostumerScreen({this.id});
+  DetailedCostumerScreen({this.costumer, this.isAddition = false});
 
   @override
   Detailed createState() => Detailed();
@@ -14,21 +19,24 @@ class DetailedCostumerScreen extends StatefulWidget {
 
 class Detailed extends State<DetailedCostumerScreen> {
 
-  bool isBigScreen() => MediaQuery.of(context).size.width > widthDivisor;
-  bool hasID() => widget.id != null && widget.id != 0;
+  bool get isBigScreen => MediaQuery.of(context).size.width > widthDivisor;
 
   @override
   Widget build(BuildContext context) {
-    return session.isAuthenticated() ? Scaffold(
-            //The top bar app
-            appBar: AppBar(
-              title: Text(hasID() ? 'Detalhes' : 'Adicionar'),
-              elevation: 8
-            ),
+    return ChangeNotifierProvider(
+      create: (context) => CostumerController(costumer: widget.costumer),
+      child: Scaffold(
 
-            //The body of the app
-            body: CostumerFormComponent(id:widget.id, afterDelete:(){Navigator.pop(context);}, afterSave: (){Navigator.pop(context);})
-          ) : session.goToAuthenticationScreen();
+        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+        bottomNavigationBar: NavigationBar(),
+        appBar: AppBar(title: Text("Detalhes")),
+
+        body: Screen(
+          onRefresh: () => new Future(() => setState(() {})),
+          children: [CostumerFormComponent(isAddition: widget.isAddition)]
+        )
+      ),
+    );
   }
 }
 

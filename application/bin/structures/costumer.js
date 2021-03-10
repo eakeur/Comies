@@ -28,11 +28,11 @@ var Costumer = /** @class */ (function () {
         __metadata("design:type", String)
     ], Costumer.prototype, "name", void 0);
     __decorate([
-        typeorm_1.OneToMany(function () { return phone_1.default; }, function (phone) { return phone.costumer; }),
+        typeorm_1.OneToMany(function () { return phone_1.default; }, function (phone) { return phone.costumer; }, { cascade: true, eager: true }),
         __metadata("design:type", Array)
     ], Costumer.prototype, "phones", void 0);
     __decorate([
-        typeorm_1.OneToMany(function () { return address_1.default; }, function (address) { return address.costumer; }),
+        typeorm_1.OneToMany(function () { return address_1.default; }, function (address) { return address.costumer; }, { cascade: true, eager: true }),
         __metadata("design:type", Array)
     ], Costumer.prototype, "addresses", void 0);
     __decorate([

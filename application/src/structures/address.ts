@@ -1,5 +1,6 @@
-import {Entity, PrimaryGeneratedColumn, Column, ManyToOne} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany} from "typeorm";
 import Costumer from "./costumer";
+import Order from "./order";
 
 @Entity()
 export default class Address {
@@ -34,7 +35,10 @@ export default class Address {
     @Column({nullable:false})
     country: string;
 
-    @ManyToOne(()=> Costumer, costumer => costumer.addresses, { eager: true })
+    @ManyToOne(()=> Costumer, costumer => costumer.addresses)
     costumer:Costumer;
+
+    @OneToMany(()=> Order, order => order.address)
+    orders:Address[];
 
 }

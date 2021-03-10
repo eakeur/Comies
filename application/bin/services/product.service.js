@@ -61,13 +61,13 @@ var ProductService = /** @class */ (function () {
                         return [4 /*yield*/, this.collection.insert(product)];
                     case 1:
                         _a.sent();
-                        this.response.notifications.push(new notification_1.default("Produto adicionado com sucesso!"));
+                        this.response.notification = new notification_1.default("Produto adicionado com sucesso!");
                         return [3 /*break*/, 3];
                     case 2:
                         error_1 = _a.sent();
                         console.log(error_1.message);
                         this.response.success = false;
-                        this.response.notifications.push(new notification_1.default("Um erro ocorreu ao adicionar esse produto. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas."));
+                        this.response.notification = new notification_1.default("Um erro ocorreu ao adicionar esse produto. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas.");
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/, this.response];
                 }
@@ -84,13 +84,13 @@ var ProductService = /** @class */ (function () {
                         return [4 /*yield*/, this.collection.delete(productID)];
                     case 1:
                         _a.sent();
-                        this.response.notifications.push(new notification_1.default("Produto excluído com sucesso!"));
+                        this.response.notification = new notification_1.default("Produto excluído com sucesso!");
                         return [3 /*break*/, 3];
                     case 2:
                         error_2 = _a.sent();
                         console.log(error_2.message);
                         this.response.success = false;
-                        this.response.notifications.push(new notification_1.default("Um erro ocorreu ao excluir esse produto. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas."));
+                        this.response.notification = new notification_1.default("Um erro ocorreu ao excluir esse produto. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas.");
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/, this.response];
                 }
@@ -108,13 +108,13 @@ var ProductService = /** @class */ (function () {
                         return [4 /*yield*/, this.collection.update(product.id, product)];
                     case 1:
                         _a.sent();
-                        this.response.notifications.push(new notification_1.default("Produto atualizado com sucesso!"));
+                        this.response.notification = new notification_1.default("Produto atualizado com sucesso!");
                         return [3 /*break*/, 3];
                     case 2:
                         error_3 = _a.sent();
                         console.log(error_3.message);
                         this.response.success = false;
-                        this.response.notifications.push(new notification_1.default("Um erro ocorreu ao atualizar esse produto. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas."));
+                        this.response.notification = new notification_1.default("Um erro ocorreu ao atualizar esse produto. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas.");
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/, this.response];
                 }
@@ -137,7 +137,7 @@ var ProductService = /** @class */ (function () {
                         error_4 = _b.sent();
                         console.error(error_4);
                         this.response.success = false;
-                        this.response.notifications.push(new notification_1.default("Ocorreu um erro ao procurar por este produto. Por favor, tente mais tarde ou fale com um administrador."));
+                        this.response.notification = new notification_1.default("Ocorreu um erro ao procurar por este produto. Por favor, tente mais tarde ou fale com um administrador.");
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/, this.response];
                 }
@@ -167,7 +167,7 @@ var ProductService = /** @class */ (function () {
                         error_5 = _b.sent();
                         console.error(error_5);
                         this.response.success = false;
-                        this.response.notifications.push(new notification_1.default("Ocorreu um erro ao procurar por produtos. Por favor, tente mais tarde ou fale com um administrador."));
+                        this.response.notification = new notification_1.default("Ocorreu um erro ao procurar por produtos. Por favor, tente mais tarde ou fale com um administrador.");
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/, this.response];
                 }
@@ -191,7 +191,7 @@ var ProductService = /** @class */ (function () {
                         error_6 = _c.sent();
                         console.error(error_6);
                         this.response.success = false;
-                        this.response.notifications.push(new notification_1.default("Ocorreu um erro ao contar os produtos. Por favor, tente mais tarde ou fale com um administrador."));
+                        this.response.notification = new notification_1.default("Ocorreu um erro ao contar os produtos. Por favor, tente mais tarde ou fale com um administrador.");
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/, this.response];
                 }
@@ -215,7 +215,7 @@ var ProductService = /** @class */ (function () {
                         error_7 = _b.sent();
                         console.error(error_7);
                         this.response.success = false;
-                        this.response.notifications.push(new notification_1.default("Ocorreu um erro ao processar sua solicitação. Por favor, tente mais tarde ou fale com um administrador."));
+                        this.response.notification = new notification_1.default("Ocorreu um erro ao processar sua solicitação. Por favor, tente mais tarde ou fale com um administrador.");
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/, this.response];
                 }

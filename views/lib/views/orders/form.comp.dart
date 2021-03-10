@@ -1,9 +1,11 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:comies/components/async.comp.dart';
 import 'package:comies/components/titlebox.comp.dart';
+import 'package:comies/controllers/costumer.controller.dart';
 import 'package:comies/controllers/order.controller.dart';
 import 'package:comies/controllers/product.controller.dart';
-import 'package:comies/services/costumers.service.dart';
 import 'package:comies/utils/declarations/environment.dart';
+import 'package:comies/utils/declarations/themes.dart';
 import 'package:comies/views/costumers/form.comp.dart';
 import 'package:comies/views/costumers/list.comp.dart';
 import 'package:comies/views/products/list.comp.dart';
@@ -11,6 +13,7 @@ import 'package:comies_entities/comies_entities.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:select_form_field/select_form_field.dart';
 
 class OrderFormComponent extends StatefulWidget {
   final Function afterSave;
@@ -54,7 +57,8 @@ class OrderForm extends State<OrderFormComponent> {
   Widget build(BuildContext context) {
     // service.setContext(context);
     return 
-    Stepper(
+    ChangeNotifierProvider(create: (context) => OrderController(),
+      child: Stepper(
       currentStep: step,
       onStepTapped: (index) => setState(() {step = index;clickedSteps.add(index);}),
       controlsBuilder: (BuildContext context, {VoidCallback onStepContinue, VoidCallback onStepCancel}) => 
@@ -64,13 +68,20 @@ class OrderForm extends State<OrderFormComponent> {
             state: getCostumerStepState(true),
             title: TitleBox('Selecione ou adicione um cliente'),
             content: SizedBox(height: 600,
-              child: ChangeNotifierProvider(create: (context) => CostumerOrderSelectionController(), child: CostumerSelection()))),
+              child: CostumerSelection())),
         Step(
           state: getProductsStepState(true),
           title: TitleBox('Selecione os produtos do pedido'),
           content: SizedBox(height: 600, 
-            child: ChangeNotifierProvider(create:(context) => OrderItemsSelectionController(), child: ProductsSelection()))),
-      ],
+            child: ProductsSelection())),
+        
+        Step(
+          state: getProductsStepState(true),
+          title: TitleBox('Detalhes do pedido'),
+          content: SizedBox(height: 600, 
+            child: OrderRevisionComponent())),
+        ],
+      )
     );
   }
 }
@@ -86,9 +97,9 @@ class FormStepperControls extends StatelessWidget {
     return Row(
       children: [
         SizedBox(height: 50),
-        TextButton(onPressed: step + 1 < 2 ? () => onPressed(1) : null, child: Text('PRÓXIMO')),
-        SizedBox(width: 20),
         TextButton(onPressed: step - 1 < 0 ? null : () => onPressed(-1), child: const Text('ANTERIOR')),
+        SizedBox(width: 20),
+        TextButton(onPressed: step + 1 < 3 ? () => onPressed(1) : null, child: Text('PRÓXIMO'))
       ],
     );
   }
@@ -104,13 +115,15 @@ class CostumerSelection extends StatefulWidget {
 }
 
 class CostumerSelectionState extends State<CostumerSelection> {
+  CarouselController slider = new CarouselController();
   bool isBigScreen() => MediaQuery.of(context).size.width > widthDivisor;
-
-  void onListClick(Costumer costumer) => Provider.of<CostumerOrderSelectionController>(context, listen: false).setCostumer(costumer);
+  void onListClick(Costumer costumer) => Provider.of<OrderController>(context, listen: false).setCostumer(costumer);
 
   @override
   Widget build(BuildContext context) {
-    return isBigScreen()
+    return ChangeNotifierProvider(
+      create: (context) => CostumerController(),
+      child: isBigScreen()
         ? Row(
           children: [
             Expanded(flex: 35,
@@ -120,31 +133,33 @@ class CostumerSelectionState extends State<CostumerSelection> {
                 child: CostumersListComponent(onListClick: onListClick ))),
               Expanded(
                   flex: 65,
-                  child: Center(child: CostumerSelectionComponent()))
+                  child: Center(child: CostumerFormComponent(onAddressTap: Provider.of<OrderController>(context, listen: false).setAddress)))
           ])
-        : Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(16))),
-              child: CostumersListComponent(onListClick: onListClick),
-            );
-  }
-}
-
-class CostumerSelectionComponent extends StatelessWidget {
-
-  @override
-  Widget build(BuildContext context){
-    return Consumer<CostumerOrderSelectionController>(
-      builder: (context, data, child){
-        return Container(
-          child: CostumerFormComponent(
-            onSelectedAddress: data.setAddress,
-            readonly: true,
-            id: data.hasCostumer ? data.costumer.id : null,
+        : CarouselSlider(
+            items: [
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(16))),
+                child: CostumersListComponent(onListClick: (cost){
+                  onListClick(cost); slider.nextPage(duration: Duration(milliseconds: 350));
+                })
+              ),
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(16))),
+                child: CostumerFormComponent(onAddressTap: Provider.of<OrderController>(context, listen: false).setAddress),
+              )
+            ],
+            options: CarouselOptions(
+                height: 10000,
+                enableInfiniteScroll: false,
+                enlargeCenterPage: true,
+                viewportFraction: 0.99,
+                disableCenter: true),
+            carouselController: slider,
           )
-        );
-      }
     );
   }
 }
@@ -167,7 +182,7 @@ class ProductsSelectionState extends State<ProductsSelection> {
   Widget build(BuildContext context) {
     bool isBigScreen = MediaQuery.of(context).size.width > widthDivisor;
     Function(Product) onListClick =
-        Provider.of<OrderItemsSelectionController>(context, listen: false).setItem;
+        Provider.of<OrderController>(context, listen: false).setItem;
 
     return ChangeNotifierProvider(create: (context) => ProductsController(),
       child: isBigScreen
@@ -227,7 +242,7 @@ class ProductSelectedListComponent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool isBigScreen = MediaQuery.of(context).size.width > widthDivisor;
-    return Consumer<OrderItemsSelectionController>(builder: (context, data, child) {
+    return Consumer<OrderController>(builder: (context, data, child) {
       return data.itemsGroups.isNotEmpty
           ? Column(children: [
               TitleBox("No carrinho", paint: !isBigScreen),
@@ -273,7 +288,7 @@ class ProductSelectionComponent extends StatelessWidget {
   Widget build(BuildContext context) {
     bool isBigScreen = MediaQuery.of(context).size.width > widthDivisor;
 
-    return Consumer<OrderItemsSelectionController>(
+    return Consumer<OrderController>(
         builder: (context, data, child){
           return Container(
             child: data.item != null
@@ -339,6 +354,132 @@ class ProductSelectionComponent extends StatelessWidget {
                 : Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [Center(child: Text("Selecione um produto"))]));
+      }
+    );
+  }
+}
+
+
+
+class OrderRevisionComponent extends StatefulWidget {
+  @override
+  _OrderRevisionComponentState createState() => _OrderRevisionComponentState();
+}
+class _OrderRevisionComponentState extends State<OrderRevisionComponent> {
+    CarouselController slider = new CarouselController();
+    bool isBigScreen() => MediaQuery.of(context).size.width > widthDivisor;
+    void onListClick(Costumer costumer) => Provider.of<OrderController>(context, listen: false).setCostumer(costumer);
+
+  Widget getDetailed(OrderController pr){
+    return Column(
+      children:[
+        TitleBox("RESUMO DO PEDIDO"),
+        if (pr.costumer != null)ListTile(
+          title:Text(pr.costumer.name), leading: Icon(Icons.person), 
+          subtitle: (pr.costumer.phones != null && pr.costumer.phones.isNotEmpty) ? Text("(${pr.costumer.phones[0].ddd}) ${pr.costumer.phones[0].number}"):null),
+        if (pr.address != null) ListTile(
+              title: Text("${pr.address.street}, ${pr.address.number} - ${pr.address.district}",softWrap: true),
+              subtitle: Text("${pr.address.city} - ${pr.address.state} - ${pr.address.reference}",softWrap: true),
+              leading: Icon(Icons.map)),
+        if (pr.order.deliverType != null) ListTile(
+              title: Text(pr.deliverTypeText ,softWrap: true),
+              leading: Icon(Icons.person_pin_circle_outlined)),
+        if (pr.order.payment != null) ListTile(
+              title: Text(pr.paymentMethodText ,softWrap: true),
+              leading: Icon(Icons.credit_card)),
+        if (pr.areItemsValid && pr.isCostumerValid && pr.areDetailsValid) Container(
+          child: AsyncButton(icon: Icon(Icons.save), text: "SALVAR", style: successButton, 
+                    onPressed: pr.addOrder,
+                    isLoading: false),
+        )
+
+      ]
+    ); 
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<OrderController>(
+      builder: (context, data, child){
+        return isBigScreen()
+        ? Row(
+          children: [
+            Expanded(flex: 25,
+              child: Card(
+                margin: EdgeInsets.all(0),
+                elevation: 8,
+                child: Container(padding: EdgeInsets.all(10) ,child: OrderPaymentComponent()))),
+              Expanded(
+                  flex: 35,
+                  child: ProductSelectedListComponent()),
+              Expanded(
+                  flex: 40,
+                  child: getDetailed(data))
+          ])
+        : CarouselSlider(
+            items: [
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(16))),
+                child: OrderPaymentComponent()
+              ),
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(16))),
+                child: ProductSelectedListComponent(),
+              )
+            ],
+            options: CarouselOptions(
+                height: 10000,
+                enableInfiniteScroll: false,
+                enlargeCenterPage: true,
+                viewportFraction: 0.99,
+                disableCenter: true),
+            carouselController: slider,
+          );
+      },
+    );
+  }
+}
+
+
+
+
+class OrderPaymentComponent extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    TextEditingController paymentMethodC = new TextEditingController();
+    return Consumer<OrderController>(
+      builder: (context, data, child){
+        return Column(
+          children: [
+            SelectFormField(
+              decoration: InputDecoration(labelText: "Forma de pagamento", suffixIcon: Icon(Icons.payment)),
+              enableSearch: true,
+              enableInteractiveSelection: true,
+              enableSuggestions: true,
+              controller: paymentMethodC,
+              onChanged: (value) => data.setPaymentMethod(PaymentMethod.values[int.tryParse(value)]),
+              items: [{"label": "Dinheiro", "value": "0"}, {"label": "Débito", "value": "1"}, 
+                {"label": "Crédito", "value": "2"}, {"label": "Pix", "value": "3"}, {"label": "Transferência", "value": "4"}],
+            ),
+            RadioListTile<DeliverType>(
+              title: Text("Retirada", style: Theme.of(context).textTheme.caption),
+              value: DeliverType.takeout,
+              groupValue: data.order.deliverType,
+              activeColor: Theme.of(context).accentColor,
+              onChanged: (value) => data.setDeliverType(value),
+            ),
+            RadioListTile<DeliverType>(
+              title: Text("Entrega", style: Theme.of(context).textTheme.caption),
+              value: DeliverType.delivery,
+              groupValue: data.order.deliverType,
+              activeColor: Theme.of(context).accentColor,
+              onChanged: (value) => data.setDeliverType(value),
+            )
+          ],
+        );
       }
     );
   }

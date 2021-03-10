@@ -13,10 +13,10 @@ export default class Costumer {
     @Column()
     name: string;
 
-    @OneToMany(()=> Phone, phone => phone.costumer)
+    @OneToMany(()=> Phone, phone => phone.costumer, {cascade: true, eager: true})
     phones: Phone[];
 
-    @OneToMany(()=> Address, address => address.costumer)
+    @OneToMany(()=> Address, address => address.costumer, {cascade: true, eager: true})
     addresses: Address[];
 
     @OneToMany(() => Order, order => order.costumer)

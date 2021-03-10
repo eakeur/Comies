@@ -44,10 +44,10 @@ var express_1 = __importDefault(require("express"));
 var routing_controllers_1 = require("routing-controllers");
 var costumer_controller_1 = __importDefault(require("./controllers/costumer.controller"));
 var product_controller_1 = __importDefault(require("./controllers/product.controller"));
-var operator_service_1 = __importDefault(require("./services/operator.service"));
 var order_controller_1 = __importDefault(require("./controllers/order.controller"));
 var operator_controller_1 = __importDefault(require("./controllers/operator.controller"));
 var serve_static_1 = __importDefault(require("serve-static"));
+var authentication_controller_1 = __importDefault(require("./controllers/authentication.controller"));
 var ServerInitializer = /** @class */ (function () {
     function ServerInitializer() {
         var _this = this;
@@ -79,10 +79,10 @@ var ServerInitializer = /** @class */ (function () {
                 port = process.env.port || 8080;
                 routing_controllers_1.useExpressServer(express_1.default().use("/", serve_static_1.default("public")), {
                     cors: true,
-                    currentUserChecker: function (action) { return new operator_service_1.default().getOperatorByToken(action); },
+                    currentUserChecker: function (action) { return new authentication_controller_1.default().getOperatorByToken(action); },
                     classTransformer: true,
-                    authorizationChecker: function (action, roles) { return new operator_service_1.default().authorizeOperator(action, roles); },
-                    controllers: [costumer_controller_1.default, product_controller_1.default, order_controller_1.default, operator_controller_1.default]
+                    authorizationChecker: function (action, roles) { return new authentication_controller_1.default().authorizeOperator(action, roles); },
+                    controllers: [costumer_controller_1.default, product_controller_1.default, order_controller_1.default, operator_controller_1.default, authentication_controller_1.default]
                 }).listen(port);
                 console.log("Comies server started on port " + port);
                 return [2 /*return*/];

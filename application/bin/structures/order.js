@@ -18,6 +18,7 @@ var store_1 = __importDefault(require("./store"));
 var order_items_1 = __importDefault(require("./order-items"));
 var enums_1 = require("./enums");
 var operator_1 = __importDefault(require("./operator"));
+var address_1 = __importDefault(require("./address"));
 var Order = /** @class */ (function () {
     function Order() {
     }
@@ -33,6 +34,18 @@ var Order = /** @class */ (function () {
         typeorm_1.Column({ nullable: false, default: enums_1.Status.pending }),
         __metadata("design:type", Number)
     ], Order.prototype, "status", void 0);
+    __decorate([
+        typeorm_1.Column({ nullable: false, default: enums_1.PaymentMethod.cash }),
+        __metadata("design:type", Number)
+    ], Order.prototype, "payment", void 0);
+    __decorate([
+        typeorm_1.Column({ nullable: false, default: enums_1.DeliverType.takeout }),
+        __metadata("design:type", Number)
+    ], Order.prototype, "deliverType", void 0);
+    __decorate([
+        typeorm_1.ManyToOne(function () { return address_1.default; }, function (address) { return address.orders; }, { cascade: true, eager: true }),
+        __metadata("design:type", address_1.default)
+    ], Order.prototype, "address", void 0);
     __decorate([
         typeorm_1.ManyToOne(function () { return store_1.default; }, function (store) { return store.orders; }),
         __metadata("design:type", store_1.default)

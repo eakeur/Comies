@@ -21,84 +21,50 @@ export default class CostumerService {
 
     collection:Repository<Costumer> = Connection.db.getRepository<Costumer>(Costumer);
 
+    addressCollection: Repository<Address> = Connection.db.getRepository<Address>(Address);
+
+    phoneCollection: Repository<Phone> = Connection.db.getRepository<Phone>(Phone);
+
+
+
+
+
+
     public async addCostumer(costumer:Costumer):Promise<Response>{
         try {
-            await this.collection.insert(costumer);
-            if (costumer.phones !== null && costumer.phones !== undefined){
-                costumer.phones.forEach((phone, index) => costumer.phones[index].costumer = costumer);
-                costumer.phones.forEach((phone) => Connection.db.getRepository<Phone>(Phone).insert(phone));
-            }
-            if (costumer.addresses !== null && costumer.addresses !== undefined){
-                costumer.addresses.forEach((addr, index) => costumer.addresses[index].costumer = costumer);
-                costumer.addresses.forEach((addr) => Connection.db.getRepository<Address>(Address).insert(addr));
-            }
-
-            this.response.notifications.push(new Notification("Cliente adicionado com sucesso!"));
+            await this.collection.save(costumer);
+            this.response.notification = new Notification("Oba! Cliente adicionado com sucesso!");
         } catch (error) {
             console.error(error);
             this.response.success = false;
-            this.response.notifications.push(new Notification("Um erro ocorreu ao adicionar esse cliente. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas."));
+            this.response.notification = new Notification("Um erro ocorreu ao adicionar esse cliente. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas.");
         }
         return this.response;
     }
 
     public async removeCostumer(costumerID: number):Promise<Response>{
         try {
-            await this.collection.delete(costumerID);
-            this.response.notifications.push(new Notification("Cliente excluído com sucesso!"));
+            const costumer = (await this.getCostumerById(costumerID)).data as Costumer;
+            await this.phoneCollection.remove(costumer.phones);
+            await this.addressCollection.remove(costumer.addresses);
+            await this.collection.remove(costumer);
+            this.response.notification = new Notification("Cliente excluído com sucesso!");
         } catch (error) {
             console.error(error);
             this.response.success = false;
-            this.response.notifications.push(new Notification("Um erro ocorreu ao excluir esse cliente. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas."));
+            this.response.notification = new Notification("Um erro ocorreu ao excluir esse cliente. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas.");
         }
         return this.response;
     }
 
     public async updateCostumer(costumer:Costumer):Promise<Response>{
         try {
-            const newAddresses = costumer.addresses.filter( addr => addr.id === null && addr.id !== undefined);
-            const newPhones = costumer.phones.filter( phone => phone.id === null && phone.id !== undefined);
-            delete costumer.addresses;
-            delete costumer.phones;
-            await this.collection.update(costumer.id, costumer);
-            if (newPhones !== null && newPhones !== undefined){
-                newPhones.forEach((phone, index) => newPhones[index].costumer = costumer);
-                newPhones.forEach((phone) => Connection.db.getRepository<Phone>(Phone).insert(phone));
-            }
-            if (newAddresses !== null && newAddresses !== undefined){
-                newAddresses.forEach((addr, index) => newAddresses[index].costumer = costumer);
-                newAddresses.forEach((addr) => Connection.db.getRepository<Address>(Address).insert(addr));
-            }
-
-            this.response.notifications.push(new Notification("Cliente atualizado com sucesso!"));
+            await this.collection.save(costumer);
+            this.response.notification = new Notification("Oba! O cliente foi atualizado com sucesso!");
         } catch (error) {
             console.error(error);
             this.response.success = false;
-            this.response.notifications.push(new Notification("Um erro ocorreu ao atualizar esse cliente. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas."));
-        }
-        return this.response;
-    }
-
-    public async removePhone(id:number):Promise<Response>{
-        try {
-            await Connection.db.getRepository<Phone>(Phone).delete(id);
-            this.response.notifications.push(new Notification("Telefone excluído com sucesso!"));
-        } catch (error) {
-            console.error(error);
-            this.response.success = false;
-            this.response.notifications.push(new Notification("Um erro ocorreu ao excluir esse telefone. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas."));
-        }
-        return this.response;
-    }
-
-    public async removeAddress(id:number):Promise<Response>{
-        try {
-            await Connection.db.getRepository<Address>(Address).delete(id);
-            this.response.notifications.push(new Notification("Endereço excluído com sucesso!"));
-        } catch (error) {
-            console.error(error);
-            this.response.success = false;
-            this.response.notifications.push(new Notification("Um erro ocorreu ao excluir esse endereço. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas."));
+            this.response.notification = new Notification("Opa! Um erro ocorreu ao atualizar esse cliente. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas.");
         }
         return this.response;
     }
@@ -109,7 +75,7 @@ export default class CostumerService {
         } catch (error) {
             console.error(error);
             this.response.success = false;
-            this.response.notifications.push(new Notification("Ocorreu um erro ao procurar por este cliente. Por favor, tente mais tarde ou fale com um administrador."))
+            this.response.notification = new Notification("Ocorreu um erro ao procurar por este cliente. Por favor, tente mais tarde ou fale com um administrador.")
         }
         return this.response;
     }
@@ -122,19 +88,20 @@ export default class CostumerService {
         } catch (error) {
             console.error(error);
             this.response.success = false;
-            this.response.notifications.push(new Notification("Ocorreu um erro ao procurar por clientes. Por favor, tente mais tarde ou fale com um administrador."))
+            this.response.notification = new Notification("Ocorreu um erro ao procurar por clientes. Por favor, tente mais tarde ou fale com um administrador.");
         }
         return this.response;
     }
 
     public async getCostumersByPhone(phone: string):Promise<Response>{
         try {
-            const phones = await Connection.db.getRepository<Phone>(Phone).find({number: Like(`%${phone}%`)});
+            const cond: FindConditions<Costumer> = {};
+            const phones = await this.phoneCollection.find({relations: ["costumer"], where:{ number:Like(`%${phone}%`)}});
             this.response.data = phones.map(phone => phone.costumer);
         } catch (error) {
             console.error(error);
             this.response.success = false;
-            this.response.notifications.push(new Notification("Ocorreu um erro ao procurar por clientes. Por favor, tente mais tarde ou fale com um administrador."))
+            this.response.notification = new Notification("Ocorreu um erro ao procurar por clientes. Por favor, tente mais tarde ou fale com um administrador.");
         }
         return this.response;
     }

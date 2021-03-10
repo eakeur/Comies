@@ -23,11 +23,11 @@ export default class ProductService {
         try {
             product.partner = this.operator.partner;
             await this.collection.insert(product);
-            this.response.notifications.push(new Notification("Produto adicionado com sucesso!"))
+            this.response.notification = new Notification("Produto adicionado com sucesso!");
         } catch (error) {
             console.log(error.message)
             this.response.success = false;
-            this.response.notifications.push(new Notification("Um erro ocorreu ao adicionar esse produto. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas."));
+            this.response.notification = new Notification("Um erro ocorreu ao adicionar esse produto. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas.");
         }
         return this.response;
     }
@@ -35,11 +35,11 @@ export default class ProductService {
     public async removeProduct(productID: number):Promise<Response>{
         try {
             await this.collection.delete(productID);
-            this.response.notifications.push(new Notification("Produto excluído com sucesso!"))
+            this.response.notification = new Notification("Produto excluído com sucesso!");
         } catch (error) {
             console.log(error.message)
             this.response.success = false;
-            this.response.notifications.push(new Notification("Um erro ocorreu ao excluir esse produto. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas."));
+            this.response.notification = new Notification("Um erro ocorreu ao excluir esse produto. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas.");
         }
         return this.response;
     }
@@ -48,11 +48,11 @@ export default class ProductService {
         try {
             delete product.orders;
             await this.collection.update(product.id, product);
-            this.response.notifications.push(new Notification("Produto atualizado com sucesso!"))
+            this.response.notification = new Notification("Produto atualizado com sucesso!");
         } catch (error) {
             console.log(error.message)
             this.response.success = false;
-            this.response.notifications.push(new Notification("Um erro ocorreu ao atualizar esse produto. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas."));
+            this.response.notification = new Notification("Um erro ocorreu ao atualizar esse produto. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas.");
         }
         return this.response;
     }
@@ -63,7 +63,7 @@ export default class ProductService {
         } catch (error) {
             console.error(error);
             this.response.success = false;
-            this.response.notifications.push(new Notification("Ocorreu um erro ao procurar por este produto. Por favor, tente mais tarde ou fale com um administrador."))
+            this.response.notification = new Notification("Ocorreu um erro ao procurar por este produto. Por favor, tente mais tarde ou fale com um administrador.");
         }
         return this.response;
     }
@@ -78,7 +78,7 @@ export default class ProductService {
         } catch (error) {
             console.error(error);
             this.response.success = false;
-            this.response.notifications.push(new Notification("Ocorreu um erro ao procurar por produtos. Por favor, tente mais tarde ou fale com um administrador."))
+            this.response.notification = new Notification("Ocorreu um erro ao procurar por produtos. Por favor, tente mais tarde ou fale com um administrador.");
         }
 
         return this.response;
@@ -90,7 +90,7 @@ export default class ProductService {
         } catch (error) {
             console.error(error);
             this.response.success = false;
-            this.response.notifications.push(new Notification("Ocorreu um erro ao contar os produtos. Por favor, tente mais tarde ou fale com um administrador."))
+            this.response.notification = new Notification("Ocorreu um erro ao contar os produtos. Por favor, tente mais tarde ou fale com um administrador.");
         }
 
         return this.response;
@@ -103,7 +103,7 @@ export default class ProductService {
         } catch (error) {
             console.error(error);
             this.response.success = false;
-            this.response.notifications.push(new Notification("Ocorreu um erro ao processar sua solicitação. Por favor, tente mais tarde ou fale com um administrador."))
+            this.response.notification = new Notification("Ocorreu um erro ao processar sua solicitação. Por favor, tente mais tarde ou fale com um administrador.");
         }
         return this.response;
     }

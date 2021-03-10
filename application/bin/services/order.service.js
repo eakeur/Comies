@@ -60,13 +60,13 @@ var OrderService = /** @class */ (function () {
                         return [4 /*yield*/, this.collection.save(order)];
                     case 1:
                         _a.sent();
-                        this.response.notifications.push(new notification_1.default("Pedido adicionado com sucesso!"));
+                        this.response.notification = new notification_1.default("Pedido adicionado com sucesso!");
                         return [3 /*break*/, 3];
                     case 2:
                         error_1 = _a.sent();
                         console.log(error_1.message);
                         this.response.success = false;
-                        this.response.notifications.push(new notification_1.default("Um erro ocorreu ao adicionar esse pedido. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas."));
+                        this.response.notification = new notification_1.default("Um erro ocorreu ao adicionar esse pedido. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas.");
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/, this.response];
                 }
@@ -89,13 +89,13 @@ var OrderService = /** @class */ (function () {
                         return [4 /*yield*/, this.collection.remove(order)];
                     case 2:
                         _a.sent();
-                        this.response.notifications.push(new notification_1.default("Pedido excluído com sucesso!"));
+                        this.response.notification = new notification_1.default("Pedido excluído com sucesso!");
                         return [3 /*break*/, 4];
                     case 3:
                         error_2 = _a.sent();
                         console.log(error_2.message);
                         this.response.success = false;
-                        this.response.notifications.push(new notification_1.default("Ocorreu um erro ao excluir este pedido. Por favor, tente mais tarde ou fale com um administrador."));
+                        this.response.notification = new notification_1.default("Ocorreu um erro ao excluir este pedido. Por favor, tente mais tarde ou fale com um administrador.");
                         return [3 /*break*/, 4];
                     case 4: return [2 /*return*/, this.response];
                 }
@@ -115,13 +115,13 @@ var OrderService = /** @class */ (function () {
                         return [4 /*yield*/, this.collection.save(order)];
                     case 1:
                         _a.sent();
-                        this.response.notifications.push(new notification_1.default("Pedido atualizado com sucesso!"));
+                        this.response.notification = new notification_1.default("Pedido atualizado com sucesso!");
                         return [3 /*break*/, 3];
                     case 2:
                         error_3 = _a.sent();
                         console.log(error_3.message);
                         this.response.success = false;
-                        this.response.notifications.push(new notification_1.default("Ocorreu um erro ao atualizar este pedido. Por favor, tente mais tarde ou fale com um administrador."));
+                        this.response.notification = new notification_1.default("Ocorreu um erro ao atualizar este pedido. Por favor, tente mais tarde ou fale com um administrador.");
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/, this.response];
                 }
@@ -147,7 +147,7 @@ var OrderService = /** @class */ (function () {
                         error_4 = _a.sent();
                         console.log(error_4.message);
                         this.response.success = false;
-                        this.response.notifications.push(new notification_1.default("Ocorreu um erro ao procurar por este pedido. Por favor, tente mais tarde ou fale com um administrador."));
+                        this.response.notification = new notification_1.default("Ocorreu um erro ao procurar por este pedido. Por favor, tente mais tarde ou fale com um administrador.");
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/, this.response];
                 }
@@ -178,7 +178,7 @@ var OrderService = /** @class */ (function () {
                         error_5 = _b.sent();
                         console.error(error_5);
                         this.response.success = false;
-                        this.response.notifications.push(new notification_1.default("Ocorreu um erro ao procurar por pedidos. Por favor, tente mais tarde ou fale com um administrador."));
+                        this.response.notification = new notification_1.default("Ocorreu um erro ao procurar por pedidos. Por favor, tente mais tarde ou fale com um administrador.");
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/, this.response];
                 }

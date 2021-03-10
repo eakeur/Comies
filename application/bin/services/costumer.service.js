@@ -50,6 +50,8 @@ var CostumerService = /** @class */ (function () {
         this.response = new response_1.default();
         this.conditions = {};
         this.collection = connection_1.default.db.getRepository(costumer_1.default);
+        this.addressCollection = connection_1.default.db.getRepository(address_1.default);
+        this.phoneCollection = connection_1.default.db.getRepository(phone_1.default);
         this.operator = operator;
     }
     CostumerService.prototype.addCostumer = function (costumer) {
@@ -59,24 +61,16 @@ var CostumerService = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.collection.insert(costumer)];
+                        return [4 /*yield*/, this.collection.save(costumer)];
                     case 1:
                         _a.sent();
-                        if (costumer.phones !== null && costumer.phones !== undefined) {
-                            costumer.phones.forEach(function (phone, index) { return costumer.phones[index].costumer = costumer; });
-                            costumer.phones.forEach(function (phone) { return connection_1.default.db.getRepository(phone_1.default).insert(phone); });
-                        }
-                        if (costumer.addresses !== null && costumer.addresses !== undefined) {
-                            costumer.addresses.forEach(function (addr, index) { return costumer.addresses[index].costumer = costumer; });
-                            costumer.addresses.forEach(function (addr) { return connection_1.default.db.getRepository(address_1.default).insert(addr); });
-                        }
-                        this.response.notifications.push(new notification_1.default("Cliente adicionado com sucesso!"));
+                        this.response.notification = new notification_1.default("Oba! Cliente adicionado com sucesso!");
                         return [3 /*break*/, 3];
                     case 2:
                         error_1 = _a.sent();
                         console.error(error_1);
                         this.response.success = false;
-                        this.response.notifications.push(new notification_1.default("Um erro ocorreu ao adicionar esse cliente. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas."));
+                        this.response.notification = new notification_1.default("Um erro ocorreu ao adicionar esse cliente. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas.");
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/, this.response];
                 }
@@ -85,102 +79,53 @@ var CostumerService = /** @class */ (function () {
     };
     CostumerService.prototype.removeCostumer = function (costumerID) {
         return __awaiter(this, void 0, void 0, function () {
-            var error_2;
+            var costumer, error_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.collection.delete(costumerID)];
+                        _a.trys.push([0, 5, , 6]);
+                        return [4 /*yield*/, this.getCostumerById(costumerID)];
                     case 1:
-                        _a.sent();
-                        this.response.notifications.push(new notification_1.default("Cliente excluído com sucesso!"));
-                        return [3 /*break*/, 3];
+                        costumer = (_a.sent()).data;
+                        return [4 /*yield*/, this.phoneCollection.remove(costumer.phones)];
                     case 2:
+                        _a.sent();
+                        return [4 /*yield*/, this.addressCollection.remove(costumer.addresses)];
+                    case 3:
+                        _a.sent();
+                        return [4 /*yield*/, this.collection.remove(costumer)];
+                    case 4:
+                        _a.sent();
+                        this.response.notification = new notification_1.default("Cliente excluído com sucesso!");
+                        return [3 /*break*/, 6];
+                    case 5:
                         error_2 = _a.sent();
                         console.error(error_2);
                         this.response.success = false;
-                        this.response.notifications.push(new notification_1.default("Um erro ocorreu ao excluir esse cliente. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas."));
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/, this.response];
+                        this.response.notification = new notification_1.default("Um erro ocorreu ao excluir esse cliente. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas.");
+                        return [3 /*break*/, 6];
+                    case 6: return [2 /*return*/, this.response];
                 }
             });
         });
     };
     CostumerService.prototype.updateCostumer = function (costumer) {
         return __awaiter(this, void 0, void 0, function () {
-            var newAddresses_1, newPhones_1, error_3;
+            var error_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        newAddresses_1 = costumer.addresses.filter(function (addr) { return addr.id === null && addr.id !== undefined; });
-                        newPhones_1 = costumer.phones.filter(function (phone) { return phone.id === null && phone.id !== undefined; });
-                        delete costumer.addresses;
-                        delete costumer.phones;
-                        return [4 /*yield*/, this.collection.update(costumer.id, costumer)];
+                        return [4 /*yield*/, this.collection.save(costumer)];
                     case 1:
                         _a.sent();
-                        if (newPhones_1 !== null && newPhones_1 !== undefined) {
-                            newPhones_1.forEach(function (phone, index) { return newPhones_1[index].costumer = costumer; });
-                            newPhones_1.forEach(function (phone) { return connection_1.default.db.getRepository(phone_1.default).insert(phone); });
-                        }
-                        if (newAddresses_1 !== null && newAddresses_1 !== undefined) {
-                            newAddresses_1.forEach(function (addr, index) { return newAddresses_1[index].costumer = costumer; });
-                            newAddresses_1.forEach(function (addr) { return connection_1.default.db.getRepository(address_1.default).insert(addr); });
-                        }
-                        this.response.notifications.push(new notification_1.default("Cliente atualizado com sucesso!"));
+                        this.response.notification = new notification_1.default("Oba! O cliente foi atualizado com sucesso!");
                         return [3 /*break*/, 3];
                     case 2:
                         error_3 = _a.sent();
                         console.error(error_3);
                         this.response.success = false;
-                        this.response.notifications.push(new notification_1.default("Um erro ocorreu ao atualizar esse cliente. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas."));
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/, this.response];
-                }
-            });
-        });
-    };
-    CostumerService.prototype.removePhone = function (id) {
-        return __awaiter(this, void 0, void 0, function () {
-            var error_4;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, connection_1.default.db.getRepository(phone_1.default).delete(id)];
-                    case 1:
-                        _a.sent();
-                        this.response.notifications.push(new notification_1.default("Telefone excluído com sucesso!"));
-                        return [3 /*break*/, 3];
-                    case 2:
-                        error_4 = _a.sent();
-                        console.error(error_4);
-                        this.response.success = false;
-                        this.response.notifications.push(new notification_1.default("Um erro ocorreu ao excluir esse telefone. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas."));
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/, this.response];
-                }
-            });
-        });
-    };
-    CostumerService.prototype.removeAddress = function (id) {
-        return __awaiter(this, void 0, void 0, function () {
-            var error_5;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, connection_1.default.db.getRepository(address_1.default).delete(id)];
-                    case 1:
-                        _a.sent();
-                        this.response.notifications.push(new notification_1.default("Endereço excluído com sucesso!"));
-                        return [3 /*break*/, 3];
-                    case 2:
-                        error_5 = _a.sent();
-                        console.error(error_5);
-                        this.response.success = false;
-                        this.response.notifications.push(new notification_1.default("Um erro ocorreu ao excluir esse endereço. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas."));
+                        this.response.notification = new notification_1.default("Opa! Um erro ocorreu ao atualizar esse cliente. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas.");
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/, this.response];
                 }
@@ -189,7 +134,7 @@ var CostumerService = /** @class */ (function () {
     };
     CostumerService.prototype.getCostumerById = function (id) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, error_6;
+            var _a, error_4;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -200,10 +145,10 @@ var CostumerService = /** @class */ (function () {
                         _a.data = _b.sent();
                         return [3 /*break*/, 3];
                     case 2:
-                        error_6 = _b.sent();
-                        console.error(error_6);
+                        error_4 = _b.sent();
+                        console.error(error_4);
                         this.response.success = false;
-                        this.response.notifications.push(new notification_1.default("Ocorreu um erro ao procurar por este cliente. Por favor, tente mais tarde ou fale com um administrador."));
+                        this.response.notification = new notification_1.default("Ocorreu um erro ao procurar por este cliente. Por favor, tente mais tarde ou fale com um administrador.");
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/, this.response];
                 }
@@ -212,7 +157,7 @@ var CostumerService = /** @class */ (function () {
     };
     CostumerService.prototype.getCostumers = function (costumer) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, error_7;
+            var _a, error_5;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -226,10 +171,10 @@ var CostumerService = /** @class */ (function () {
                         _a.data = _b.sent();
                         return [3 /*break*/, 3];
                     case 2:
-                        error_7 = _b.sent();
-                        console.error(error_7);
+                        error_5 = _b.sent();
+                        console.error(error_5);
                         this.response.success = false;
-                        this.response.notifications.push(new notification_1.default("Ocorreu um erro ao procurar por clientes. Por favor, tente mais tarde ou fale com um administrador."));
+                        this.response.notification = new notification_1.default("Ocorreu um erro ao procurar por clientes. Por favor, tente mais tarde ou fale com um administrador.");
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/, this.response];
                 }
@@ -238,21 +183,22 @@ var CostumerService = /** @class */ (function () {
     };
     CostumerService.prototype.getCostumersByPhone = function (phone) {
         return __awaiter(this, void 0, void 0, function () {
-            var phones, error_8;
+            var cond, phones, error_6;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, connection_1.default.db.getRepository(phone_1.default).find({ number: typeorm_1.Like("%" + phone + "%") })];
+                        cond = {};
+                        return [4 /*yield*/, this.phoneCollection.find({ relations: ["costumer"], where: { number: typeorm_1.Like("%" + phone + "%") } })];
                     case 1:
                         phones = _a.sent();
                         this.response.data = phones.map(function (phone) { return phone.costumer; });
                         return [3 /*break*/, 3];
                     case 2:
-                        error_8 = _a.sent();
-                        console.error(error_8);
+                        error_6 = _a.sent();
+                        console.error(error_6);
                         this.response.success = false;
-                        this.response.notifications.push(new notification_1.default("Ocorreu um erro ao procurar por clientes. Por favor, tente mais tarde ou fale com um administrador."));
+                        this.response.notification = new notification_1.default("Ocorreu um erro ao procurar por clientes. Por favor, tente mais tarde ou fale com um administrador.");
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/, this.response];
                 }

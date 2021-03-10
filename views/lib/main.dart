@@ -1,4 +1,3 @@
-import 'package:comies/utils/declarations/session.dart';
 import 'package:comies/utils/declarations/storage.dart';
 import 'package:comies/views/authentication/authentication.screen.dart';
 import 'package:comies/views/costumers/costumers.screen.dart';
@@ -14,22 +13,17 @@ import 'package:provider/provider.dart';
 import 'controllers/main.controller.dart';
 import 'utils/declarations/themes.dart';
 
+SessionController session;
+
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await initDB();
-  session = await new Session().loadSession();
-  bool isSet = await session.isConfigured();
-  if (isSet){
-    session.isAuthenticated() ? initialPage = '/' : initialPage = '/authentication';
-  }
-  runApp(ChangeNotifierProvider(
-    create: (context) => MainController(),
-    child: MyApp(),
-    )
-  );
+  WidgetsFlutterBinding.ensureInitialized(); await initDB();
+  session = SessionController();
+  session.getSession();
+  runApp(ChangeNotifierProvider(create: (context) => session, child: MyApp()));
 }
 
-String initialPage = "/welcome";
+
+
 
 class MyApp extends StatelessWidget {
   @override
@@ -44,8 +38,6 @@ class ApplicationLauncher extends StatefulWidget {
 }
 
 Function(ThemeMode) themeSwitcher;
-
-Session session;
 
 class Application extends State<ApplicationLauncher> {
   ThemeMode themeMode = ThemeMode.system;
@@ -115,13 +107,12 @@ class Application extends State<ApplicationLauncher> {
   @override
   Widget build(BuildContext context) {
     themeSwitcher = switchTheme;
-    session.loadSession();
     return MaterialApp(
       title: 'Comies',
       theme: mainTheme(Brightness.light),
       darkTheme: mainTheme(Brightness.dark),
       themeMode: themeMode,
-      initialRoute: initialPage,
+      initialRoute: Provider.of<SessionController>(context, listen: false).actualRoute,
       onGenerateRoute: onGeneratedRoute,
     );
   }

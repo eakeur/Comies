@@ -13,7 +13,7 @@ export default class Phone {
     @Column({nullable:false})
     number: string;
 
-    @ManyToOne(()=> Costumer, costumer => costumer.phones, { eager: true })
+    @ManyToOne(()=> Costumer, costumer => costumer.phones)
     costumer:Costumer;
 
 }

@@ -1,9 +1,9 @@
+import 'package:comies/controllers/authentication.controller.dart';
 import 'package:comies/controllers/main.controller.dart';
-import 'package:comies/services/authentication.service.dart';
 import 'package:comies/utils/declarations/environment.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../main.dart' show session, themeSwitcher;
+import '../main.dart' show themeSwitcher;
 
 class ComiesDrawer extends StatefulWidget {
   @override
@@ -16,6 +16,7 @@ class DrawerState extends State<ComiesDrawer> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           ListTile(
             leading: Icon(Icons.settings),
@@ -35,7 +36,7 @@ class DrawerState extends State<ComiesDrawer> {
             leading: Icon(Icons.logout),
             title: Text("Sair"),
             onTap: () {
-              new AuthenticationService(null).logoff().then((v) {
+              AuthenticationController.logoff().then((v) {
                 Navigator.pushNamed(context, "/authentication");
               });
             },
@@ -65,7 +66,7 @@ class NavigationBar extends StatefulWidget {
   _NavigationBarState createState() => _NavigationBarState();
 }
 
-class _NavigationBarState extends State<NavigationBar> with TickerProviderStateMixin {
+class _NavigationBarState extends State<NavigationBar> with SingleTickerProviderStateMixin {
   List<Map<String, dynamic>> menuEntries = [
     {'name': 'Início', 'path': '/', 'icon': Icons.home, "clicked": true},
     {'name': 'Pedidos', 'path': '/orders', 'icon': Icons.post_add, "clicked": false},
@@ -76,12 +77,13 @@ class _NavigationBarState extends State<NavigationBar> with TickerProviderStateM
 
   bool showTab = false;
   AnimationController _animationController;
+  PersistentBottomSheetController sheetController;
 
 
   @override
   void initState(){
     _animationController =
-    AnimationController(vsync: this, duration: Duration(milliseconds: 250));
+    AnimationController(vsync: this, duration: Duration(milliseconds: 1000));
     super.initState();
   }
 
@@ -89,52 +91,63 @@ class _NavigationBarState extends State<NavigationBar> with TickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedSize(
-      curve: Curves.easeInCirc,
-      vsync: this,
-      duration: Duration(milliseconds: 200),
-      child: BottomAppBar(
+    return BottomAppBar(
         shape: CircularNotchedRectangle(),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               decoration: BoxDecoration(borderRadius: BorderRadius.only(topRight: Radius.circular(20), topLeft: Radius.circular(20))),
               height: 50,
-              child: Row(children: [
-                Hero(
-                  tag: "menudrawer",
-                  child: Material(
-                    color: Colors.transparent,
-                    child: IconButton(
-                      icon: AnimatedIcon(icon: AnimatedIcons.menu_close , progress: _animationController),
-                      onPressed: (){
-                        showTab ? _animationController.reverse() : _animationController.forward();
-                        setState((){ showTab = !showTab;});
-                      },
+              width: MediaQuery.of(context).size.width * 0.7,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  Hero(
+                    tag: "menudrawer",
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Container(
+                        height: 45, width: 60,
+                        child:
+                          Center(child: 
+                            IconButton(
+                              icon: AnimatedIcon(icon: AnimatedIcons.menu_close, progress: _animationController),
+                              onPressed: (){
+                                sheetController != null ? _animationController.reverse() : _animationController.forward();
+                                setState(() {
+                                  if (sheetController != null){
+                                    sheetController.close();
+                                    if (sheetController != null) sheetController = null;
+                                  } else sheetController = Scaffold.of(context).showBottomSheet((context) => ComiesDrawer());
+                                  
+                                });
+                              }
+                            )
+                          ),
+                        )
                     )
-                  )
-                ),
-                for (var route in menuEntries)
-                Hero(
-                  tag: "route "+route['name'],
-                  child: Material(
-                    color: Colors.transparent,
-                    child: MenuButton(
-                      text: route["name"], icon: route['icon'],
-                      isClicked: Provider.of<MainController>(context, listen: false).actualRoute == route["path"],
-                      route: route['path'],
-                      onClick: (route) => setState(() {Provider.of<MainController>(context, listen: false).setActualRoute(route, context);}),
+                  ),
+                  for (var route in menuEntries)
+                  Hero(
+                    tag: "route "+route['name'],
+                    child: Material(
+                      color: Colors.transparent,
+                      child: MenuButton(
+                        text: route["name"], icon: route['icon'],
+                        isClicked: Provider.of<SessionController>(context, listen: false).actualRoute == route["path"],
+                        route: route['path'],
+                        onClick: (route) => setState(() {Provider.of<SessionController>(context, listen: false).setActualRoute(route, context);}),
+                      )
                     )
-                  )
-                ),
-              ])
+                  ),
+                ],
+              )
             ),
-            if (showTab) ComiesDrawer()
           ],
         ),
-      ),
-    );
+      );
   }
 }
 
@@ -151,7 +164,8 @@ class MenuButton extends StatelessWidget {
     bool isBigScreen() => MediaQuery.of(context).size.width > widthDivisor;
 
     return AnimatedSwitcher(
-      duration: Duration(milliseconds: 500),
+      duration: Duration(milliseconds: 1000),
+      reverseDuration: Duration(milliseconds: 1000),
       switchInCurve: Curves.easeInBack,
       switchOutCurve: Curves.easeOutBack,
       transitionBuilder: (child, animation) => SizeTransition(

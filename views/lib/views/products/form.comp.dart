@@ -24,8 +24,6 @@ class ProductForm extends State<ProductFormComponent> {
 
   TextEditingController unityController = new TextEditingController();
 
-  bool loaded = true;
-
   bool isBigScreen() => MediaQuery.of(context).size.width > widthDivisor;
 
   void onSave() => Provider.of<ProductsController>(context, listen: false).addProduct()
@@ -48,7 +46,7 @@ class ProductForm extends State<ProductFormComponent> {
       return AsyncComponent(
           data: widget.isAddition ? {widget: "new"} : data.product,
           messageIfNullOrEmpty: "Selecione um produto para ver seus detalhes",
-          status: LoadStatus.loaded,
+          status: data.addPending != false || data.deletePending != false || data.updatePending ? LoadStatus.loaded : data.productLoadStatus,
           snackbar: data.snackbar,
           child: widget.isAddition || data.product != null 
             ? Form(

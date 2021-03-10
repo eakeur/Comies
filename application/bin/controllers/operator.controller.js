@@ -102,15 +102,6 @@ var OperatorController = /** @class */ (function () {
             });
         });
     };
-    OperatorController.prototype.login = function (operator) {
-        return __awaiter(this, void 0, void 0, function () {
-            var service;
-            return __generator(this, function (_a) {
-                service = new operator_service_1.default();
-                return [2 /*return*/, service.authenticate(operator)];
-            });
-        });
-    };
     __decorate([
         routing_controllers_1.Authorized('getOperators'),
         routing_controllers_1.Get("/:id"),
@@ -154,14 +145,6 @@ var OperatorController = /** @class */ (function () {
         __metadata("design:paramtypes", [operator_1.default, operator_1.default]),
         __metadata("design:returntype", Promise)
     ], OperatorController.prototype, "removeOperator", null);
-    __decorate([
-        routing_controllers_1.Post("/login"),
-        routing_controllers_1.UseBefore(body_parser_1.json()),
-        __param(0, routing_controllers_1.Body()),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], OperatorController.prototype, "login", null);
     OperatorController = __decorate([
         routing_controllers_1.Controller("/operators")
     ], OperatorController);

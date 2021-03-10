@@ -3,17 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 void notify(Response response, BuildContext context) {
-    for (var not in response.notifications) {
-      ScaffoldMessenger.of(context).showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: ListTile(title: Text(not.message)),
+          content: ListTile(title: Text(response.notification.message)),
           duration: Duration(seconds: 4),
-          action: not.action != null
+          action: response.notification.action != null
               ? SnackBarAction(
-                  label: not.action.name,
-                  onPressed: () => Navigator.pushNamed(context, not.action.href))
+                  label: response.notification.action.name,
+                  onPressed: () => Navigator.pushNamed(context, response.notification.action.href))
               : null,
         ),
       );
-    }
 }

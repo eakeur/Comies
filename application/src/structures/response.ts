@@ -1,7 +1,7 @@
 import Notification from "./notification";
 
 export default class Response {
-    notifications:Notification[] = [];
+    notification: Notification;
     success = true;
     data:any;
     access: string;

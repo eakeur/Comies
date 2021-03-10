@@ -23,7 +23,7 @@ class Products extends State<ProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return session.isAuthenticated() 
+    return session.isAuthenticated 
       ?  ChangeNotifierProvider(
         create: (context) => ProductsController(),
         child: Scaffold(

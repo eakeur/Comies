@@ -31,11 +31,24 @@ var Status;
     Status[Status["delivered"] = 5] = "delivered";
     Status[Status["finished"] = 6] = "finished";
 })(Status = exports.Status || (exports.Status = {}));
+var PaymentMethod;
+(function (PaymentMethod) {
+    PaymentMethod[PaymentMethod["cash"] = 0] = "cash";
+    PaymentMethod[PaymentMethod["debit"] = 1] = "debit";
+    PaymentMethod[PaymentMethod["credit"] = 2] = "credit";
+    PaymentMethod[PaymentMethod["pix"] = 3] = "pix";
+    PaymentMethod[PaymentMethod["transference"] = 4] = "transference";
+})(PaymentMethod = exports.PaymentMethod || (exports.PaymentMethod = {}));
+var DeliverType;
+(function (DeliverType) {
+    DeliverType[DeliverType["takeout"] = 0] = "takeout";
+    DeliverType[DeliverType["delivery"] = 1] = "delivery";
+})(DeliverType = exports.DeliverType || (exports.DeliverType = {}));
 var Permission;
 (function (Permission) {
     Permission[Permission["get"] = 0] = "get";
     Permission[Permission["put"] = 1] = "put";
     Permission[Permission["add"] = 2] = "add";
     Permission[Permission["del"] = 3] = "del";
-})(Permission || (Permission = {}));
+})(Permission = exports.Permission || (exports.Permission = {}));
 //# sourceMappingURL=enums.js.map

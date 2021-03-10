@@ -22,11 +22,11 @@ export default class OrderService {
             order.operator = this.operator;
             order.store = this.operator.store;
             await this.collection.save(order);
-            this.response.notifications.push(new Notification("Pedido adicionado com sucesso!"));
+            this.response.notification = new Notification("Pedido adicionado com sucesso!");
         } catch (error) {
             console.log(error.message)
             this.response.success = false;
-            this.response.notifications.push(new Notification("Um erro ocorreu ao adicionar esse pedido. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas."))
+            this.response.notification = new Notification("Um erro ocorreu ao adicionar esse pedido. Por favor, tente novamente mais tarde ou verifique se todas as informações estão corretas.");
         }
         return this.response;
     }
@@ -36,11 +36,11 @@ export default class OrderService {
         try {
             if (order.store !== this.operator.store){throw Error;}
             await this.collection.remove(order);
-            this.response.notifications.push(new Notification("Pedido excluído com sucesso!"));
+            this.response.notification = new Notification("Pedido excluído com sucesso!");
         } catch (error) {
             console.log(error.message)
             this.response.success = false;
-            this.response.notifications.push(new Notification("Ocorreu um erro ao excluir este pedido. Por favor, tente mais tarde ou fale com um administrador."))
+            this.response.notification = new Notification("Ocorreu um erro ao excluir este pedido. Por favor, tente mais tarde ou fale com um administrador.");
         }
         return this.response
     }
@@ -49,11 +49,11 @@ export default class OrderService {
         try {
             if (order.store !== this.operator.store){throw Error;}
             await this.collection.save(order);
-            this.response.notifications.push(new Notification("Pedido atualizado com sucesso!"));
+            this.response.notification = new Notification("Pedido atualizado com sucesso!");
         } catch (error) {
             console.log(error.message)
             this.response.success = false;
-            this.response.notifications.push(new Notification("Ocorreu um erro ao atualizar este pedido. Por favor, tente mais tarde ou fale com um administrador."))
+            this.response.notification = new Notification("Ocorreu um erro ao atualizar este pedido. Por favor, tente mais tarde ou fale com um administrador.");
         }
         return this.response;
     }
@@ -66,7 +66,7 @@ export default class OrderService {
         } catch (error) {
             console.log(error.message)
             this.response.success = false;
-            this.response.notifications.push(new Notification("Ocorreu um erro ao procurar por este pedido. Por favor, tente mais tarde ou fale com um administrador."))
+            this.response.notification = new Notification("Ocorreu um erro ao procurar por este pedido. Por favor, tente mais tarde ou fale com um administrador.");
         }
         return this.response;
     }
@@ -82,7 +82,7 @@ export default class OrderService {
         } catch (error) {
             console.error(error);
             this.response.success = false;
-            this.response.notifications.push(new Notification("Ocorreu um erro ao procurar por pedidos. Por favor, tente mais tarde ou fale com um administrador."))
+            this.response.notification = new Notification("Ocorreu um erro ao procurar por pedidos. Por favor, tente mais tarde ou fale com um administrador.");
         }
         return this.response;
     }

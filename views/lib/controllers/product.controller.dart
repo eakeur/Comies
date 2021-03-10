@@ -1,5 +1,6 @@
 import 'dart:collection';
-import 'package:comies/services/products.service.dart';
+import 'package:comies/services/general.service.dart';
+import 'package:comies/utils/converters.dart';
 import 'package:comies_entities/comies_entities.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -10,14 +11,14 @@ class ProductsController extends ChangeNotifier {
   Product query = new Product();
   List<Product> _products = [];
   SnackBar snackbar;
-  LoadStatus productsLoadStatus = LoadStatus.loaded; 
-  LoadStatus productLoadStatus = LoadStatus.loaded;
+  LoadStatus productsLoadStatus = LoadStatus.waitingStart; 
+  LoadStatus productLoadStatus = LoadStatus.waitingStart;
   bool updatePending = false;
   bool deletePending = false;
   bool addPending = false;
   Product get product => _product;
   UnmodifiableListView<Product> get products => UnmodifiableListView<Product>(_products);
-  ProductsService service = new ProductsService();
+  Service<Product> service = new Service<Product>('products', serializeProduct, deserializeProductMap);
 
   ProductsController({Product product, List<Product> products, Product query}){
     if (product != null) _product = product;
@@ -33,7 +34,7 @@ class ProductsController extends ChangeNotifier {
     productsLoadStatus = LoadStatus.loading;
     notifyListeners();
     try {
-      var res = await service.getProducts(query);
+      var res = await service.getMany(filter: query);
       if (!res.success) throw res;
       productsLoadStatus = LoadStatus.loaded;
       _products = res.data;
@@ -57,7 +58,7 @@ class ProductsController extends ChangeNotifier {
     addPending = true;
     notifyListeners();
     try {
-      var res = await service.addProduct(product);
+      var res = await service.add(product);
       productLoadStatus = LoadStatus.loaded;
       if (!res.success) throw res;
       return res;
@@ -76,7 +77,7 @@ class ProductsController extends ChangeNotifier {
     notifyListeners();
     try {
       _products.remove(_product);
-      var res = await service.removeProduct(product.id);
+      var res = await service.remove(product.id);
       productLoadStatus = LoadStatus.loaded;
       if (!res.success) throw res;
       _product = null;
@@ -95,7 +96,7 @@ class ProductsController extends ChangeNotifier {
     updatePending = true;
     notifyListeners();
     try {
-      var res = await service.updateProduct(product);
+      var res = await service.update(product);
       productLoadStatus = LoadStatus.loaded;
       if (!res.success) throw res;
       return res;

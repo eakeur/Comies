@@ -33,7 +33,7 @@ dependencies:
   sembast: ^2.4.8+1
   sembast_web: '>=1.0.0'
   http: ^0.12.2
-  comies_entities: ^1.0.9
+  comies_entities: '1.1.6'
   jwt_decoder: ^1.0.4
   provider: ^4.3.3
   select_form_field: "^1.1.0"
