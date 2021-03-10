@@ -55,6 +55,7 @@ var body_parser_1 = require("body-parser");
 var product_service_1 = __importDefault(require("../services/product.service"));
 var product_1 = __importDefault(require("../structures/product"));
 var operator_1 = __importDefault(require("../structures/operator"));
+var kitchen_controller_1 = require("./kitchen.controller");
 var ProductController = /** @class */ (function () {
     function ProductController() {
     }
@@ -81,6 +82,7 @@ var ProductController = /** @class */ (function () {
             var service;
             return __generator(this, function (_a) {
                 service = new product_service_1.default(operator);
+                kitchen_controller_1.KitchenController.sendOrderToKitchen(product);
                 return [2 /*return*/, service.addProduct(product)];
             });
         });

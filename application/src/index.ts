@@ -8,7 +8,7 @@ import OrderController from './controllers/order.controller';
 import OperatorController from './controllers/operator.controller';
 import servefiles from "serve-static";
 import AuthenticationController from './controllers/authentication.controller';
-import { KitchenController } from './controllers/kitchen.controller';
+import { DeliveryController, KitchenController } from './controllers/kitchen.controller';
 
 class ServerInitializer {
 
@@ -37,6 +37,8 @@ class ServerInitializer {
             controllers: [CostumerController, ProductController, OrderController, OperatorController, AuthenticationController]
         }).listen(port);
         KitchenController.openKitchen(server);
+        DeliveryController.openKitchen(server);
+
         console.log(`Comies server started on port ${port}`);
     }
 }

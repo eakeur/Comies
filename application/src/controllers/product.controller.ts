@@ -3,6 +3,7 @@ import { json } from 'body-parser'
 import ProductService from '../services/product.service';
 import Product from "../structures/product";
 import Operator from "../structures/operator";
+import { KitchenController } from "./kitchen.controller";
 
 @Controller("/products")
 @Authorized()
