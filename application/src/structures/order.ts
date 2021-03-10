@@ -1,4 +1,4 @@
-import {Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, ManyToMany, JoinTable} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, ManyToMany, JoinTable, AfterInsert, AfterUpdate} from "typeorm";
 import Costumer from "./costumer";
 import PartnerConfiguration from "./partner-configurations";
 import Product from "./product";
@@ -7,6 +7,7 @@ import ProductItem from "./order-items";
 import { DeliverType, PaymentMethod, Status } from "./enums";
 import Operator from "./operator";
 import Address from "./address";
+import OrderController from "../controllers/order.controller";
 
 @Entity()
 export default class Order {
@@ -47,6 +48,13 @@ export default class Order {
 
     @Column({default: true})
     active: boolean;
+
+
+    @AfterInsert()
+    @AfterUpdate()
+    sendOrderChange(): void {
+        OrderController.sendToTheKitchen(this);
+    }
 
 
 

@@ -8,6 +8,7 @@ import OrderController from './controllers/order.controller';
 import OperatorController from './controllers/operator.controller';
 import servefiles from "serve-static";
 import AuthenticationController from './controllers/authentication.controller';
+import { KitchenController } from './controllers/kitchen.controller';
 
 class ServerInitializer {
 
@@ -28,15 +29,15 @@ class ServerInitializer {
 
     public async initializeServer(){
         const port = process.env.port || 8080;
-        useExpressServer(express().use("/", servefiles("public")), {
+        const server = useExpressServer(express().use("/", servefiles("public")), {
             cors: true,
             currentUserChecker: (action: Action) => new AuthenticationController().getOperatorByToken(action),
             classTransformer:true,
             authorizationChecker:  (action: Action, roles: any[]) => new AuthenticationController().authorizeOperator(action, roles),
             controllers: [CostumerController, ProductController, OrderController, OperatorController, AuthenticationController]
         }).listen(port);
+        KitchenController.openKitchen(server);
         console.log(`Comies server started on port ${port}`);
     }
 }
-
 ServerInitializer.start();

@@ -103,6 +103,13 @@ var OrderController = /** @class */ (function () {
             });
         });
     };
+    OrderController.sendToTheKitchen = function (order) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/];
+            });
+        });
+    };
     __decorate([
         routing_controllers_1.Authorized('getOrders'),
         routing_controllers_1.Get("/:id"),

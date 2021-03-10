@@ -45,4 +45,8 @@ export default class OrderController {
         return service.removeOrder(order);
     }
 
+    public static async sendToTheKitchen(order: Order){
+
+    }
+
 }
