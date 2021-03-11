@@ -14,7 +14,7 @@ export default class ProductItem {
     @Column({nullable: false})
     group: number;
 
-    @ManyToMany(() => ProductItem, productItem => productItem.order, { eager: true })
+    @ManyToMany(() => ProductItem, productItem => productItem.order)
     product: Product;
 
     @Column({nullable: false, type:"float"})

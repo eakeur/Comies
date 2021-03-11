@@ -58,6 +58,18 @@ export default class AuthenticationController {
         }
     }
 
+    public async getOperatorBySocketToken(token: string):Promise<Operator>{
+        try {
+            const identification : { id: number, iat:number, exp:number } = jwt.verify(token, Connection.secret) as { id: number, iat:number, exp:number };
+            const operator = await this.collection.findOne(identification.id);
+            if (!operator.active) throw new Error('Inactive user');
+            return operator;
+        } catch (error) {
+            console.log("Operador não autorizado com token: " + token)
+            return undefined;
+        }
+    }
+
     public async authorizeOperator(action: Action, roles: string[]):Promise<boolean>{
         try {
             const identification = jwt.verify(action.request.headers.authorization, Connection.secret)

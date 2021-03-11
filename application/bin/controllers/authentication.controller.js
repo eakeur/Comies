@@ -132,9 +132,32 @@ var AuthenticationController = /** @class */ (function () {
             });
         });
     };
+    AuthenticationController.prototype.getOperatorBySocketToken = function (token) {
+        return __awaiter(this, void 0, void 0, function () {
+            var identification, operator, error_3;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        identification = jwt.verify(token, connection_1.default.secret);
+                        return [4 /*yield*/, this.collection.findOne(identification.id)];
+                    case 1:
+                        operator = _a.sent();
+                        if (!operator.active)
+                            throw new Error('Inactive user');
+                        return [2 /*return*/, operator];
+                    case 2:
+                        error_3 = _a.sent();
+                        console.log("Operador não autorizado com token: " + token);
+                        return [2 /*return*/, undefined];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
     AuthenticationController.prototype.authorizeOperator = function (action, roles) {
         return __awaiter(this, void 0, void 0, function () {
-            var identification, allowed_1, operator, allowances_1, error_3;
+            var identification, allowed_1, operator, allowances_1, error_4;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -200,7 +223,7 @@ var AuthenticationController = /** @class */ (function () {
                         });
                         return [2 /*return*/, true];
                     case 2:
-                        error_3 = _a.sent();
+                        error_4 = _a.sent();
                         return [2 /*return*/, true];
                     case 3: return [2 /*return*/];
                 }

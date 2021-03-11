@@ -19,13 +19,9 @@ var order_items_1 = __importDefault(require("./order-items"));
 var enums_1 = require("./enums");
 var operator_1 = __importDefault(require("./operator"));
 var address_1 = __importDefault(require("./address"));
-var order_controller_1 = __importDefault(require("../controllers/order.controller"));
 var Order = /** @class */ (function () {
     function Order() {
     }
-    Order.prototype.sendOrderChange = function () {
-        order_controller_1.default.sendToTheKitchen(this);
-    };
     __decorate([
         typeorm_1.PrimaryGeneratedColumn(),
         __metadata("design:type", Number)
@@ -64,7 +60,6 @@ var Order = /** @class */ (function () {
     ], Order.prototype, "operator", void 0);
     __decorate([
         typeorm_1.OneToMany(function () { return order_items_1.default; }, function (productItem) { return productItem.order; }, { cascade: true, eager: true }),
-        typeorm_1.JoinTable(),
         __metadata("design:type", Array)
     ], Order.prototype, "products", void 0);
     __decorate([
@@ -75,13 +70,6 @@ var Order = /** @class */ (function () {
         typeorm_1.Column({ default: true }),
         __metadata("design:type", Boolean)
     ], Order.prototype, "active", void 0);
-    __decorate([
-        typeorm_1.AfterInsert(),
-        typeorm_1.AfterUpdate(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", []),
-        __metadata("design:returntype", void 0)
-    ], Order.prototype, "sendOrderChange", null);
     Order = __decorate([
         typeorm_1.Entity()
     ], Order);

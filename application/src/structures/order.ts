@@ -40,7 +40,6 @@ export default class Order {
     operator: Operator;
 
     @OneToMany(() => ProductItem, productItem => productItem.order, {cascade: true, eager:true})
-    @JoinTable()
     products: ProductItem[];
 
     @Column({nullable: false, type:"float"})
@@ -48,13 +47,6 @@ export default class Order {
 
     @Column({default: true})
     active: boolean;
-
-
-    @AfterInsert()
-    @AfterUpdate()
-    sendOrderChange(): void {
-        OrderController.sendToTheKitchen(this);
-    }
 
 
 

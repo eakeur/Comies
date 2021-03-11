@@ -55,6 +55,7 @@ var body_parser_1 = require("body-parser");
 var order_service_1 = __importDefault(require("../services/order.service"));
 var order_1 = __importDefault(require("../structures/order"));
 var operator_1 = __importDefault(require("../structures/operator"));
+var kitchen_controller_1 = require("./kitchen.controller");
 var OrderController = /** @class */ (function () {
     function OrderController() {
     }
@@ -78,10 +79,18 @@ var OrderController = /** @class */ (function () {
     };
     OrderController.prototype.addOrder = function (operator, order) {
         return __awaiter(this, void 0, void 0, function () {
-            var service;
+            var service, response;
             return __generator(this, function (_a) {
-                service = new order_service_1.default(operator);
-                return [2 /*return*/, service.addOrder(order)];
+                switch (_a.label) {
+                    case 0:
+                        service = new order_service_1.default(operator);
+                        return [4 /*yield*/, service.addOrder(order)];
+                    case 1:
+                        response = _a.sent();
+                        if (response.success)
+                            kitchen_controller_1.KitchenController.sendOrderToKitchen(order);
+                        return [2 /*return*/, response];
+                }
             });
         });
     };
@@ -106,6 +115,7 @@ var OrderController = /** @class */ (function () {
     OrderController.sendToTheKitchen = function (order) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
+                kitchen_controller_1.KitchenController.sendOrderToKitchen(order);
                 return [2 /*return*/];
             });
         });

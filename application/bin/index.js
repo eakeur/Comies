@@ -37,6 +37,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var connection_1 = __importDefault(require("./utils/connection"));
 require("reflect-metadata");
@@ -47,6 +54,7 @@ var product_controller_1 = __importDefault(require("./controllers/product.contro
 var order_controller_1 = __importDefault(require("./controllers/order.controller"));
 var operator_controller_1 = __importDefault(require("./controllers/operator.controller"));
 var serve_static_1 = __importDefault(require("serve-static"));
+var WebSocket = __importStar(require("ws"));
 var authentication_controller_1 = __importDefault(require("./controllers/authentication.controller"));
 var kitchen_controller_1 = require("./controllers/kitchen.controller");
 var ServerInitializer = /** @class */ (function () {
@@ -77,16 +85,95 @@ var ServerInitializer = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var port, server;
             return __generator(this, function (_a) {
-                port = process.env.port || 8080;
-                server = routing_controllers_1.useExpressServer(express_1.default().use("/", serve_static_1.default("public")), {
-                    cors: true,
-                    currentUserChecker: function (action) { return new authentication_controller_1.default().getOperatorByToken(action); },
-                    classTransformer: true,
-                    authorizationChecker: function (action, roles) { return new authentication_controller_1.default().authorizeOperator(action, roles); },
-                    controllers: [costumer_controller_1.default, product_controller_1.default, order_controller_1.default, operator_controller_1.default, authentication_controller_1.default]
-                }).listen(port);
-                kitchen_controller_1.KitchenController.openKitchen(server);
-                console.log("Comies server started on port " + port);
+                switch (_a.label) {
+                    case 0:
+                        port = process.env.port || 8080;
+                        server = routing_controllers_1.useExpressServer(express_1.default().use("/", serve_static_1.default("public")), {
+                            cors: true,
+                            currentUserChecker: function (action) { return new authentication_controller_1.default().getOperatorByToken(action); },
+                            classTransformer: true,
+                            authorizationChecker: function (action, roles) { return new authentication_controller_1.default().authorizeOperator(action, roles); },
+                            controllers: [costumer_controller_1.default, product_controller_1.default, order_controller_1.default, operator_controller_1.default, authentication_controller_1.default]
+                        }).listen(port);
+                        return [4 /*yield*/, this.openRooms(server)];
+                    case 1:
+                        _a.sent();
+                        console.log("Comies server started on port " + port);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    ServerInitializer.prototype.openRooms = function (server) {
+        return __awaiter(this, void 0, void 0, function () {
+            var socket;
+            var _this = this;
+            return __generator(this, function (_a) {
+                socket = new WebSocket.Server({ server: server });
+                kitchen_controller_1.KitchenController.openKitchen(socket);
+                socket.on("connection", function (srv, req) { return __awaiter(_this, void 0, void 0, function () {
+                    var routes_1, operator, partnerID_1, storeID_1, error_1;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                _a.trys.push([0, 2, , 3]);
+                                routes_1 = req.url.split('/');
+                                return [4 /*yield*/, new authentication_controller_1.default().getOperatorBySocketToken(routes_1[4])];
+                            case 1:
+                                operator = _a.sent();
+                                if (operator) {
+                                    console.log('Operator ' + operator.id + ' from store ' + operator.store.id + ' connected to the socket with address :' + req.socket.remoteAddress);
+                                    partnerID_1 = Number.parseInt(routes_1[2], 10);
+                                    storeID_1 = Number.parseInt(routes_1[3], 10);
+                                    if (partnerID_1 === operator.partner.id && storeID_1 === operator.store.id) {
+                                        switch (routes_1[1]) {
+                                            case "":
+                                                srv.close();
+                                                break;
+                                            case "kitchen":
+                                                kitchen_controller_1.KitchenController.addClient(srv, partnerID_1, storeID_1);
+                                                break;
+                                            default:
+                                                srv.close();
+                                                break;
+                                        }
+                                        srv.on("message", function (message) {
+                                            switch (routes_1[1]) {
+                                                case "":
+                                                    srv.close();
+                                                    break;
+                                                case "kitchen":
+                                                    kitchen_controller_1.KitchenController.receiveSocket(message, routes_1.slice(2));
+                                                    break;
+                                                default:
+                                                    srv.close();
+                                                    break;
+                                            }
+                                        });
+                                        srv.on("close", function (message) {
+                                            switch (routes_1[1]) {
+                                                case "": break;
+                                                case "kitchen":
+                                                    kitchen_controller_1.KitchenController.removeClient(srv, partnerID_1, storeID_1);
+                                                    break;
+                                                default: break;
+                                            }
+                                        });
+                                    }
+                                    else
+                                        srv.close();
+                                }
+                                else
+                                    srv.close();
+                                return [3 /*break*/, 3];
+                            case 2:
+                                error_1 = _a.sent();
+                                srv.close();
+                                return [3 /*break*/, 3];
+                            case 3: return [2 /*return*/];
+                        }
+                    });
+                }); });
                 return [2 /*return*/];
             });
         });

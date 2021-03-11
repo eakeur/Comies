@@ -33,7 +33,7 @@ var ProductItem = /** @class */ (function () {
         __metadata("design:type", Number)
     ], ProductItem.prototype, "group", void 0);
     __decorate([
-        typeorm_1.ManyToMany(function () { return ProductItem_1; }, function (productItem) { return productItem.order; }, { eager: true }),
+        typeorm_1.ManyToMany(function () { return ProductItem_1; }, function (productItem) { return productItem.order; }),
         __metadata("design:type", product_1.default)
     ], ProductItem.prototype, "product", void 0);
     __decorate([

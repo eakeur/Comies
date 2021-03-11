@@ -1,34 +1,50 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var WebSocket = __importStar(require("ws"));
-var costumer_service_1 = __importDefault(require("../services/costumer.service"));
-var costumer_1 = __importDefault(require("../structures/costumer"));
 var KitchenController = /** @class */ (function () {
     function KitchenController() {
     }
-    KitchenController.openKitchen = function (io) {
-        var _this = this;
-        KitchenController.socket = new WebSocket.Server({ server: io })
-            .on("connection", function (srv) {
-            console.log('a user connected on ' + srv.url);
-            srv.on("message", function (message) { return _this.sendOrderToKitchen({ message: message }); });
-            new costumer_service_1.default().getCostumers(new costumer_1.default())
-                .then(function (x) { return srv.send(JSON.stringify(x.data)); });
-        });
+    KitchenController.openKitchen = function (socket) {
+        KitchenController.socket = socket;
     };
-    KitchenController.sendOrderToKitchen = function (data) {
-        KitchenController.socket.clients.forEach(function (client) { return client.send(JSON.stringify(data)); });
+    KitchenController.addClient = function (client, partnerID, storeID) {
+        if (KitchenController.rooms.has(partnerID)) {
+            if (KitchenController.rooms.get(partnerID).has(storeID))
+                KitchenController.rooms.get(partnerID).get(storeID).add(client);
+            else {
+                var socketSet = new Set();
+                socketSet.add(client);
+                KitchenController.rooms.get(partnerID);
+            }
+        }
+        else {
+            var orderMap = new Map();
+            var socketSet = new Set();
+            socketSet.add(client);
+            orderMap.set(storeID, socketSet);
+            KitchenController.rooms.set(partnerID, orderMap);
+        }
     };
+    KitchenController.removeClient = function (client, partnerID, storeID) {
+        KitchenController.rooms.get(partnerID).get(storeID).delete(client);
+    };
+    KitchenController.sendOrderToKitchen = function (order) {
+        if (KitchenController.rooms.has(order.store.partner.id)) {
+            if (KitchenController.rooms.get(order.store.partner.id).has(order.store.id)) {
+                KitchenController.rooms.get(order.store.partner.id).get(order.store.id).forEach(function (client) {
+                    client.send(JSON.stringify(order));
+                });
+            }
+        }
+    };
+    KitchenController.receiveSocket = function (message, route) {
+        try {
+            KitchenController.rooms.get(Number.parseInt(route[0], 10)).get(Number.parseInt(route[1], 10))
+                .forEach(function (cli) { return cli.send("Someone put something on the oven: " + message); });
+        }
+        catch (error) {
+        }
+    };
+    KitchenController.rooms = new Map();
     return KitchenController;
 }());
 exports.KitchenController = KitchenController;

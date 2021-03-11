@@ -46,6 +46,11 @@ class DrawerState extends State<ComiesDrawer> {
             title: Text("Reajustar"),
             onTap: () => Navigator.pushNamed(context, "/welcome"),
           ),
+          ListTile(
+            leading: Icon(Icons.food_bank),
+            title: Text("Cozinha"),
+            onTap: () => Navigator.pushNamed(context, "/panel"),
+          ),
           Divider(thickness: 1.2),
           SwitchListTile(
             title: Text('Modo noturno'),

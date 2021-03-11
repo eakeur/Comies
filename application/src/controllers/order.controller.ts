@@ -3,6 +3,7 @@ import { json } from 'body-parser'
 import OrderService from "../services/order.service";
 import Order from "../structures/order";
 import Operator from "../structures/operator";
+import { KitchenController } from "./kitchen.controller";
 
 @Controller("/orders")
 export default class OrderController {
@@ -26,7 +27,9 @@ export default class OrderController {
     @UseBefore(json())
     public async addOrder(@CurrentUser({required:true}) operator: Operator, @Body() order:Order){
         const service:OrderService = new OrderService(operator);
-        return service.addOrder(order);
+        const response = await service.addOrder(order);
+        if (response.success) KitchenController.sendOrderToKitchen(order);
+        return response;
     }
 
     @Authorized('updateOrders')
@@ -46,7 +49,7 @@ export default class OrderController {
     }
 
     public static async sendToTheKitchen(order: Order){
-
+        KitchenController.sendOrderToKitchen(order);
     }
 
 }

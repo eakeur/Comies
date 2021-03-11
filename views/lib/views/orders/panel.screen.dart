@@ -1,14 +1,18 @@
+import 'package:comies/main.dart';
 import 'package:comies/utils/declarations/environment.dart';
 import 'package:comies_entities/comies_entities.dart';
 import 'package:flutter/material.dart';
+import 'package:web_socket_channel/io.dart';
 
 class OrdersPanelScreen extends StatefulWidget {
+  final channel = IOWebSocketChannel.connect('ws://localhost:8080/kitchen/1/1/'+session.token);
   @override
   OrdersPanel createState() => OrdersPanel();
 }
 
 class OrdersPanel extends State<OrdersPanelScreen> {
   bool isBigScreen() => MediaQuery.of(context).size.width > widthDivisor;
+  
 
   @override
   Widget build(BuildContext context) {
@@ -20,28 +24,12 @@ class OrdersPanel extends State<OrdersPanelScreen> {
         mini: true,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.miniStartTop,
-      body: AdaptableWidget(
-        children: [
-          NewOrdersColumn(
-            orders: [],
-          ),
-          NewOrdersColumn(
-            orders: [new Order(), new Order()],
-          ),
-          NewOrdersColumn(
-            orders: [
-              new Order(),
-              new Order(),
-              new Order(),
-              new Order(),
-              new Order(),
-            ],
-          ),
-          NewOrdersColumn(
-            orders: [],
-          ),
-        ],
-      ),
+      body: StreamBuilder(
+        stream: widget.channel.stream,
+        builder: (context, data){
+          return data.hasData ? Text(data.data) : Text("Nenhum pedido por aqui");
+        },
+      )
 
     );
   }
