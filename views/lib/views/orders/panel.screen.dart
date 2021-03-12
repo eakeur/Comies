@@ -1,18 +1,31 @@
+import 'dart:convert';
+
+import 'package:comies/components/screen.comp.dart';
+import 'package:comies/controllers/main.controller.dart';
 import 'package:comies/main.dart';
+import 'package:comies/utils/converters.dart';
 import 'package:comies/utils/declarations/environment.dart';
 import 'package:comies_entities/comies_entities.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:web_socket_channel/io.dart';
 
 class OrdersPanelScreen extends StatefulWidget {
-  final channel = IOWebSocketChannel.connect('ws://localhost:8080/kitchen/1/1/'+session.token);
+  final channel = IOWebSocketChannel.connect(session.kitchenRoute, headers: {"authorization": session.token});
   @override
   OrdersPanel createState() => OrdersPanel();
 }
 
 class OrdersPanel extends State<OrdersPanelScreen> {
   bool isBigScreen() => MediaQuery.of(context).size.width > widthDivisor;
-  
+  List<Order> orders = [];
+
+  void setOrder(List<dynamic> ordersMap){
+    ordersMap.map((e) => deserializeOrderMap(e)).toList().forEach((ord) {
+      if (!orders.any((order) => order.id == ord.id)) orders.add(ord);
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +40,17 @@ class OrdersPanel extends State<OrdersPanelScreen> {
       body: StreamBuilder(
         stream: widget.channel.stream,
         builder: (context, data){
-          return data.hasData ? Text(data.data) : Text("Nenhum pedido por aqui");
+
+          if (data.hasData){
+            setOrder(jsonDecode(data.data));
+
+            List<Order> pending = orders.where((ord) => ord.status == Status.pending).toList();
+            if (pending.isNotEmpty) return Column(children: [
+              for (var order in pending)
+                Card(child: Text("PEDIDO: R\$${order.price}"))
+            ]);
+            else return Center(child: Text("Ops! Nenhum pedido na cozinha."));
+          } else return Center(child: Text("Ops! Nenhum pedido na cozinha."));
         },
       )
 

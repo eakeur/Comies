@@ -1,6 +1,9 @@
 import Order from "../structures/order";
 import {IncomingMessage, Server} from 'http';
 import * as WebSocket from 'ws';
+import Operator from "../structures/operator";
+import OrderService from "../services/order.service";
+import { Status } from "../structures/enums";
 
 export class KitchenController {
 
@@ -11,7 +14,7 @@ export class KitchenController {
         KitchenController.socket = socket;
     }
 
-    public static addClient(client: WebSocket, partnerID: number, storeID: number){
+    public static async addClient(client: WebSocket, partnerID: number, storeID: number, operator: Operator){
         if (KitchenController.rooms.has(partnerID)){
             if(KitchenController.rooms.get(partnerID).has(storeID)) KitchenController.rooms.get(partnerID).get(storeID).add(client);
             else {
@@ -24,6 +27,8 @@ export class KitchenController {
             orderMap.set(storeID, socketSet);
             KitchenController.rooms.set(partnerID, orderMap);
         }
+        client.send(JSON.stringify((await new OrderService(operator).getOrders(new Order())).data));
+
     }
 
     public static removeClient(client: WebSocket, partnerID: number, storeID: number){
@@ -34,7 +39,7 @@ export class KitchenController {
         if (KitchenController.rooms.has(order.store.partner.id)){
             if(KitchenController.rooms.get(order.store.partner.id).has(order.store.id)){
                 KitchenController.rooms.get(order.store.partner.id).get(order.store.id).forEach(client => {
-                    client.send(JSON.stringify(order));
+                    client.send(JSON.stringify([order]));
                 });
             }
         }

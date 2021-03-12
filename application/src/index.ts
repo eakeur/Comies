@@ -50,7 +50,7 @@ class ServerInitializer {
         socket.on("connection", async (srv: WebSocket, req: IncomingMessage) => {
             try {
                 const routes = req.url.split('/');
-                const operator = await new AuthenticationController().getOperatorBySocketToken(routes[4]);
+                const operator = await new AuthenticationController().getOperatorBySocketToken(req.headers.authorization);
                 if (operator){
                     console.log('Operator '+operator.id+' from store '+operator.store.id+' connected to the socket with address :' + req.socket.remoteAddress);
                     const partnerID = Number.parseInt(routes[2], 10);
@@ -58,7 +58,7 @@ class ServerInitializer {
                     if ( partnerID === operator.partner.id && storeID === operator.store.id){
                         switch (routes[1]) {
                             case "": srv.close(); break;
-                            case "kitchen": KitchenController.addClient(srv, partnerID, storeID); break;
+                            case "kitchen": KitchenController.addClient(srv, partnerID, storeID, operator); break;
                             default: srv.close(); break;
                         }
                         srv.on("message", (message: any) => {

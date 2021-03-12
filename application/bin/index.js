@@ -118,7 +118,7 @@ var ServerInitializer = /** @class */ (function () {
                             case 0:
                                 _a.trys.push([0, 2, , 3]);
                                 routes_1 = req.url.split('/');
-                                return [4 /*yield*/, new authentication_controller_1.default().getOperatorBySocketToken(routes_1[4])];
+                                return [4 /*yield*/, new authentication_controller_1.default().getOperatorBySocketToken(req.headers.authorization)];
                             case 1:
                                 operator = _a.sent();
                                 if (operator) {
@@ -131,7 +131,7 @@ var ServerInitializer = /** @class */ (function () {
                                                 srv.close();
                                                 break;
                                             case "kitchen":
-                                                kitchen_controller_1.KitchenController.addClient(srv, partnerID_1, storeID_1);
+                                                kitchen_controller_1.KitchenController.addClient(srv, partnerID_1, storeID_1, operator);
                                                 break;
                                             default:
                                                 srv.close();

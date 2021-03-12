@@ -12,9 +12,12 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 class SessionController extends ChangeNotifier {
 
   Operator operator;
+  Partner partner;
+  Store store;
   String token;
   Profile permissions;
   String server;
+  String get kitchenRoute => "${server.replaceFirst("http://", "ws://").replaceFirst("https://", "wss://")}/kitchen/${partner.id}/${store.id}";
 
   List<Widget> _actionsOnPage = [];
   UnmodifiableListView<Widget> get actionsOnPage => _actionsOnPage;
@@ -83,12 +86,15 @@ class SessionController extends ChangeNotifier {
   }
   AuthenticationScreen goToAuthenticationScreen(){
     return AuthenticationScreen();
+    
   }
 
   Future<void> _getOperator() async {
     var res = await new Service<Operator>('operators', serializeOperator, deserializeOperatorMap).getOne(JwtDecoder.decode(token)['id']);
     if (res.success){
       operator = res.data;
+      partner = operator.partner;
+      store = operator.store;
       permissions = operator.profile;
     }
   }

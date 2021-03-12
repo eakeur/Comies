@@ -32,9 +32,7 @@ export default class OrderService {
     }
 
     public async removeOrder(order:Order):Promise<Response>{
-        const response = new Response();
         try {
-            if (order.store !== this.operator.store){throw Error;}
             await this.collection.remove(order);
             this.response.notification = new Notification("Pedido excluído com sucesso!");
         } catch (error) {
@@ -47,7 +45,6 @@ export default class OrderService {
 
     public async updateOrder(order:Order):Promise<Response>{
         try {
-            if (order.store !== this.operator.store){throw Error;}
             await this.collection.save(order);
             this.response.notification = new Notification("Pedido atualizado com sucesso!");
         } catch (error) {
@@ -61,7 +58,6 @@ export default class OrderService {
     public async getOrderById(id:number):Promise<Response>{
         try {
             const order = await this.collection.findOne(id);
-            if (order.store !== this.operator.store){throw Error;}
             this.response.data = order;
         } catch (error) {
             console.log(error.message)
@@ -73,12 +69,7 @@ export default class OrderService {
 
     public async getOrders(filters:Order):Promise<Response>{
         try {
-            if (filters.store){
-                if (filters.store !== this.operator.store){throw Error;}
-            }
-            const query = this.collection.createQueryBuilder(); query.where("active = 1");
-            query.orderBy("placed");
-            this.response.data = await query.getMany();
+            this.response.data = await this.collection.find();
         } catch (error) {
             console.error(error);
             this.response.success = false;

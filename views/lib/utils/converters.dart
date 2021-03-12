@@ -107,7 +107,10 @@ import 'package:comies_entities/comies_entities.dart';
         op.profile = new Profile();
         if (map['profile'] != null) op.profile = deserializeProfileMap(map['profile']);
         op.active = map["active"];
-        op.orders = map['orders'];
+        op.partner = map['partner'] != null ? deserializePartnerMap(map['partner']) : null;
+        op.store = map['store'] != null ? deserializeStoreMap(map['store']) : null;
+        op.orders = [];
+        if (map['orders'] != null && map['orders'] is List) map['orders'].forEach((e) => op.orders.add(deserializeOrderMap(e)));
       }
       return op;
     } catch (e) {throw e;}
@@ -125,9 +128,10 @@ import 'package:comies_entities/comies_entities.dart';
       if (map["items"] != null && map["items"] is List) map["items"].forEach((item) => op.items.add(deserializeItemMap(item)));
       op.operator = map["operator"] != null ? deserializeOperatorMap(map["operator"]) : null;
       op.payment = PaymentMethod.values[map['payment']];
-      op.placed = DateTime.tryParse(map['placed']);
-      op.price = map["price"];
-      op.status = Status.values[map['status']];
+      op.placed = map['placed'] != null ? DateTime.tryParse(map['placed']) : null;
+      var price = map["price"];
+      op.price =  price is int ? price.toDouble() : price is double ? price : null;
+      op.status = map['status'] != null ? Status.values[map['status']] : null;
       op.store = map["store"] != null ? null : null;
       return op;
     } catch (e) {throw e;}
@@ -142,11 +146,42 @@ import 'package:comies_entities/comies_entities.dart';
         op.discount = map['discount'];
         op.group = map['group'];
         op.order = map['order'];
-        op.quantity = map['quantity'];
+        var qty = map['quantity'];
+        op.quantity = qty is int ? qty.toDouble() : qty is double ? qty : null;
         return op;
     } catch (e) {throw e;}
   }
 
+  Store deserializeStoreMap(Map<String, dynamic> map){
+    try {
+      Store op = new Store();
+      op.id = map['id'];
+      op.name = map["name"];
+      op.operators = [];
+      if (map["operators"] != null && map["operators"] is List) map['operators'].forEach((op) => op.operators.add(deserializeOperatorMap(op)));
+      op.partner = map["partner"] != null ? deserializePartnerMap(map["partner"]) : null;
+      return op;
+    } catch (e) {throw e;}
+  }
+
+    Partner deserializePartnerMap(Map<String, dynamic> map){
+    try {
+      Partner op = new Partner();
+      op.id = map['id'];
+      op.name = map["name"];
+      op.products = [];
+      if (map["products"] != null && map["products"] is List) map['products'].forEach((op) => op.products.add(deserializeProductMap(op)));
+      op.active = map['active'];
+      op.profiles = [];
+      if (map["profiles"] != null && map["profiles"] is List) map['profiles'].forEach((op) => op.profiles.add(new Profile()));
+      op.configurations = [];
+      if (map["configurations"] != null && map["configurations"] is List) map['configurations'].forEach((op) => op.products.add(new Configuration()));
+      op.operators = [];
+      if (map["operators"] != null && map["operators"] is List) map['operators'].forEach((op) => op.products.add(deserializeOperatorMap(op)));
+
+      return op;
+    } catch (e) {throw e;}
+  }
 
 
 
@@ -262,6 +297,37 @@ import 'package:comies_entities/comies_entities.dart';
         if (prod.price != null) "price": prod.price,
         if (prod.unity != null) "unity": prod.unity.index,
         if (prod.partner != null) "partner": prod.partner
+      };
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Map<String, dynamic> serializePartner(Partner prod) {
+    try {
+      return {
+        if (prod.id != null) "id": prod.id,
+        if (prod.name != null) "name": prod.name,
+        if (prod.stores != null) "stores": prod.stores.map((e) => serializeStore(e)),
+        if (prod.products != null) "products": prod.products.map((e) => serializeProduct(e)),
+        if (prod.active != null) "active": prod.active,
+        // if (prod.profiles != null) "profiles": prod.profiles.map((e) => e.),
+        // if (prod.configurations != null) "configurations": prod.configurations,
+        // if (prod.operators != null) "unity": prod.operators.map((e) => serializeOperator(e))
+      };
+    } catch (e) {
+      throw e;
+    }
+  }
+
+    Map<String, dynamic> serializeStore(Store prod) {
+    try {
+      return {
+        if (prod.id != null) "id": prod.id,
+        if (prod.name != null) "name": prod.name,
+        if (prod.partner != null) "partner": serializePartner(prod.partner),
+        if (prod.orders != null) "orders": prod.orders.map((e) => serializeOrder(e)),
+        if (prod.operators != null) "active": prod.operators.map((e) => serializeOperator(e)),
       };
     } catch (e) {
       throw e;

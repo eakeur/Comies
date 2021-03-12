@@ -75,29 +75,23 @@ var OrderService = /** @class */ (function () {
     };
     OrderService.prototype.removeOrder = function (order) {
         return __awaiter(this, void 0, void 0, function () {
-            var response, error_2;
+            var error_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        response = new response_1.default();
-                        _a.label = 1;
-                    case 1:
-                        _a.trys.push([1, 3, , 4]);
-                        if (order.store !== this.operator.store) {
-                            throw Error;
-                        }
+                        _a.trys.push([0, 2, , 3]);
                         return [4 /*yield*/, this.collection.remove(order)];
-                    case 2:
+                    case 1:
                         _a.sent();
                         this.response.notification = new notification_1.default("Pedido excluído com sucesso!");
-                        return [3 /*break*/, 4];
-                    case 3:
+                        return [3 /*break*/, 3];
+                    case 2:
                         error_2 = _a.sent();
                         console.log(error_2.message);
                         this.response.success = false;
                         this.response.notification = new notification_1.default("Ocorreu um erro ao excluir este pedido. Por favor, tente mais tarde ou fale com um administrador.");
-                        return [3 /*break*/, 4];
-                    case 4: return [2 /*return*/, this.response];
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/, this.response];
                 }
             });
         });
@@ -109,9 +103,6 @@ var OrderService = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        if (order.store !== this.operator.store) {
-                            throw Error;
-                        }
                         return [4 /*yield*/, this.collection.save(order)];
                     case 1:
                         _a.sent();
@@ -138,9 +129,6 @@ var OrderService = /** @class */ (function () {
                         return [4 /*yield*/, this.collection.findOne(id)];
                     case 1:
                         order = _a.sent();
-                        if (order.store !== this.operator.store) {
-                            throw Error;
-                        }
                         this.response.data = order;
                         return [3 /*break*/, 3];
                     case 2:
@@ -156,21 +144,13 @@ var OrderService = /** @class */ (function () {
     };
     OrderService.prototype.getOrders = function (filters) {
         return __awaiter(this, void 0, void 0, function () {
-            var query, _a, error_5;
+            var _a, error_5;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 2, , 3]);
-                        if (filters.store) {
-                            if (filters.store !== this.operator.store) {
-                                throw Error;
-                            }
-                        }
-                        query = this.collection.createQueryBuilder();
-                        query.where("active = 1");
-                        query.orderBy("placed");
                         _a = this.response;
-                        return [4 /*yield*/, query.getMany()];
+                        return [4 /*yield*/, this.collection.find()];
                     case 1:
                         _a.data = _b.sent();
                         return [3 /*break*/, 3];
