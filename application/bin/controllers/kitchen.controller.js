@@ -58,7 +58,7 @@ var KitchenController = /** @class */ (function () {
                             else {
                                 socketSet = new Set();
                                 socketSet.add(client);
-                                KitchenController.rooms.get(partnerID);
+                                KitchenController.rooms.get(partnerID).set(storeID, socketSet);
                             }
                         }
                         else {

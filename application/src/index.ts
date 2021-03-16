@@ -12,6 +12,7 @@ import AuthenticationController from './controllers/authentication.controller';
 import { KitchenController } from './controllers/kitchen.controller';
 import { DeliveryController } from './controllers/delivery.controller';
 import { IncomingMessage, Server } from 'http';
+import { ScreenController } from './controllers/screen.controller';
 
 class ServerInitializer {
 
@@ -31,7 +32,7 @@ class ServerInitializer {
     }
 
     public async initializeServer(){
-        const port = process.env.port || 8080;
+        const port = process.env.PORT || 8080;
         const server = useExpressServer(express().use("/", servefiles("public")), {
             cors: true,
             currentUserChecker: (action: Action) => new AuthenticationController().getOperatorByToken(action),
@@ -59,12 +60,14 @@ class ServerInitializer {
                         switch (routes[1]) {
                             case "": srv.close(); break;
                             case "kitchen": KitchenController.addClient(srv, partnerID, storeID, operator); break;
+                            case "screen": ScreenController.addClient(srv, partnerID, storeID, operator, routes[4] === "TV"); break;
                             default: srv.close(); break;
                         }
                         srv.on("message", (message: any) => {
                             switch (routes[1]) {
                                 case "": srv.close(); break;
                                 case "kitchen": KitchenController.receiveSocket(message, routes.slice(2)); break;
+                                case "screen": ScreenController.receiveSocket(message, routes.slice(2)); break;
                                 default: srv.close(); break;
                             }
                         });

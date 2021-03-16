@@ -19,7 +19,7 @@ export class KitchenController {
             if(KitchenController.rooms.get(partnerID).has(storeID)) KitchenController.rooms.get(partnerID).get(storeID).add(client);
             else {
                 const socketSet = new Set<WebSocket>();socketSet.add(client);
-                KitchenController.rooms.get(partnerID);
+                KitchenController.rooms.get(partnerID).set(storeID, socketSet);
             }
         } else {
             const orderMap = new Map<number, Set<WebSocket>>();

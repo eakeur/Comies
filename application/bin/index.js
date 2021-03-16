@@ -57,6 +57,7 @@ var serve_static_1 = __importDefault(require("serve-static"));
 var WebSocket = __importStar(require("ws"));
 var authentication_controller_1 = __importDefault(require("./controllers/authentication.controller"));
 var kitchen_controller_1 = require("./controllers/kitchen.controller");
+var screen_controller_1 = require("./controllers/screen.controller");
 var ServerInitializer = /** @class */ (function () {
     function ServerInitializer() {
         var _this = this;
@@ -87,7 +88,7 @@ var ServerInitializer = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        port = process.env.port || 8080;
+                        port = process.env.PORT || 8080;
                         server = routing_controllers_1.useExpressServer(express_1.default().use("/", serve_static_1.default("public")), {
                             cors: true,
                             currentUserChecker: function (action) { return new authentication_controller_1.default().getOperatorByToken(action); },
@@ -133,6 +134,9 @@ var ServerInitializer = /** @class */ (function () {
                                             case "kitchen":
                                                 kitchen_controller_1.KitchenController.addClient(srv, partnerID_1, storeID_1, operator);
                                                 break;
+                                            case "screen":
+                                                screen_controller_1.ScreenController.addClient(srv, partnerID_1, storeID_1, operator, routes_1[4] === "TV");
+                                                break;
                                             default:
                                                 srv.close();
                                                 break;
@@ -144,6 +148,9 @@ var ServerInitializer = /** @class */ (function () {
                                                     break;
                                                 case "kitchen":
                                                     kitchen_controller_1.KitchenController.receiveSocket(message, routes_1.slice(2));
+                                                    break;
+                                                case "screen":
+                                                    screen_controller_1.ScreenController.receiveSocket(message, routes_1.slice(2));
                                                     break;
                                                 default:
                                                     srv.close();

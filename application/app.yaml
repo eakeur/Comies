@@ -1,1 +1,3 @@
-runtime: nodejs12 # or nodejs10
+runtime: nodejs14
+network:
+  session_affinity: true
