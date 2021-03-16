@@ -18,7 +18,8 @@ class SessionController extends ChangeNotifier {
   Profile permissions;
   String server;
   String get kitchenRoute => "${server.replaceFirst("http://", "ws://").replaceFirst("https://", "wss://")}/kitchen/${partner.id}/${store.id}";
-
+  String get screenRoute => "${server.replaceFirst("http://", "ws://").replaceFirst("https://", "wss://")}/screen/${partner.id}/${store.id}/";
+  String get screenTVRoute => "${server.replaceFirst("http://", "ws://").replaceFirst("https://", "wss://")}/screen/${partner.id}/${store.id}/TV";
   List<Widget> _actionsOnPage = [];
   UnmodifiableListView<Widget> get actionsOnPage => _actionsOnPage;
 

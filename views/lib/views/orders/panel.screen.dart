@@ -1,13 +1,12 @@
 import 'dart:convert';
-
+import 'dart:io';
 import 'package:comies/components/screen.comp.dart';
-import 'package:comies/controllers/main.controller.dart';
+import 'package:comies/components/titlebox.comp.dart';
 import 'package:comies/main.dart';
 import 'package:comies/utils/converters.dart';
 import 'package:comies/utils/declarations/environment.dart';
 import 'package:comies_entities/comies_entities.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:web_socket_channel/io.dart';
 
 class OrdersPanelScreen extends StatefulWidget {
@@ -26,105 +25,112 @@ class OrdersPanel extends State<OrdersPanelScreen> {
     });
   }
 
+  IOWebSocketChannel ch;
+  ScrollController ctr;
+  String cod = "";
+  var show = true;
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pop(context),
-        tooltip: 'Voltar',
-        child: Icon(Icons.arrow_back),
-        mini: true,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniStartTop,
-      body: StreamBuilder(
-        stream: widget.channel.stream,
-        builder: (context, data){
-
-          if (data.hasData){
-            setOrder(jsonDecode(data.data));
-
-            List<Order> pending = orders.where((ord) => ord.status == Status.pending).toList();
-            if (pending.isNotEmpty) return Column(children: [
-              for (var order in pending)
-                Card(child: Text("PEDIDO: R\$${order.price}"))
-            ]);
-            else return Center(child: Text("Ops! Nenhum pedido na cozinha."));
-          } else return Center(child: Text("Ops! Nenhum pedido na cozinha."));
-        },
-      )
-
-    );
+  void initState(){
+    ctr = new ScrollController();
+    super.initState();
   }
-}
-
-class AdaptableWidget extends StatelessWidget {
-  final List<Widget> children;
-  AdaptableWidget({this.children});
 
   @override
   Widget build(BuildContext context) {
-    bool isBigScreen() => MediaQuery.of(context).size.width > widthDivisor;
-    return isBigScreen()
-        ? Row(
-            children: [
-              if (children.length >= 0) Expanded(flex: 25, child: children[0]),
-              if (children.length > 1) Expanded(flex: 25, child: children[1]),
-              if (children.length > 2) Expanded(flex: 25, child: children[2]),
-              if (children.length > 3) Expanded(flex: 25, child: children[3]),
-            ],
-          )
-        : Column(
-            children: children,
-          );
-  }
-}
-
-class NewOrdersColumn extends StatelessWidget {
-  final List<Order> orders;
-  NewOrdersColumn({this.orders});
-  bool hasOrders() => orders.isNotEmpty;
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(top: 30, left: 15),
-      child: !hasOrders()
-          ? Center(child: Text('Nenhum pedido nesta etapa!'))
-          : ListView(
-              children: [
-                for (var order in orders)
-                  GeneralOrderCard(order: order)
-              ],
+    return ch != null ? StreamBuilder(
+        stream: ch.stream,
+        builder: (context, datea){
+          
+          if (datea.hasData){
+            if (show){cod = datea.data; show = false;}
+            else ctr.jumpTo(double.tryParse(datea.data));
+          }
+          return Scaffold(
+            floatingActionButton: FloatingActionButton(
+              onPressed: () => Navigator.pop(context),
+              tooltip: 'Voltar',
+              child: Icon(Icons.arrow_back),
+              mini: true,
             ),
-    );
+
+            appBar: AppBar(title: Text("Cozinha" + (cod == "" ? "" : " - ID: $cod"))),
+            floatingActionButtonLocation: FloatingActionButtonLocation.miniStartTop,
+
+
+            body: StreamBuilder(
+                  stream: widget.channel.stream,
+                  builder: (context, data){
+
+                    if (data.hasData){
+                      setOrder(jsonDecode(data.data));
+                      List<Order> pending = orders.where((ord) => ord.status == Status.pending).toList();
+                      List<Order> preparing = orders.where((ord) => ord.status == Status.preparing).toList();
+                      return Screen(
+                        onRefresh: () => new Future(() => setState(() {})),
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(flex: 35,
+                                child: ListView(controller: ctr, children: [
+                                  for (var order in pending) OrderCard(order: order)
+                                ]),
+                              ),
+                              Expanded(flex: 65,
+                                child: ListView(children: [
+                                  for (var order in preparing) OrderCard(order: order)
+                                ]),
+                              )
+                            ],
+                          )
+                        ]
+                      );
+                    } else return Center(child: Text("Ops! Nenhum pedido na cozinha."));
+                  },
+                )
+
+          );
+        },
+      ) : Center(child:TextButton(child: Text("INICIAR"), onPressed: (){
+        setState((){ch =  IOWebSocketChannel.connect(Uri.parse(session.screenTVRoute), headers: {"authorization": session.token});});
+      }));
+    
+    
+    
+  }
+
+
+  @override
+  void dispose() {
+    widget.channel.sink.close();
+    super.dispose();
   }
 }
 
-class GeneralOrderCard extends StatelessWidget {
+
+class OrderCard extends StatefulWidget {
   final Order order;
-  GeneralOrderCard({this.order});
+  OrderCard({this.order});
+  @override
+  _OrderCardState createState() => _OrderCardState();
+}
+
+class _OrderCardState extends State<OrderCard> {
   @override
   Widget build(BuildContext context) {
-    order.status = Status.waiting;
-    Color statusColor;
-    switch (order.status) {
-      case Status.confirmed: statusColor = Colors.deepOrange; break;
-      case Status.preparing: statusColor = Colors.orange; break;
-      case Status.waiting: statusColor = Colors.green; break;
-      default: statusColor = Colors.deepOrange; break;
-    }
     return Card(
-      elevation: 8,
-      shape: RoundedRectangleBorder(
-        side: BorderSide(color: statusColor, width: 3),
-        borderRadius: BorderRadius.all(Radius.circular(4))
-      ),
-      child: InkWell(
-        onTap: () {},
-        child: Container(
-          height: 250,
-        ),
-      ),
+      child: Container(
+        width: 300,
+        child: Column(
+          children: [
+            TitleBox("PEDIDO Nº "+widget.order.id.toString()),
+            for (var it in widget.order.items) ListTile(title: Text("PRODUTO: ${it.product.name} - QUANTIDADE: ${it.quantity}")),
+            Container(
+              alignment: Alignment.bottomRight,
+              child: Row(children: [TextButton(child: Text("PREPARAR"), onPressed: (){})]),
+            )
+        ])
+      )
     );
   }
 }
